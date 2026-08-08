@@ -16,6 +16,9 @@ const DEFAULT_SETTINGS: Omit<InquiryFormSettings, "studio_id" | "updated_at"> = 
   ask_party_size: true,
   ask_referral_source: true,
   ask_message: true,
+  ask_budget: false,
+  ask_preferred_contact_method: false,
+  require_phone: false,
   custom_questions: [],
 };
 
@@ -32,6 +35,8 @@ export default function PublicInquiryPage() {
     phone: "",
     party_size: "",
     referral_source: "",
+    budget: "",
+    preferred_contact_method: "",
     message: "",
   });
   const [customAnswers, setCustomAnswers] = useState<Record<string, string>>({});
@@ -56,6 +61,9 @@ export default function PublicInquiryPage() {
           ask_party_size: data.ask_party_size,
           ask_referral_source: data.ask_referral_source,
           ask_message: data.ask_message,
+          ask_budget: data.ask_budget ?? false,
+          ask_preferred_contact_method: data.ask_preferred_contact_method ?? false,
+          require_phone: data.require_phone ?? false,
           custom_questions: (data.custom_questions as CustomQuestion[]) ?? [],
         });
       }
@@ -75,6 +83,8 @@ export default function PublicInquiryPage() {
 
     const notesParts: string[] = [];
     if (form.party_size) notesParts.push(`Estimated wedding party size: ${form.party_size}`);
+    if (form.budget) notesParts.push(`Budget range: ${form.budget}`);
+    if (form.preferred_contact_method) notesParts.push(`Preferred contact method: ${form.preferred_contact_method}`);
     if (form.message) notesParts.push(form.message);
     settings.custom_questions.forEach((q) => {
       const answer = customAnswers[q.id];
@@ -227,11 +237,40 @@ export default function PublicInquiryPage() {
                 <label className="block text-sm mb-1">Phone</label>
                 <input
                   className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  required={settings.require_phone}
                   value={form.phone}
                   onChange={(e) => update("phone", e.target.value)}
                 />
               </div>
             </div>
+
+            {settings.ask_budget && (
+              <div>
+                <label className="block text-sm mb-1">Budget range</label>
+                <input
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  placeholder="e.g. $500-$800"
+                  value={form.budget}
+                  onChange={(e) => update("budget", e.target.value)}
+                />
+              </div>
+            )}
+
+            {settings.ask_preferred_contact_method && (
+              <div>
+                <label className="block text-sm mb-1">Preferred contact method</label>
+                <select
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  value={form.preferred_contact_method}
+                  onChange={(e) => update("preferred_contact_method", e.target.value)}
+                >
+                  <option value="">No preference</option>
+                  <option value="Email">Email</option>
+                  <option value="Phone call">Phone call</option>
+                  <option value="Text">Text</option>
+                </select>
+              </div>
+            )}
 
             {settings.ask_referral_source && (
               <div>

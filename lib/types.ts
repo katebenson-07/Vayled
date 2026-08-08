@@ -165,7 +165,21 @@ export interface InquiryFormSettings {
   ask_party_size: boolean;
   ask_referral_source: boolean;
   ask_message: boolean;
+  ask_budget: boolean;
+  ask_preferred_contact_method: boolean;
+  require_phone: boolean;
   custom_questions: CustomQuestion[];
+  updated_at: string;
+}
+
+export interface StudioSettings {
+  studio_id: string;
+  studio_name: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  address: string | null;
+  notify_on_new_inquiry: boolean;
+  notification_email: string | null;
   updated_at: string;
 }
 

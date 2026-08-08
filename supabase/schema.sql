@@ -324,6 +324,9 @@ create table if not exists inquiry_form_settings (
 );
 
 alter table inquiry_form_settings add column if not exists custom_questions jsonb not null default '[]'::jsonb;
+alter table inquiry_form_settings add column if not exists ask_budget boolean not null default false;
+alter table inquiry_form_settings add column if not exists ask_preferred_contact_method boolean not null default false;
+alter table inquiry_form_settings add column if not exists require_phone boolean not null default false;
 
 alter table inquiry_form_settings enable row level security;
 
@@ -334,3 +337,26 @@ create policy "Studios manage their own inquiry form settings" on inquiry_form_s
 drop policy if exists "Public can view inquiry form settings" on inquiry_form_settings;
 create policy "Public can view inquiry form settings" on inquiry_form_settings
   for select to anon using (true);
+
+-- ============================================================================
+-- Studio settings: business profile + notification preferences
+-- Private to the studio (no public policy) — separate from
+-- inquiry_form_settings, which the public inquiry page needs to read.
+-- ============================================================================
+
+create table if not exists studio_settings (
+  studio_id uuid primary key references auth.users(id) on delete cascade,
+  studio_name text,
+  contact_email text,
+  contact_phone text,
+  address text,
+  notify_on_new_inquiry boolean not null default true,
+  notification_email text,
+  updated_at timestamptz not null default now()
+);
+
+alter table studio_settings enable row level security;
+
+drop policy if exists "Studios manage their own settings" on studio_settings;
+create policy "Studios manage their own settings" on studio_settings
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
