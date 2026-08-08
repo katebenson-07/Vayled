@@ -131,11 +131,18 @@ export interface ContractClause {
   body: string;
 }
 
+export interface ContractSection {
+  id: string;
+  heading: string;
+  body: string;
+}
+
 export interface ContractTemplate {
   id: string;
   studio_id: string;
   body: string;
   custom_clauses: ContractClause[];
+  sections: ContractSection[];
   updated_at: string;
 }
 

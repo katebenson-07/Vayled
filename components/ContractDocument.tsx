@@ -2,14 +2,22 @@ import { Fragment } from "react";
 import { FIELD_MARKERS, stripFieldMarkers } from "@/lib/merge";
 
 type Block =
-  | { type: "heading"; text: string }
   | { type: "bullets"; items: string[] }
   | { type: "paragraph"; text: string };
 
-const HEADING_RE = /^([IVXLCDM]+)\.\s+(.+)$/;
 const FIELD_SPLIT_RE = new RegExp(`${FIELD_MARKERS.start}([\\s\\S]*?)${FIELD_MARKERS.end}`, "g");
 const PAYMENT_ROW_RE = /^(Contract total|Booking Deposit|Remaining Balance)\s*:\s*(.+)$/i;
 const LEAD_LABEL_RE = /^([A-Z][A-Za-z &'-]{2,40}):\s*(.+)$/;
+
+export function ContractSectionHeading({ numeral, title }: { numeral: string; title: string }) {
+  return (
+    <div className="flex items-baseline gap-4 pt-5 mt-3 border-t border-charcoal/10 first:border-t-0 first:mt-0 first:pt-0">
+      <span className="font-heading text-base text-gold shrink-0">{numeral}.</span>
+      <h2 className="font-heading text-base text-charcoal tracking-wide shrink-0 whitespace-nowrap">{title}</h2>
+      <span className="flex-1 border-b border-charcoal/20" />
+    </div>
+  );
+}
 
 function parseBlocks(text: string): Block[] {
   const rawBlocks = text.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
@@ -17,10 +25,6 @@ function parseBlocks(text: string): Block[] {
 
   for (const raw of rawBlocks) {
     const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
-    if (lines.length === 1 && HEADING_RE.test(lines[0])) {
-      blocks.push({ type: "heading", text: lines[0] });
-      continue;
-    }
     if (lines.every((l) => l.startsWith("- "))) {
       blocks.push({ type: "bullets", items: lines.map((l) => l.replace(/^- /, "")) });
       continue;
@@ -68,7 +72,6 @@ function parsePaymentRow(item: string): { label: string; amount: string; sublabe
   const plain = stripFieldMarkers(item);
   const m = PAYMENT_ROW_RE.exec(plain);
   if (!m) return null;
-  // Re-run against the marked-up text to keep the field span for the amount.
   const markedRest = item.slice(item.indexOf(":") + 1).trim();
   const commaIdx = markedRest.indexOf(",");
   if (commaIdx === -1) {
@@ -89,27 +92,6 @@ export default function ContractDocument({ text }: { text: string }) {
   const rendered: React.ReactNode[] = [];
 
   blocks.forEach((block, i) => {
-    if (block.type === "heading") {
-      if (inPaymentTable) {
-        rendered.push(renderPaymentTable(paymentRows.splice(0), `pay-${i}`));
-        inPaymentTable = false;
-      }
-      const match = HEADING_RE.exec(block.text);
-      rendered.push(
-        <div
-          key={i}
-          className="flex items-baseline gap-4 pt-5 mt-3 border-t border-charcoal/10 first:border-t-0 first:mt-0 first:pt-0"
-        >
-          <span className="font-heading text-base text-gold shrink-0">{match ? `${match[1]}.` : ""}</span>
-          <h2 className="font-heading text-base text-charcoal tracking-wide shrink-0 whitespace-nowrap">
-            {match ? match[2] : block.text}
-          </h2>
-          <span className="flex-1 border-b border-charcoal/20" />
-        </div>
-      );
-      return;
-    }
-
     if (block.type === "bullets") {
       const normalItems: string[] = [];
       block.items.forEach((item) => {

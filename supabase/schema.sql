@@ -173,11 +173,13 @@ create table if not exists contract_templates (
   studio_id uuid not null references auth.users(id) on delete cascade,
   body text not null default '',
   custom_clauses jsonb not null default '[]'::jsonb,
+  sections jsonb not null default '[]'::jsonb,
   updated_at timestamptz not null default now(),
   unique (studio_id)
 );
 
 alter table contract_templates add column if not exists custom_clauses jsonb not null default '[]'::jsonb;
+alter table contract_templates add column if not exists sections jsonb not null default '[]'::jsonb;
 
 -- ============================================================================
 -- Email templates + send log

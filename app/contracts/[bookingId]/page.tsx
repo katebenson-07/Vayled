@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
-import ContractDocument from "@/components/ContractDocument";
+import ContractDocument, { ContractSectionHeading } from "@/components/ContractDocument";
 import ContractLetterhead from "@/components/ContractLetterhead";
 import ContractSignatureBlock from "@/components/ContractSignatureBlock";
 import ContractFooter from "@/components/ContractFooter";
 import { supabase } from "@/lib/supabaseClient";
-import { Booking, Client, ContractClause, ContractTemplate, Payment } from "@/lib/types";
+import { Booking, Client, ContractClause, ContractSection, ContractTemplate, Payment } from "@/lib/types";
 import { buildMergeContext, applyTemplateWithMarkers } from "@/lib/merge";
+import { toRoman, parseLegacyBody } from "@/lib/contractSections";
 import { format, parseISO } from "date-fns";
 
 function ContractContent() {
@@ -82,8 +83,15 @@ function ContractContent() {
   const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
   const balanceDue = Number(booking.contract_total) - totalPaid;
   const context = buildMergeContext(client, booking, balanceDue, studioName);
-  const filled = template ? applyTemplateWithMarkers(template.body, context) : "No contract template set up yet.";
-  const clauses = (template?.custom_clauses as ContractClause[]) ?? [];
+
+  const templateSections = (template?.sections as ContractSection[]) ?? [];
+  const legacyClauses = (template?.custom_clauses as ContractClause[]) ?? [];
+  const sections: ContractSection[] =
+    templateSections.length > 0
+      ? templateSections
+      : template?.body
+      ? [...parseLegacyBody(template.body), ...legacyClauses.map((c) => ({ id: c.id, heading: c.heading, body: c.body }))]
+      : [];
 
   return (
     <div className="space-y-6">
@@ -141,18 +149,15 @@ function ContractContent() {
           venue={client?.venue || undefined}
         />
 
-        <ContractDocument text={filled} />
-
-        {clauses.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-charcoal/10 space-y-4">
-            <h2 className="font-heading text-base text-charcoal tracking-wide">Additional Terms</h2>
-            {clauses.map((c) => (
-              <div key={c.id}>
-                <p className="font-serif text-base text-charcoal mb-1">{c.heading}</p>
-                <ContractDocument text={applyTemplateWithMarkers(c.body, context)} />
-              </div>
-            ))}
-          </div>
+        {sections.length === 0 ? (
+          <p className="text-charcoal/60 text-sm">No contract template set up yet.</p>
+        ) : (
+          sections.map((section, i) => (
+            <div key={section.id}>
+              <ContractSectionHeading numeral={toRoman(i + 1)} title={section.heading} />
+              <ContractDocument text={applyTemplateWithMarkers(section.body, context)} />
+            </div>
+          ))
         )}
 
         <ContractSignatureBlock studioName={studioName || "Your Studio"} brideName={client?.bride_name} />
