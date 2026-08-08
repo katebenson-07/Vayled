@@ -59,6 +59,8 @@ Open [http://localhost:3000](http://localhost:3000). Sign up with an email and p
 
 **Expenses** — a simple log (date, category, amount, vendor, note) with date-range filtering and CSV export formatted to hand to your CPA.
 
+**Public inquiry form** — a no-login page at `/inquire/[your-user-id]` you can link from a website, Instagram bio, or anywhere else. Submitting it creates a client and an inquiry in your account automatically. Your personal link is shown on the Dashboard with a copy button.
+
 ## What's not built yet
 
 These need external services this app doesn't have credentials for, so they're intentionally out of scope for now:

@@ -287,3 +287,18 @@ create policy "Studios manage their own sent email log" on sent_emails
 drop policy if exists "Studios manage their own expenses" on expenses;
 create policy "Studios manage their own expenses" on expenses
   for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+-- ============================================================================
+-- Public inquiry form
+-- Lets a stylist share a link (e.g. from their own website) where anyone can
+-- submit a new inquiry without logging in. Insert-only — the public can never
+-- read, update, or delete existing data.
+-- ============================================================================
+
+drop policy if exists "Public can submit inquiries (clients)" on clients;
+create policy "Public can submit inquiries (clients)" on clients
+  for insert to anon with check (true);
+
+drop policy if exists "Public can submit inquiries (bookings)" on bookings;
+create policy "Public can submit inquiries (bookings)" on bookings
+  for insert to anon with check (status = 'inquiry');
