@@ -25,6 +25,16 @@ function ClientDetail() {
     load();
   }, [id]);
 
+  async function updateClient(fields: Partial<Client>) {
+    if (!client) return;
+    setClient({ ...client, ...fields });
+    const { error } = await supabase.from("clients").update(fields).eq("id", client.id);
+    if (error) {
+      // revert on failure
+      setClient(client);
+    }
+  }
+
   async function createBooking() {
     const { data: userData } = await supabase.auth.getUser();
     const stylist_id = userData.user?.id;
@@ -53,23 +63,69 @@ function ClientDetail() {
         {client.wedding_date ?? "No date set"} · {client.venue ?? "No venue"}
       </p>
 
-      <div className="bg-white border border-charcoal/10 rounded-xl p-6 mb-6 space-y-1 text-sm">
-        <p>
-          <span className="text-charcoal/60">Email:</span> {client.email || "—"}
-        </p>
-        <p>
-          <span className="text-charcoal/60">Phone:</span> {client.phone || "—"}
-        </p>
-        {client.referral_source && (
-          <p>
-            <span className="text-charcoal/60">Referred by:</span> {client.referral_source}
-          </p>
-        )}
-        {client.notes && (
-          <p>
-            <span className="text-charcoal/60">Notes:</span> {client.notes}
-          </p>
-        )}
+      <div className="bg-white border border-charcoal/10 rounded-xl p-6 mb-6">
+        <h2 className="font-serif text-lg mb-4">Details</h2>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <label className="block text-charcoal/60 mb-1">Bride&apos;s name</label>
+            <input
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={client.bride_name}
+              onChange={(e) => updateClient({ bride_name: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="block text-charcoal/60 mb-1">Wedding date</label>
+            <input
+              type="date"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={client.wedding_date ?? ""}
+              onChange={(e) => updateClient({ wedding_date: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="block text-charcoal/60 mb-1">Venue</label>
+            <input
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={client.venue ?? ""}
+              onChange={(e) => updateClient({ venue: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="block text-charcoal/60 mb-1">Email</label>
+            <input
+              type="email"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={client.email ?? ""}
+              onChange={(e) => updateClient({ email: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="block text-charcoal/60 mb-1">Phone</label>
+            <input
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={client.phone ?? ""}
+              onChange={(e) => updateClient({ phone: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="block text-charcoal/60 mb-1">Referred by</label>
+            <input
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={client.referral_source ?? ""}
+              onChange={(e) => updateClient({ referral_source: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="mt-4">
+          <label className="block text-charcoal/60 mb-1">Notes</label>
+          <textarea
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+            rows={3}
+            defaultValue={client.notes ?? ""}
+            onBlur={(e) => updateClient({ notes: e.target.value })}
+          />
+        </div>
       </div>
 
       <div className="flex items-center justify-between mb-3">
