@@ -31,6 +31,14 @@ const PROFILE_DEFAULTS: Omit<StudioSettings, "studio_id" | "updated_at"> = {
   notification_email: "",
 };
 
+type Tab = "profile" | "notifications" | "inquiry";
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "profile", label: "Personal Information" },
+  { id: "notifications", label: "Notifications" },
+  { id: "inquiry", label: "Inquiry Form" },
+];
+
 function InquirySettingsContent() {
   const [studioId, setStudioId] = useState<string | null>(null);
   const [settings, setSettings] = useState<Omit<InquiryFormSettings, "studio_id" | "updated_at">>(DEFAULTS);
@@ -38,6 +46,7 @@ function InquirySettingsContent() {
   const [newQuestion, setNewQuestion] = useState("");
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>("profile");
 
   useEffect(() => {
     async function load() {
@@ -136,7 +145,23 @@ function InquirySettingsContent() {
       </div>
       {saved && <p className="text-sm text-green-700">Saved.</p>}
 
-      <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+      <div className="flex gap-1 border-b border-charcoal/10 text-sm">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setActiveTab(t.id)}
+            className={`px-4 py-2 -mb-px border-b-2 transition-colors ${
+              activeTab === t.id
+                ? "border-charcoal text-charcoal font-medium"
+                : "border-transparent text-charcoal/50 hover:text-charcoal"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <section className={`bg-white border border-charcoal/10 rounded-xl p-6 ${activeTab === "profile" ? "" : "hidden"}`}>
         <h2 className="font-serif text-lg mb-4">Business profile</h2>
         <div className="space-y-4 text-sm">
           <div className="grid sm:grid-cols-2 gap-4">
@@ -177,7 +202,7 @@ function InquirySettingsContent() {
         </div>
       </section>
 
-      <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+      <section className={`bg-white border border-charcoal/10 rounded-xl p-6 ${activeTab === "notifications" ? "" : "hidden"}`}>
         <h2 className="font-serif text-lg mb-1">Notifications</h2>
         <p className="text-xs text-charcoal/50 mb-4">
           Note: this only saves your preference for now — actually emailing you on new inquiries needs an email
@@ -204,6 +229,7 @@ function InquirySettingsContent() {
         </div>
       </section>
 
+      <div className={`space-y-6 ${activeTab === "inquiry" ? "" : "hidden"}`}>
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Inquiry form welcome text</h2>
         <div className="space-y-4 text-sm">
@@ -287,6 +313,7 @@ function InquirySettingsContent() {
           </div>
         )}
       </section>
+      </div>
     </div>
   );
 }
