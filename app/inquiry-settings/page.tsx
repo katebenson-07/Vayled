@@ -150,7 +150,7 @@ function InquirySettingsContent() {
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-1">Your own questions</h2>
         <p className="text-xs text-charcoal/50 mb-4">
-          Add anything else you like to ask — every stylist's process is a little different. Answers show up in the
+          Add anything else you like to ask — every stylist&apos;s process is a little different. Answers show up in the
           client&apos;s notes once they submit.
         </p>
         <div className="flex gap-2 mb-4 text-sm">
