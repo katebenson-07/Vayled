@@ -14,6 +14,7 @@ const links = [
   { href: "/emails", label: "Emails" },
   { href: "/analytics", label: "Analytics" },
   { href: "/expenses", label: "Expenses" },
+  { href: "/inquiry-settings", label: "Inquiry Form" },
 ];
 
 export default function Nav() {

@@ -14,8 +14,8 @@ const config: Config = {
         beige: "#DDD9C9",
       },
       fontFamily: {
-        serif: ["Georgia", "Playfair Display", "serif"],
-        sans: ["ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },
   },

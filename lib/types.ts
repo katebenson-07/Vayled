@@ -150,6 +150,25 @@ export interface SentEmail {
   sent_at: string;
 }
 
+export interface CustomQuestion {
+  id: string;
+  label: string;
+}
+
+export interface InquiryFormSettings {
+  studio_id: string;
+  welcome_heading: string;
+  welcome_message: string;
+  ask_wedding_date: boolean;
+  ask_venue: boolean;
+  ask_getting_ready_location: boolean;
+  ask_party_size: boolean;
+  ask_referral_source: boolean;
+  ask_message: boolean;
+  custom_questions: CustomQuestion[];
+  updated_at: string;
+}
+
 export interface Expense {
   id: string;
   studio_id: string;

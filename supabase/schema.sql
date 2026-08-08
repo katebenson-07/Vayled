@@ -302,3 +302,35 @@ create policy "Public can submit inquiries (clients)" on clients
 drop policy if exists "Public can submit inquiries (bookings)" on bookings;
 create policy "Public can submit inquiries (bookings)" on bookings
   for insert to anon with check (status = 'inquiry');
+
+-- ============================================================================
+-- Customizable inquiry form settings
+-- Each studio can toggle which optional questions show on their public
+-- inquiry form, and edit the welcome heading/message.
+-- ============================================================================
+
+create table if not exists inquiry_form_settings (
+  studio_id uuid primary key references auth.users(id) on delete cascade,
+  welcome_heading text not null default 'Welcome, beautiful bride-to-be',
+  welcome_message text not null default 'We''re so honored you''re considering us for your special day. Tell us a bit about your wedding and we''ll be in touch to check availability.',
+  ask_wedding_date boolean not null default true,
+  ask_venue boolean not null default true,
+  ask_getting_ready_location boolean not null default true,
+  ask_party_size boolean not null default true,
+  ask_referral_source boolean not null default true,
+  ask_message boolean not null default true,
+  custom_questions jsonb not null default '[]'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table inquiry_form_settings add column if not exists custom_questions jsonb not null default '[]'::jsonb;
+
+alter table inquiry_form_settings enable row level security;
+
+drop policy if exists "Studios manage their own inquiry form settings" on inquiry_form_settings;
+create policy "Studios manage their own inquiry form settings" on inquiry_form_settings
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+drop policy if exists "Public can view inquiry form settings" on inquiry_form_settings;
+create policy "Public can view inquiry form settings" on inquiry_form_settings
+  for select to anon using (true);

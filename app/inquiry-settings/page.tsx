@@ -1,0 +1,193 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import AuthGuard from "@/components/AuthGuard";
+import { supabase } from "@/lib/supabaseClient";
+import { CustomQuestion, InquiryFormSettings } from "@/lib/types";
+
+const DEFAULTS: Omit<InquiryFormSettings, "studio_id" | "updated_at"> = {
+  welcome_heading: "Welcome, beautiful bride-to-be",
+  welcome_message:
+    "We're so honored you're considering us for your special day. Tell us a bit about your wedding and we'll be in touch to check availability.",
+  ask_wedding_date: true,
+  ask_venue: true,
+  ask_getting_ready_location: true,
+  ask_party_size: true,
+  ask_referral_source: true,
+  ask_message: true,
+  custom_questions: [],
+};
+
+function InquirySettingsContent() {
+  const [studioId, setStudioId] = useState<string | null>(null);
+  const [settings, setSettings] = useState<Omit<InquiryFormSettings, "studio_id" | "updated_at">>(DEFAULTS);
+  const [newQuestion, setNewQuestion] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id ?? null;
+      setStudioId(uid);
+      if (uid) {
+        const { data } = await supabase.from("inquiry_form_settings").select("*").eq("studio_id", uid).maybeSingle();
+        if (data) {
+          setSettings({
+            welcome_heading: data.welcome_heading,
+            welcome_message: data.welcome_message,
+            ask_wedding_date: data.ask_wedding_date,
+            ask_venue: data.ask_venue,
+            ask_getting_ready_location: data.ask_getting_ready_location,
+            ask_party_size: data.ask_party_size,
+            ask_referral_source: data.ask_referral_source,
+            ask_message: data.ask_message,
+            custom_questions: (data.custom_questions as CustomQuestion[]) ?? [],
+          });
+        }
+      }
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  function toggle(key: keyof typeof DEFAULTS) {
+    setSettings((s) => ({ ...s, [key]: !s[key as keyof typeof s] }));
+  }
+
+  function addQuestion() {
+    if (!newQuestion.trim()) return;
+    const q: CustomQuestion = { id: crypto.randomUUID(), label: newQuestion.trim() };
+    setSettings((s) => ({ ...s, custom_questions: [...s.custom_questions, q] }));
+    setNewQuestion("");
+  }
+
+  function removeQuestion(id: string) {
+    setSettings((s) => ({ ...s, custom_questions: s.custom_questions.filter((q) => q.id !== id) }));
+  }
+
+  async function save() {
+    if (!studioId) return;
+    const { error } = await supabase
+      .from("inquiry_form_settings")
+      .upsert({ studio_id: studioId, ...settings, updated_at: new Date().toISOString() });
+    if (!error) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
+  }
+
+  if (loading) return <p className="text-charcoal/60">Loading...</p>;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="font-serif text-2xl mb-1">Inquiry form</h1>
+          <p className="text-charcoal/60 text-sm">
+            Customize what your public inquiry form asks for.{" "}
+            {studioId && (
+              <Link href={`/inquire/${studioId}`} target="_blank" className="text-gold hover:underline">
+                Preview your form ↗
+              </Link>
+            )}
+          </p>
+        </div>
+        <button onClick={save} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+          Save
+        </button>
+      </div>
+      {saved && <p className="text-sm text-green-700">Saved.</p>}
+
+      <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <h2 className="font-serif text-lg mb-4">Welcome text</h2>
+        <div className="space-y-4 text-sm">
+          <div>
+            <label className="block text-charcoal/60 mb-1">Heading</label>
+            <input
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={settings.welcome_heading}
+              onChange={(e) => setSettings((s) => ({ ...s, welcome_heading: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label className="block text-charcoal/60 mb-1">Message</label>
+            <textarea
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              rows={3}
+              value={settings.welcome_message}
+              onChange={(e) => setSettings((s) => ({ ...s, welcome_message: e.target.value }))}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <h2 className="font-serif text-lg mb-1">Questions to ask</h2>
+        <p className="text-xs text-charcoal/50 mb-4">
+          Name and email are always asked so you can follow up. Toggle the rest on or off.
+        </p>
+        <div className="space-y-3 text-sm">
+          {(
+            [
+              ["ask_wedding_date", "Wedding date"],
+              ["ask_venue", "Venue"],
+              ["ask_getting_ready_location", "Getting ready location"],
+              ["ask_party_size", "Party size"],
+              ["ask_referral_source", "How did you hear about us?"],
+              ["ask_message", "Tell us about your vision (open message)"],
+            ] as [keyof typeof DEFAULTS, string][]
+          ).map(([key, label]) => (
+            <label key={key} className="flex items-center gap-2">
+              <input type="checkbox" checked={settings[key] as boolean} onChange={() => toggle(key)} />
+              {label}
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <h2 className="font-serif text-lg mb-1">Your own questions</h2>
+        <p className="text-xs text-charcoal/50 mb-4">
+          Add anything else you like to ask — every stylist's process is a little different. Answers show up in the
+          client&apos;s notes once they submit.
+        </p>
+        <div className="flex gap-2 mb-4 text-sm">
+          <input
+            className="flex-1 border border-charcoal/20 rounded-md px-3 py-2"
+            placeholder="e.g. What's your hair type?"
+            value={newQuestion}
+            onChange={(e) => setNewQuestion(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addQuestion())}
+          />
+          <button onClick={addQuestion} className="bg-charcoal text-ivory rounded-md px-4 py-2">
+            Add
+          </button>
+        </div>
+        {settings.custom_questions.length === 0 ? (
+          <p className="text-sm text-charcoal/50">No custom questions yet.</p>
+        ) : (
+          <div className="space-y-2 text-sm">
+            {settings.custom_questions.map((q) => (
+              <div key={q.id} className="flex items-center justify-between border-b border-charcoal/10 pb-2">
+                <span>{q.label}</span>
+                <button onClick={() => removeQuestion(q.id)} className="text-red-600 text-xs">
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+export default function InquirySettingsPage() {
+  return (
+    <AuthGuard>
+      <InquirySettingsContent />
+    </AuthGuard>
+  );
+}
