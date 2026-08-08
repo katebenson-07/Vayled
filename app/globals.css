@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #EAECE4;
+  color: #33181C;
+}
+
+.tracking-widest-lg {
+  letter-spacing: 0.18em;
+}
