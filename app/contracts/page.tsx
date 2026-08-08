@@ -70,7 +70,9 @@ VII. LIABILITY
 
 VIII. PHOTOGRAPHY RELEASE
 
-The Client agrees that the hair stylist may use photographs of the completed hair style for promotional purposes, including but not limited to the artist's portfolio and social media.
+The Client agrees that the hair stylist may use photographs of the completed hair style for promotional purposes, including but not limited to the artist's portfolio and social media, unless declined below.
+
+- [ ] I do not consent to the use of my wedding photos for the Hair Stylist's promotional purposes.
 
 IX. AMENDMENTS
 
@@ -92,15 +94,7 @@ Both parties, the Client and the Hair stylist, acknowledge that they have had th
 
 If any provision or portion of this Contract is deemed invalid, illegal, or unenforceable by a court of competent jurisdiction, the remaining provisions shall remain in full force and effect to the extent permitted by law.
 
-Both the Client and the Hair stylist consent to the use of electronic communication, including email, for the purpose of exchanging information, updates, and documents related to this Contract. Such electronic communication shall be deemed valid and binding.
-
-By signing below, the Client and the Hair stylist acknowledge that they have diligently read, comprehended, and concurred with the terms and conditions outlined in this Contract.
-
-Client's Name: {{bride_name}}                    Hair Stylist's Name: {{studio_name}}
-
-Client signature: _______________________   Date: {{today}}
-
-Hair Stylist signature: _______________________   Date: {{today}}`;
+Both the Client and the Hair stylist consent to the use of electronic communication, including email, for the purpose of exchanging information, updates, and documents related to this Contract. Such electronic communication shall be deemed valid and binding.`;
 
 function ContractsContent() {
   const [template, setTemplate] = useState<ContractTemplate | null>(null);

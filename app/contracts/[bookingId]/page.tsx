@@ -5,9 +5,12 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
 import ContractDocument from "@/components/ContractDocument";
+import ContractLetterhead from "@/components/ContractLetterhead";
+import ContractSignatureBlock from "@/components/ContractSignatureBlock";
+import ContractFooter from "@/components/ContractFooter";
 import { supabase } from "@/lib/supabaseClient";
 import { Booking, Client, ContractClause, ContractTemplate, Payment } from "@/lib/types";
-import { buildMergeContext, applyTemplate } from "@/lib/merge";
+import { buildMergeContext, applyTemplateWithMarkers } from "@/lib/merge";
 import { format, parseISO } from "date-fns";
 
 function ContractContent() {
@@ -79,7 +82,7 @@ function ContractContent() {
   const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
   const balanceDue = Number(booking.contract_total) - totalPaid;
   const context = buildMergeContext(client, booking, balanceDue, studioName);
-  const filled = template ? applyTemplate(template.body, context) : "No contract template set up yet.";
+  const filled = template ? applyTemplateWithMarkers(template.body, context) : "No contract template set up yet.";
   const clauses = (template?.custom_clauses as ContractClause[]) ?? [];
 
   return (
@@ -131,42 +134,29 @@ function ContractContent() {
       )}
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-8 md:p-12">
-        <div className="text-center mb-8 pb-6 border-b border-charcoal/10">
-          <p className="font-serif text-2xl text-charcoal">{studioName || "Your Studio"}</p>
-          <p className="text-xs uppercase tracking-widest-lg text-gold mt-1">Bridal Contract</p>
-          <div className="flex items-center justify-center flex-wrap gap-x-6 gap-y-1 text-xs text-charcoal/60 mt-4">
-            <span>
-              <span className="text-charcoal/40">Bride </span>
-              {client?.bride_name ?? "—"}
-            </span>
-            <span>
-              <span className="text-charcoal/40">Wedding date </span>
-              {client?.wedding_date ? format(parseISO(client.wedding_date), "MMMM d, yyyy") : "TBD"}
-            </span>
-            <span>
-              <span className="text-charcoal/40">Venue </span>
-              {client?.venue || "TBD"}
-            </span>
-            <span>
-              <span className="text-charcoal/40">Prepared </span>
-              {format(new Date(), "MMMM d, yyyy")}
-            </span>
-          </div>
-        </div>
+        <ContractLetterhead
+          studioName={studioName || "Your Studio"}
+          brideName={client?.bride_name}
+          weddingDate={client?.wedding_date ? format(parseISO(client.wedding_date), "MMMM d, yyyy") : undefined}
+          venue={client?.venue || undefined}
+        />
 
         <ContractDocument text={filled} />
 
         {clauses.length > 0 && (
           <div className="mt-6 pt-6 border-t border-charcoal/10 space-y-4">
-            <h2 className="font-serif text-lg text-charcoal">Additional Terms</h2>
+            <h2 className="font-heading text-base text-charcoal tracking-wide">Additional Terms</h2>
             {clauses.map((c) => (
               <div key={c.id}>
                 <p className="font-serif text-base text-charcoal mb-1">{c.heading}</p>
-                <ContractDocument text={applyTemplate(c.body, context)} />
+                <ContractDocument text={applyTemplateWithMarkers(c.body, context)} />
               </div>
             ))}
           </div>
         )}
+
+        <ContractSignatureBlock studioName={studioName || "Your Studio"} brideName={client?.bride_name} />
+        <ContractFooter />
       </section>
     </div>
   );

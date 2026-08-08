@@ -31,5 +31,25 @@ export function applyTemplate(template: string, context: Record<string, string>)
   });
 }
 
+// Invisible control characters (STX/ETX) used to mark which spans of text
+// came from a merge field, so the pretty contract renderer can style them as
+// fill-in blanks. Only used for the on-screen/printed contract — the plain
+// applyTemplate() above stays marker-free for emails and invoices.
+const FIELD_START = "";
+const FIELD_END = "";
+const FIELD_MARKER_RE = new RegExp(`[${FIELD_START}${FIELD_END}]`, "g");
+
+export function applyTemplateWithMarkers(template: string, context: Record<string, string>): string {
+  return template.replace(/{{\s*([a-zA-Z_]+)\s*}}/g, (match, key) => {
+    return key in context ? `${FIELD_START}${context[key]}${FIELD_END}` : match;
+  });
+}
+
+export function stripFieldMarkers(text: string): string {
+  return text.replace(FIELD_MARKER_RE, "");
+}
+
+export const FIELD_MARKERS = { start: FIELD_START, end: FIELD_END };
+
 export const MERGE_FIELD_HELP =
   "Available fields: {{bride_name}}, {{wedding_date}}, {{venue}}, {{contact_email}}, {{contact_phone}}, {{contract_total}}, {{deposit_amount}}, {{balance_due}}, {{studio_name}}, {{today}}";
