@@ -14,6 +14,7 @@ function ContractContent() {
   const [client, setClient] = useState<Client | null>(null);
   const [template, setTemplate] = useState<ContractTemplate | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [studioName, setStudioName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   async function load() {
@@ -31,6 +32,15 @@ function ContractContent() {
     setPayments((paymentData as Payment[]) ?? []);
     const { data: templateData } = await supabase.from("contract_templates").select("*").maybeSingle();
     setTemplate(templateData as ContractTemplate);
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData.user) {
+      const { data: profileData } = await supabase
+        .from("studio_settings")
+        .select("studio_name")
+        .eq("studio_id", userData.user.id)
+        .maybeSingle();
+      setStudioName(profileData?.studio_name ?? null);
+    }
     setLoading(false);
   }
 
@@ -56,7 +66,7 @@ function ContractContent() {
 
   const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
   const balanceDue = Number(booking.contract_total) - totalPaid;
-  const context = buildMergeContext(client, booking, balanceDue);
+  const context = buildMergeContext(client, booking, balanceDue, studioName);
   const filled = template ? applyTemplate(template.body, context) : "No contract template set up yet.";
 
   return (
