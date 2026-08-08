@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import Nav from "./Nav";
+import Sidebar from "./Sidebar";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -36,9 +36,9 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-ivory">
-      <Nav />
-      <main className="max-w-5xl mx-auto p-6">{children}</main>
+    <div className="min-h-screen bg-ivory md:flex">
+      <Sidebar />
+      <main className="flex-1 min-w-0 p-6 md:p-8 max-w-6xl">{children}</main>
     </div>
   );
 }
