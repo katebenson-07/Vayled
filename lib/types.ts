@@ -125,10 +125,17 @@ export interface TrialSession {
   created_at: string;
 }
 
+export interface ContractClause {
+  id: string;
+  heading: string;
+  body: string;
+}
+
 export interface ContractTemplate {
   id: string;
   studio_id: string;
   body: string;
+  custom_clauses: ContractClause[];
   updated_at: string;
 }
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
-import { ContractTemplate } from "@/lib/types";
+import { ContractTemplate, ContractClause } from "@/lib/types";
 import { MERGE_FIELD_HELP } from "@/lib/merge";
 
 const DEFAULT_TEMPLATE = `BRIDAL CONTRACT
@@ -105,6 +105,9 @@ Hair Stylist signature: _______________________   Date: {{today}}`;
 function ContractsContent() {
   const [template, setTemplate] = useState<ContractTemplate | null>(null);
   const [body, setBody] = useState("");
+  const [clauses, setClauses] = useState<ContractClause[]>([]);
+  const [newHeading, setNewHeading] = useState("");
+  const [newClauseBody, setNewClauseBody] = useState("");
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
 
@@ -123,14 +126,29 @@ function ContractsContent() {
       }
       setTemplate(data as ContractTemplate);
       setBody((data as ContractTemplate)?.body ?? "");
+      setClauses(((data as ContractTemplate)?.custom_clauses as ContractClause[]) ?? []);
       setLoading(false);
     }
     load();
   }, []);
 
+  function addClause() {
+    if (!newHeading.trim() || !newClauseBody.trim()) return;
+    setClauses((c) => [...c, { id: crypto.randomUUID(), heading: newHeading.trim(), body: newClauseBody.trim() }]);
+    setNewHeading("");
+    setNewClauseBody("");
+  }
+
+  function removeClause(id: string) {
+    setClauses((c) => c.filter((cl) => cl.id !== id));
+  }
+
   async function save() {
     if (!template) return;
-    await supabase.from("contract_templates").update({ body, updated_at: new Date().toISOString() }).eq("id", template.id);
+    await supabase
+      .from("contract_templates")
+      .update({ body, custom_clauses: clauses, updated_at: new Date().toISOString() })
+      .eq("id", template.id);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
@@ -139,14 +157,21 @@ function ContractsContent() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-serif text-2xl mb-1">Contract template</h1>
-        <p className="text-charcoal/60 text-sm">
-          Edit this once — it auto-fills with each booking&apos;s details when you view a contract from that booking&apos;s page.
-        </p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="font-serif text-2xl mb-1">Contract template</h1>
+          <p className="text-charcoal/60 text-sm">
+            Edit this once — it auto-fills with each booking&apos;s details when you view a contract from that booking&apos;s page.
+          </p>
+        </div>
+        <button onClick={save} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+          Save
+        </button>
       </div>
+      {saved && <p className="text-sm text-green-700">Saved.</p>}
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <h2 className="font-serif text-lg mb-1">Base contract</h2>
         <p className="text-xs text-charcoal/50 mb-3">{MERGE_FIELD_HELP}</p>
         <textarea
           className="w-full border border-charcoal/20 rounded-md px-3 py-3 text-sm font-mono"
@@ -154,12 +179,49 @@ function ContractsContent() {
           value={body}
           onChange={(e) => setBody(e.target.value)}
         />
-        <div className="flex items-center gap-3 mt-4">
-          <button onClick={save} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
-            Save template
+      </section>
+
+      <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <h2 className="font-serif text-lg mb-1">Your own clauses</h2>
+        <p className="text-xs text-charcoal/50 mb-4">
+          Add any extra terms specific to your business — they&apos;ll appear after the base contract on every booking&apos;s
+          contract. Merge fields like {"{{bride_name}}"} work here too.
+        </p>
+        <div className="space-y-2 mb-4">
+          <input
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+            placeholder="Clause heading, e.g. Travel Fee"
+            value={newHeading}
+            onChange={(e) => setNewHeading(e.target.value)}
+          />
+          <textarea
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+            rows={3}
+            placeholder="Clause text..."
+            value={newClauseBody}
+            onChange={(e) => setNewClauseBody(e.target.value)}
+          />
+          <button onClick={addClause} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+            Add clause
           </button>
-          {saved && <span className="text-sm text-green-700">Saved.</span>}
         </div>
+        {clauses.length === 0 ? (
+          <p className="text-sm text-charcoal/50">No extra clauses yet.</p>
+        ) : (
+          <div className="space-y-3 text-sm">
+            {clauses.map((c) => (
+              <div key={c.id} className="border border-charcoal/10 rounded-md p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="font-medium">{c.heading}</p>
+                  <button onClick={() => removeClause(c.id)} className="text-red-600 text-xs">
+                    Remove
+                  </button>
+                </div>
+                <p className="text-charcoal/60 whitespace-pre-wrap">{c.body}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
