@@ -47,6 +47,8 @@ function InquirySettingsContent() {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("profile");
+  const [inquiryLink, setInquiryLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -54,6 +56,7 @@ function InquirySettingsContent() {
       const uid = userData.user?.id ?? null;
       setStudioId(uid);
       if (uid) {
+        setInquiryLink(`${window.location.origin}/inquire/${uid}`);
         const [{ data }, { data: profileData }] = await Promise.all([
           supabase.from("inquiry_form_settings").select("*").eq("studio_id", uid).maybeSingle(),
           supabase.from("studio_settings").select("*").eq("studio_id", uid).maybeSingle(),
@@ -91,6 +94,13 @@ function InquirySettingsContent() {
     }
     load();
   }, []);
+
+  function copyInquiryLink() {
+    if (!inquiryLink) return;
+    navigator.clipboard.writeText(inquiryLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   function toggle(key: keyof typeof DEFAULTS) {
     setSettings((s) => ({ ...s, [key]: !s[key as keyof typeof s] }));
@@ -230,6 +240,29 @@ function InquirySettingsContent() {
       </section>
 
       <div className={`space-y-6 ${activeTab === "inquiry" ? "" : "hidden"}`}>
+      <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-1">Your public inquiry form</h2>
+        <p className="text-charcoal/60 text-sm mb-3">
+          Share this link on your website, Instagram bio, or anywhere brides find you. Anyone who fills it out shows up
+          as a new inquiry — no account needed on their end.
+        </p>
+        <div className="flex items-center gap-2 text-sm">
+          <input
+            readOnly
+            value={inquiryLink ?? "Loading..."}
+            onFocus={(e) => e.target.select()}
+            className="flex-1 border border-charcoal/20 rounded-md px-3 py-2 bg-ivory text-charcoal/70"
+          />
+          <button
+            onClick={copyInquiryLink}
+            disabled={!inquiryLink}
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 disabled:opacity-50 whitespace-nowrap"
+          >
+            {copied ? "Copied!" : "Copy link"}
+          </button>
+        </div>
+      </section>
+
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Inquiry form welcome text</h2>
         <div className="space-y-4 text-sm">
