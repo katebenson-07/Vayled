@@ -219,6 +219,23 @@ create table if not exists expenses (
 );
 
 -- ============================================================================
+-- Mileage tracker
+-- Logs business driving (client visits, product runs, etc.) so stylists can
+-- claim the IRS standard mileage deduction at tax time.
+-- ============================================================================
+
+create table if not exists mileage_trips (
+  id uuid primary key default uuid_generate_v4(),
+  studio_id uuid not null references auth.users(id) on delete cascade,
+  trip_date date not null default current_date,
+  client_name text,
+  from_location text,
+  to_location text,
+  miles numeric not null default 0,
+  created_at timestamptz not null default now()
+);
+
+-- ============================================================================
 -- Inspiration / mood board photos
 -- Photos follow the bride (client_id), not a single booking, so they show up
 -- consistently across the client's history. booking_id is optional context
@@ -255,6 +272,7 @@ alter table contract_templates enable row level security;
 alter table email_templates enable row level security;
 alter table sent_emails enable row level security;
 alter table expenses enable row level security;
+alter table mileage_trips enable row level security;
 
 drop policy if exists "Stylists manage their own clients" on clients;
 create policy "Stylists manage their own clients" on clients
@@ -314,6 +332,10 @@ create policy "Studios manage their own sent email log" on sent_emails
 
 drop policy if exists "Studios manage their own expenses" on expenses;
 create policy "Studios manage their own expenses" on expenses
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+drop policy if exists "Studios manage their own mileage trips" on mileage_trips;
+create policy "Studios manage their own mileage trips" on mileage_trips
   for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
 
 -- ============================================================================
@@ -382,6 +404,9 @@ create table if not exists studio_settings (
   notification_email text,
   updated_at timestamptz not null default now()
 );
+
+alter table studio_settings add column if not exists mileage_rate numeric not null default 0.70;
+alter table studio_settings add column if not exists expense_budgets jsonb not null default '{}'::jsonb;
 
 alter table studio_settings enable row level security;
 

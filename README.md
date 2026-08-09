@@ -57,7 +57,7 @@ Open [http://localhost:3000](http://localhost:3000). Sign up with an email and p
 
 **Business analytics** — 12-month view of inquiries, bookings, and "ghosted" inquiries by month, booked-rate, and your busiest month for inquiries.
 
-**Expenses** — a simple log (date, category, amount, vendor, note) with date-range filtering and CSV export formatted to hand to your CPA.
+**Expenses** — a log (date, category, amount, vendor, note) with monthly filtering, editable per-category budgets with over-budget warnings, a mileage tracker (trips, editable IRS rate, automatic deduction totals), and CSV export for both expenses and mileage formatted to hand to your CPA.
 
 **Public inquiry form** — a no-login page at `/inquire/[your-user-id]` you can link from a website, Instagram bio, or anywhere else. Submitting it creates a client and an inquiry in your account automatically. Your personal link is shown on the Dashboard with a copy button.
 

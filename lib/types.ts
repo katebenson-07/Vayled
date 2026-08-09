@@ -205,6 +205,8 @@ export interface StudioSettings {
   address: string | null;
   notify_on_new_inquiry: boolean;
   notification_email: string | null;
+  mileage_rate: number;
+  expense_budgets: Record<string, number>;
   updated_at: string;
 }
 
@@ -216,5 +218,16 @@ export interface Expense {
   amount: number;
   vendor: string | null;
   note: string | null;
+  created_at: string;
+}
+
+export interface MileageTrip {
+  id: string;
+  studio_id: string;
+  trip_date: string;
+  client_name: string | null;
+  from_location: string | null;
+  to_location: string | null;
+  miles: number;
   created_at: string;
 }

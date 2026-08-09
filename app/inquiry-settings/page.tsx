@@ -22,7 +22,12 @@ const DEFAULTS: Omit<InquiryFormSettings, "studio_id" | "updated_at"> = {
   custom_questions: [],
 };
 
-const PROFILE_DEFAULTS: Omit<StudioSettings, "studio_id" | "updated_at"> = {
+type ProfileFields = Pick<
+  StudioSettings,
+  "studio_name" | "contact_email" | "contact_phone" | "address" | "notify_on_new_inquiry" | "notification_email"
+>;
+
+const PROFILE_DEFAULTS: ProfileFields = {
   studio_name: "",
   contact_email: "",
   contact_phone: "",
@@ -42,7 +47,7 @@ const TABS: { id: Tab; label: string }[] = [
 function InquirySettingsContent() {
   const [studioId, setStudioId] = useState<string | null>(null);
   const [settings, setSettings] = useState<Omit<InquiryFormSettings, "studio_id" | "updated_at">>(DEFAULTS);
-  const [profile, setProfile] = useState<Omit<StudioSettings, "studio_id" | "updated_at">>(PROFILE_DEFAULTS);
+  const [profile, setProfile] = useState<ProfileFields>(PROFILE_DEFAULTS);
   const [newQuestion, setNewQuestion] = useState("");
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
