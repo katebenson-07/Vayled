@@ -33,6 +33,14 @@ const PIPELINE_STEPS = [
   "Balance & review",
 ] as const;
 
+const TABS = [
+  { id: "overview", label: "Overview" },
+  { id: "notes", label: "Trial notes" },
+  { id: "timeline", label: "Timeline" },
+  { id: "payments", label: "Payments" },
+] as const;
+type TabId = (typeof TABS)[number]["id"];
+
 function BookingDetail() {
   const { id } = useParams<{ id: string }>();
   const [booking, setBooking] = useState<Booking | null>(null);
@@ -47,6 +55,7 @@ function BookingDetail() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [trial, setTrial] = useState<TrialSession | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabId>("overview");
 
   const [newNoteTag, setNewNoteTag] = useState(NOTE_TAGS[0]);
   const [newNoteBody, setNewNoteBody] = useState("");
@@ -337,6 +346,23 @@ function BookingDetail() {
         </Link>
       </div>
 
+      <div className="flex gap-1 border-b border-charcoal/10">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 text-sm border-b-2 -mb-px transition-colors ${
+              activeTab === tab.id
+                ? "border-charcoal text-charcoal font-medium"
+                : "border-transparent text-charcoal/50 hover:text-charcoal/80"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "overview" && (
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Booking details</h2>
         <div className="grid grid-cols-2 gap-4 text-sm">
@@ -422,7 +448,15 @@ function BookingDetail() {
           </div>
         </div>
       </section>
+      )}
 
+      {activeTab === "notes" && (
+      <>
+      <div className="flex flex-wrap gap-2 text-sm">
+        <Link href={`/trials/${id}`} className="border border-charcoal/20 rounded-md px-3 py-2 hover:bg-white">
+          Open full trial session (fee, ratings, quote) →
+        </Link>
+      </div>
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Stylist notes</h2>
@@ -472,7 +506,11 @@ function BookingDetail() {
           </div>
         )}
       </section>
+      </>
+      )}
 
+      {activeTab === "overview" && (
+      <>
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Vendor team</h2>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -597,7 +635,10 @@ function BookingDetail() {
           </div>
         )}
       </section>
+      </>
+      )}
 
+      {activeTab === "timeline" && (
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Wedding-day timeline</h2>
         {!booking.ready_by_time ? (
@@ -648,7 +689,9 @@ function BookingDetail() {
           </div>
         )}
       </section>
+      )}
 
+      {activeTab === "payments" && (
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-serif text-lg">Payments</h2>
@@ -675,7 +718,9 @@ function BookingDetail() {
           </div>
         )}
       </section>
+      )}
 
+      {activeTab === "overview" && (
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Stylists on this job</h2>
         {!client?.wedding_date ? (
@@ -727,6 +772,7 @@ function BookingDetail() {
           </div>
         )}
       </section>
+      )}
     </div>
   );
 }

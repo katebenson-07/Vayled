@@ -4,16 +4,39 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
-import { Booking, Client, Payment, PartyMember } from "@/lib/types";
-import { computeTimeline } from "@/lib/timeline";
-import { format, parseISO, isSameMonth, isToday, isBefore, startOfDay } from "date-fns";
+import { Booking, Client, Payment, PartyMember, TrialSession } from "@/lib/types";
+import { fetchInboxItems, InboxItem } from "@/lib/inbox";
+import {
+  format,
+  parseISO,
+  isSameMonth,
+  isBefore,
+  isAfter,
+  startOfDay,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  addDays,
+  formatDistanceToNowStrict,
+} from "date-fns";
 
 type BookingWithClient = Booking & { clients: Client | null };
+type TrialWithClient = TrialSession & { bookings: (Booking & { clients: Client | null }) | null };
+
+const ACTIVITY_GLYPH: Record<InboxItem["type"], string> = {
+  contract: "◆",
+  payment: "$",
+  inquiry: "·",
+  trial: "✓",
+};
 
 function DashboardContent() {
+  const [greetingName, setGreetingName] = useState("there");
   const [bookings, setBookings] = useState<BookingWithClient[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
-  const [nextMembers, setNextMembers] = useState<PartyMember[]>([]);
+  const [members, setMembers] = useState<PartyMember[]>([]);
+  const [trials, setTrials] = useState<TrialWithClient[]>([]);
+  const [activity, setActivity] = useState<InboxItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [inquiryLink, setInquiryLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -23,32 +46,32 @@ function DashboardContent() {
       const { data: userData } = await supabase.auth.getUser();
       if (userData.user) {
         setInquiryLink(`${window.location.origin}/inquire/${userData.user.id}`);
+        const { data: profile } = await supabase
+          .from("studio_settings")
+          .select("studio_name")
+          .eq("studio_id", userData.user.id)
+          .maybeSingle();
+        const name = profile?.studio_name?.split(" ")[0] || userData.user.email?.split("@")[0] || "there";
+        setGreetingName(name);
       }
 
-      const { data: bookingData } = await supabase
-        .from("bookings")
-        .select("*, clients(*)")
-        .neq("status", "cancelled");
-      const list = (bookingData as BookingWithClient[]) ?? [];
-      setBookings(list);
+      const [{ data: bookingData }, { data: paymentData }, { data: memberData }, { data: trialData }, inboxItems] =
+        await Promise.all([
+          supabase.from("bookings").select("*, clients(*)").neq("status", "cancelled"),
+          supabase.from("payments").select("*"),
+          supabase.from("party_members").select("*"),
+          supabase
+            .from("trial_sessions")
+            .select("*, bookings(*, clients(*))")
+            .order("session_date", { ascending: true }),
+          fetchInboxItems(),
+        ]);
 
-      const { data: paymentData } = await supabase.from("payments").select("*");
+      setBookings((bookingData as BookingWithClient[]) ?? []);
       setPayments((paymentData as Payment[]) ?? []);
-
-      const today = startOfDay(new Date());
-      const upcoming = list
-        .filter((b) => b.clients?.wedding_date)
-        .sort((a, b) => (a.clients!.wedding_date! < b.clients!.wedding_date! ? -1 : 1));
-      const next = upcoming.find((b) => !isBefore(parseISO(b.clients!.wedding_date!), today));
-      if (next) {
-        const { data: memberData } = await supabase
-          .from("party_members")
-          .select("*")
-          .eq("booking_id", next.id)
-          .order("order_index");
-        setNextMembers((memberData as PartyMember[]) ?? []);
-      }
-
+      setMembers((memberData as PartyMember[]) ?? []);
+      setTrials((trialData as TrialWithClient[]) ?? []);
+      setActivity(inboxItems.slice(0, 4));
       setLoading(false);
     }
     load();
@@ -66,150 +89,232 @@ function DashboardContent() {
     return Number(b.contract_total) - paid;
   }
 
-  if (loading) return <p className="text-charcoal/60">Loading...</p>;
-
-  const today = startOfDay(new Date());
-
-  const thisMonthCount = bookings.filter(
-    (b) => b.clients?.wedding_date && isSameMonth(parseISO(b.clients.wedding_date), today)
-  ).length;
-
-  const newInquiries = bookings.filter((b) => b.status === "inquiry").length;
-
-  const bookedRevenue = bookings
-    .filter((b) => b.status === "booked" || b.status === "completed")
-    .reduce((sum, b) => sum + Number(b.contract_total), 0);
-
-  const outstanding = bookings.reduce((sum, b) => sum + Math.max(balanceFor(b), 0), 0);
-
-  const upcomingBookings = bookings
-    .filter((b) => b.clients?.wedding_date && !isBefore(parseISO(b.clients.wedding_date), today))
-    .sort((a, b) => (a.clients!.wedding_date! < b.clients!.wedding_date! ? -1 : 1))
-    .slice(0, 4);
-
-  const nextBooking = upcomingBookings[0];
-
-  const timeline =
-    nextBooking && nextBooking.ready_by_time && nextBooking.clients?.wedding_date && nextMembers.length > 0
-      ? computeTimeline(new Date(`${nextBooking.clients.wedding_date}T${nextBooking.ready_by_time}`), nextMembers, 10)
-      : [];
-
-  const duePayments = bookings
-    .filter((b) => balanceFor(b) > 0 && b.clients?.wedding_date)
-    .sort((a, b) => (a.clients!.wedding_date! < b.clients!.wedding_date! ? -1 : 1))
-    .slice(0, 4);
-
-  function badgeFor(b: BookingWithClient) {
-    if (b.status === "inquiry") return { label: "Inquiry", cls: "bg-charcoal/10 text-charcoal" };
-    if (b.deposit_paid) return { label: "Deposit paid", cls: "bg-blue-50 text-blue-700" };
-    return { label: "Confirmed", cls: "bg-green-50 text-green-700" };
+  function partySummary(bookingId: string) {
+    const party = members.filter((m) => m.booking_id === bookingId);
+    if (party.length === 0) return "Party of 1";
+    const hasHair = party.some((m) => m.hair);
+    const hasMakeup = party.some((m) => m.makeup);
+    const service = hasHair && hasMakeup ? "Hair + Makeup" : hasHair ? "Hair only" : hasMakeup ? "Makeup only" : "";
+    return [`Party of ${party.length}`, service].filter(Boolean).join(" · ");
   }
 
+  if (loading) return <p className="text-charcoal/60">Loading...</p>;
+
+  const now = new Date();
+  const today = startOfDay(now);
+  const weekOut = addDays(today, 7);
+  const monthStart = startOfMonth(now);
+  const monthEnd = endOfMonth(now);
+  const lastMonthStart = startOfMonth(subMonths(now, 1));
+  const lastMonthEnd = endOfMonth(subMonths(now, 1));
+
+  const hour = now.getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
+  const revenueMTD = payments
+    .filter((p) => {
+      const d = parseISO(p.paid_at);
+      return !isBefore(d, monthStart) && !isAfter(d, monthEnd);
+    })
+    .reduce((sum, p) => sum + Number(p.amount), 0);
+
+  const revenueLastMonth = payments
+    .filter((p) => {
+      const d = parseISO(p.paid_at);
+      return !isBefore(d, lastMonthStart) && !isAfter(d, lastMonthEnd);
+    })
+    .reduce((sum, p) => sum + Number(p.amount), 0);
+
+  const revenueDelta =
+    revenueLastMonth > 0 ? Math.round(((revenueMTD - revenueLastMonth) / revenueLastMonth) * 100) : null;
+
+  const bookingsThisMonth = bookings.filter(
+    (b) => b.clients?.wedding_date && isSameMonth(parseISO(b.clients.wedding_date), now)
+  );
+
+  const upcomingWeddings = bookings.filter((b) => {
+    if (!b.clients?.wedding_date) return false;
+    const d = parseISO(b.clients.wedding_date);
+    return !isBefore(d, today) && !isAfter(d, weekOut);
+  });
+
+  const upcomingTrials = trials.filter((t) => {
+    if (!t.session_date || t.completed) return false;
+    const d = parseISO(t.session_date);
+    return !isBefore(d, today) && !isAfter(d, weekOut);
+  });
+
+  const scheduledTrials = trials.filter((t) => t.session_date && !t.completed && !isBefore(parseISO(t.session_date), today));
+  const nextTrial = scheduledTrials[0];
+
+  const unpaidBookings = bookings.filter((b) => balanceFor(b) > 0);
+  const unpaidBalance = unpaidBookings.reduce((sum, b) => sum + balanceFor(b), 0);
+
+  type FeedRow = {
+    id: string;
+    date: Date;
+    name: string;
+    tag: "WEDDING DAY" | "TRIAL";
+    subtitle: string;
+    amount: number;
+    href: string;
+  };
+
+  const feed: FeedRow[] = [
+    ...upcomingWeddings.map((b) => ({
+      id: `w-${b.id}`,
+      date: parseISO(b.clients!.wedding_date!),
+      name: b.clients?.bride_name ?? "Unknown",
+      tag: "WEDDING DAY" as const,
+      subtitle: [b.clients?.venue, partySummary(b.id)].filter(Boolean).join(" · "),
+      amount: Number(b.contract_total),
+      href: `/bookings/${b.id}`,
+    })),
+    ...upcomingTrials.map((t) => ({
+      id: `t-${t.id}`,
+      date: parseISO(t.session_date!),
+      name: t.bookings?.clients?.bride_name ?? "Client",
+      tag: "TRIAL" as const,
+      subtitle: [t.location || "On location", "Party of 1", "Hair + Makeup"].filter(Boolean).join(" · "),
+      amount: Number(t.fee),
+      href: `/trials/${t.booking_id}`,
+    })),
+  ].sort((a, b) => a.date.getTime() - b.date.getTime());
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-serif text-2xl mb-1">Dashboard</h1>
-        <p className="text-charcoal/60 text-sm">
-          You have {thisMonthCount} wedding{thisMonthCount === 1 ? "" : "s"} this month.
-        </p>
+    <div className="space-y-8">
+      <div className="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <h1 className="font-script text-4xl md:text-5xl leading-tight mb-1 capitalize">
+            {greeting}, {greetingName}
+          </h1>
+          <p className="text-xs uppercase tracking-widest-lg text-charcoal/50">{format(now, "EEEE, MMMM d, yyyy")}</p>
+        </div>
+        <Link
+          href="/clients"
+          className="bg-charcoal text-ivory rounded-md px-5 py-2.5 text-sm uppercase tracking-wide hover:opacity-90"
+        >
+          + New booking
+        </Link>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white border border-charcoal/10 rounded-xl p-4">
-          <p className="text-xs text-charcoal/60 mb-1">This month</p>
-          <p className="text-2xl font-medium">{thisMonthCount}</p>
-          <p className="text-xs text-charcoal/60">bookings</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
+          <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Revenue MTD</p>
+          <p className="font-serif text-3xl">${revenueMTD.toFixed(0)}</p>
+          <p className="text-xs text-charcoal/50 mt-1">
+            {revenueDelta === null ? "First tracked month" : `${revenueDelta >= 0 ? "+" : ""}${revenueDelta}% vs last month`}
+          </p>
         </div>
-        <div className="bg-white border border-charcoal/10 rounded-xl p-4">
-          <p className="text-xs text-charcoal/60 mb-1">Outstanding</p>
-          <p className="text-2xl font-medium">${outstanding.toFixed(0)}</p>
-          <p className="text-xs text-charcoal/60">balances due</p>
+        <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
+          <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Bookings this month</p>
+          <p className="font-serif text-3xl">{bookingsThisMonth.length}</p>
+          <p className="text-xs text-charcoal/50 mt-1">{upcomingWeddings.length} upcoming this week</p>
         </div>
-        <div className="bg-white border border-charcoal/10 rounded-xl p-4">
-          <p className="text-xs text-charcoal/60 mb-1">New inquiries</p>
-          <p className="text-2xl font-medium">{newInquiries}</p>
-          <p className="text-xs text-charcoal/60">awaiting reply</p>
+        <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
+          <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Trials scheduled</p>
+          <p className="font-serif text-3xl">{scheduledTrials.length}</p>
+          <p className="text-xs text-charcoal/50 mt-1">
+            {nextTrial?.session_date ? `Next: ${format(parseISO(nextTrial.session_date), "MMM d")}` : "None scheduled"}
+          </p>
         </div>
-        <div className="bg-white border border-charcoal/10 rounded-xl p-4">
-          <p className="text-xs text-charcoal/60 mb-1">Booked revenue</p>
-          <p className="text-2xl font-medium">${bookedRevenue.toFixed(0)}</p>
-          <p className="text-xs text-charcoal/60">confirmed bookings</p>
+        <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
+          <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Unpaid balance</p>
+          <p className="font-serif text-3xl">${unpaidBalance.toFixed(0)}</p>
+          <p className="text-xs text-charcoal/50 mt-1">
+            {unpaidBookings.length} invoice{unpaidBookings.length === 1 ? "" : "s"} pending
+          </p>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <section className="bg-white border border-charcoal/10 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-serif text-lg">Upcoming bookings</h2>
-            <Link href="/bookings" className="text-gold text-sm hover:underline">
-              View all
+      <div className="grid lg:grid-cols-[1.4fr_1fr] gap-4 items-start">
+        <section className="bg-beige border border-charcoal/10 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Upcoming — next 7 days</h2>
+            <Link href="/bookings" className="text-gold text-xs hover:underline">
+              View all →
             </Link>
           </div>
-          {upcomingBookings.length === 0 ? (
-            <p className="text-charcoal/60 text-sm">Nothing upcoming yet.</p>
+          {feed.length === 0 ? (
+            <p className="text-charcoal/60 text-sm">Nothing on the books in the next week.</p>
           ) : (
             <div className="divide-y divide-charcoal/10">
-              {upcomingBookings.map((b) => {
-                const badge = badgeFor(b);
-                return (
-                  <Link
-                    key={b.id}
-                    href={`/bookings/${b.id}`}
-                    className="flex items-center justify-between py-3 text-sm hover:bg-ivory -mx-1 px-1 rounded"
-                  >
-                    <div>
-                      <p className="font-medium">{b.clients?.bride_name ?? "Unknown"}</p>
-                      <p className="text-charcoal/60 text-xs">
-                        {b.clients?.wedding_date ? format(parseISO(b.clients.wedding_date), "MMM d") : "No date"} ·{" "}
-                        {b.clients?.venue ?? "No venue"}
-                      </p>
+              {feed.slice(0, 6).map((row) => (
+                <Link key={row.id} href={row.href} className="flex items-center gap-4 py-3 -mx-1 px-1 rounded hover:bg-white/40">
+                  <div className="w-12 text-center shrink-0">
+                    <p className="text-[10px] uppercase tracking-wide text-charcoal/50">{format(row.date, "EEE")}</p>
+                    <p className="font-serif text-xl leading-none">{format(row.date, "d")}</p>
+                    <p className="text-[10px] uppercase tracking-wide text-charcoal/50">{format(row.date, "MMM")}</p>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-sm truncate">{row.name}</p>
+                      <span
+                        className={`text-[10px] uppercase tracking-wide px-2 py-0.5 rounded shrink-0 ${
+                          row.tag === "WEDDING DAY"
+                            ? "bg-charcoal text-ivory"
+                            : "border border-charcoal/30 text-charcoal/70"
+                        }`}
+                      >
+                        {row.tag}
+                      </span>
                     </div>
-                    <span className={`text-xs px-2 py-1 rounded ${badge.cls}`}>{badge.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        <section className="bg-white border border-charcoal/10 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-serif text-lg">
-              {nextBooking && isToday(parseISO(nextBooking.clients!.wedding_date!)) ? "Today's schedule" : "Next wedding"}
-            </h2>
-            {nextBooking?.clients?.wedding_date && (
-              <span className="text-charcoal/60 text-xs">
-                {format(parseISO(nextBooking.clients.wedding_date), "EEE, MMM d")}
-              </span>
-            )}
-          </div>
-          {!nextBooking ? (
-            <p className="text-charcoal/60 text-sm">No upcoming weddings.</p>
-          ) : timeline.length === 0 ? (
-            <p className="text-charcoal/60 text-sm">
-              Add a ready-by time and wedding party on{" "}
-              <Link href={`/bookings/${nextBooking.id}`} className="text-gold hover:underline">
-                {nextBooking.clients?.bride_name ?? "this booking"}
-              </Link>{" "}
-              to see the schedule.
-            </p>
-          ) : (
-            <div className="space-y-2 text-sm">
-              {timeline.map((entry) => (
-                <div key={entry.member.id} className="flex items-center justify-between border-b border-charcoal/10 pb-2">
-                  <span>
-                    {entry.member.name} <span className="text-charcoal/60">({entry.member.role})</span>
-                  </span>
-                  <span className="text-charcoal/60">{format(entry.start, "h:mm a")}</span>
-                </div>
+                    <p className="text-xs text-charcoal/60 truncate mt-0.5">{row.subtitle}</p>
+                  </div>
+                  <span className="text-sm font-medium shrink-0">${row.amount.toFixed(0)}</span>
+                </Link>
               ))}
             </div>
           )}
         </section>
+
+        <div className="space-y-4">
+          <section className="bg-beige border border-charcoal/10 rounded-xl p-6">
+            <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Quick actions</h2>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <Link href="/clients/new" className="border border-charcoal/20 rounded-md px-3 py-3 hover:bg-white/40">
+                + New client
+              </Link>
+              <Link href="/contracts" className="border border-charcoal/20 rounded-md px-3 py-3 hover:bg-white/40">
+                + New contract
+              </Link>
+              <Link
+                href={feed[0] ? feed[0].href.replace("/trials/", "/bookings/") : "/bookings"}
+                className="border border-charcoal/20 rounded-md px-3 py-3 hover:bg-white/40"
+              >
+                + Build timeline
+              </Link>
+              <Link href="/expenses" className="border border-charcoal/20 rounded-md px-3 py-3 hover:bg-white/40">
+                + Log expense
+              </Link>
+            </div>
+          </section>
+
+          <section className="bg-beige border border-charcoal/10 rounded-xl p-6">
+            <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Recent activity</h2>
+            {activity.length === 0 ? (
+              <p className="text-charcoal/60 text-sm">Nothing yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {activity.map((item) => (
+                  <div key={item.id} className="flex items-start gap-2 text-sm">
+                    <span className="text-gold shrink-0 mt-0.5">{ACTIVITY_GLYPH[item.type]}</span>
+                    <div className="min-w-0">
+                      <p className="font-medium leading-snug">{item.title}</p>
+                      <p className="text-charcoal/50 text-xs">
+                        {item.name} · {formatDistanceToNowStrict(new Date(item.timestamp), { addSuffix: true })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       </div>
 
-      <section className="bg-white border border-charcoal/10 rounded-xl p-5">
-        <h2 className="font-serif text-lg mb-1">Your public inquiry form</h2>
+      <section className="bg-beige border border-charcoal/10 rounded-xl p-6">
+        <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-1">Your public inquiry form</h2>
         <p className="text-charcoal/60 text-sm mb-3">
           Share this link on your website, Instagram bio, or anywhere brides find you. Anyone who fills it out shows up
           as a new inquiry — no account needed on their end.
@@ -219,7 +324,7 @@ function DashboardContent() {
             readOnly
             value={inquiryLink ?? "Loading..."}
             onFocus={(e) => e.target.select()}
-            className="flex-1 border border-charcoal/20 rounded-md px-3 py-2 bg-ivory text-charcoal/70"
+            className="flex-1 border border-charcoal/20 rounded-md px-3 py-2 bg-white/50 text-charcoal/70"
           />
           <button
             onClick={copyInquiryLink}
@@ -229,61 +334,6 @@ function DashboardContent() {
             {copied ? "Copied!" : "Copy link"}
           </button>
         </div>
-      </section>
-
-      <section className="bg-white border border-charcoal/10 rounded-xl p-5">
-        <h2 className="font-serif text-lg mb-3">Quick actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-          <Link href="/clients/new" className="border border-charcoal/20 rounded-md px-3 py-2 text-center hover:bg-ivory">
-            New client
-          </Link>
-          <Link href="/clients" className="border border-charcoal/20 rounded-md px-3 py-2 text-center hover:bg-ivory">
-            New booking
-          </Link>
-          <Link
-            href={nextBooking ? `/bookings/${nextBooking.id}` : "/bookings"}
-            className="border border-charcoal/20 rounded-md px-3 py-2 text-center hover:bg-ivory"
-          >
-            Build timeline
-          </Link>
-          <button
-            onClick={() => alert("Reminders aren't wired up yet — coming in a later version.")}
-            className="border border-charcoal/20 rounded-md px-3 py-2 text-center hover:bg-ivory"
-          >
-            Send reminder
-          </button>
-        </div>
-      </section>
-
-      <section className="bg-white border border-charcoal/10 rounded-xl p-5">
-        <h2 className="font-serif text-lg mb-3">Balances due soon</h2>
-        {duePayments.length === 0 ? (
-          <p className="text-charcoal/60 text-sm">Nothing outstanding.</p>
-        ) : (
-          <div className="divide-y divide-charcoal/10 text-sm">
-            {duePayments.map((b) => {
-              const overdue = b.clients?.wedding_date ? isBefore(parseISO(b.clients.wedding_date), today) : false;
-              return (
-                <Link
-                  key={b.id}
-                  href={`/bookings/${b.id}`}
-                  className="flex items-center justify-between py-3 hover:bg-ivory -mx-1 px-1 rounded"
-                >
-                  <div>
-                    <p className="font-medium">{b.clients?.bride_name ?? "Unknown"}</p>
-                    <p className={`text-xs ${overdue ? "text-red-600" : "text-charcoal/60"}`}>
-                      {b.clients?.wedding_date ? `Due ${format(parseISO(b.clients.wedding_date), "MMM d")}` : "No date"}
-                      {overdue ? " · overdue" : ""}
-                    </p>
-                  </div>
-                  <span className={overdue ? "text-red-600 font-medium" : "text-charcoal"}>
-                    ${balanceFor(b).toFixed(0)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
       </section>
     </div>
   );
