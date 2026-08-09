@@ -23,7 +23,9 @@ import {
 type BookingWithClient = Booking & { clients: Client | null };
 type Assignment = { stylist_id: string; booking_id: string };
 
-const STYLIST_COLORS = ["#E8637D", "#4C8BF5", "#4CAF6D", "#E0A030", "#9B6FE0", "#5CC8C0", "#E0625A", "#7A8FA6"];
+// Warm, tonal palette (charcoal → gold → clay) instead of bright rainbow colors,
+// so assigned-stylist tags stay in the studio's own brand family.
+const STYLIST_COLORS = ["#33181C", "#6F5F4D", "#9B7B5A", "#C4A882", "#5C4A3A", "#8B6F5E", "#4A3728", "#7D6553"];
 function colorForStylist(index: number) {
   return STYLIST_COLORS[index % STYLIST_COLORS.length];
 }
@@ -38,6 +40,7 @@ function initials(name: string) {
 
 function CalendarContent() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [studioName, setStudioName] = useState("");
   const [bookings, setBookings] = useState<BookingWithClient[]>([]);
   const [stylists, setStylists] = useState<Stylist[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -49,6 +52,16 @@ function CalendarContent() {
 
   useEffect(() => {
     async function load() {
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData.user) {
+        const { data: profile } = await supabase
+          .from("studio_settings")
+          .select("studio_name")
+          .eq("studio_id", userData.user.id)
+          .maybeSingle();
+        setStudioName(profile?.studio_name || "Your studio");
+      }
+
       const { data: bookingData } = await supabase
         .from("bookings")
         .select("*, clients(*)")
@@ -122,9 +135,9 @@ function CalendarContent() {
 
       const availableDays = Math.max(0, totalDays - jobCount - offDaysInMonth);
       const status = jobCount >= 3 ? "Heavy schedule" : jobCount >= 1 ? "Partially booked" : "Available";
-      const statusColor = jobCount >= 3 ? "#E0625A" : jobCount >= 1 ? "#E0A030" : "#4CAF6D";
+      const statusClass = jobCount >= 3 ? "text-red-600" : jobCount >= 1 ? "text-amber-700" : "text-green-700";
 
-      return { stylist: s, jobCount, availableDays, totalDays, status, statusColor };
+      return { stylist: s, jobCount, availableDays, totalDays, status, statusClass };
     });
   }, [stylists, bookings, assignments, timeOff, currentMonth]);
 
@@ -150,18 +163,19 @@ function CalendarContent() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h1 className="font-serif text-2xl">
-          Vayled <span className="text-charcoal/50 text-lg">/ team calendar</span>
-        </h1>
+      <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+        <div>
+          <h1 className="font-script text-5xl leading-tight mb-1">Calendar</h1>
+          <p className="text-xs uppercase tracking-widest-lg text-charcoal/50">{studioName} · Team schedule</p>
+        </div>
         <div className="flex items-center gap-2 text-sm">
           <button
             onClick={() => setShowFilter((f) => !f)}
-            className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white"
+            className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-beige"
           >
             Filter
           </button>
-          <Link href="/stylists" className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white">
+          <Link href="/stylists" className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-beige">
             Add stylist
           </Link>
           <Link href="/clients" className="bg-charcoal text-ivory rounded-md px-4 py-2 font-medium">
@@ -192,7 +206,7 @@ function CalendarContent() {
         <div>
           <p className="text-xs uppercase tracking-wide text-charcoal/50 mb-3">Stylists</p>
           <div className="space-y-4">
-            {monthStats.map(({ stylist, status, statusColor }, i) => (
+            {monthStats.map(({ stylist, status, statusClass }, i) => (
               <div key={stylist.id} className="flex items-center gap-3">
                 <span
                   className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-medium shrink-0"
@@ -202,9 +216,7 @@ function CalendarContent() {
                 </span>
                 <div>
                   <p className="text-sm font-medium">{stylist.name}</p>
-                  <p className="text-xs" style={{ color: statusColor }}>
-                    ● {status}
-                  </p>
+                  <p className={`text-xs ${statusClass}`}>● {status}</p>
                 </div>
               </div>
             ))}
@@ -220,21 +232,21 @@ function CalendarContent() {
           <div className="flex items-center gap-3 mb-4">
             <button
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-              className="border border-charcoal/20 rounded-md px-3 py-1 hover:bg-white"
+              className="border border-charcoal/20 rounded-md px-3 py-1 hover:bg-beige"
             >
               ‹ Prev
             </button>
             <span className="font-serif text-lg min-w-[140px] text-center">{format(currentMonth, "MMMM yyyy")}</span>
             <button
               onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-              className="border border-charcoal/20 rounded-md px-3 py-1 hover:bg-white"
+              className="border border-charcoal/20 rounded-md px-3 py-1 hover:bg-beige"
             >
               Next ›
             </button>
           </div>
 
-          <div className="bg-white border border-charcoal/10 rounded-xl overflow-hidden">
-            <div className="grid grid-cols-7 border-b border-charcoal/10 text-xs text-charcoal/60">
+          <div className="bg-beige border border-charcoal/10 rounded-xl overflow-hidden">
+            <div className="grid grid-cols-7 border-b border-charcoal/10 text-[10px] uppercase tracking-wide text-charcoal/50">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
                 <div key={d} className="p-2 text-center">
                   {d}
@@ -245,6 +257,7 @@ function CalendarContent() {
               {days.map((day) => {
                 const dayBookings = bookingsForDay(day);
                 const inMonth = isSameMonth(day, currentMonth);
+                const isToday = isSameDay(day, new Date());
                 return (
                   <div
                     key={day.toISOString()}
@@ -252,7 +265,13 @@ function CalendarContent() {
                       inMonth ? "" : "bg-ivory/50 text-charcoal/30"
                     }`}
                   >
-                    <div className="mb-1">{format(day, "d")}</div>
+                    <div
+                      className={`mb-1 inline-flex items-center justify-center ${
+                        isToday ? "w-5 h-5 rounded-full bg-charcoal text-ivory text-[10px]" : ""
+                      }`}
+                    >
+                      {format(day, "d")}
+                    </div>
                     {dayBookings.map((b) => {
                       const ids = stylistsForBooking(b.id);
                       const idx = ids.length > 0 ? stylists.findIndex((s) => s.id === ids[0]) : -1;
