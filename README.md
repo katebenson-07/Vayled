@@ -61,11 +61,13 @@ Open [http://localhost:3000](http://localhost:3000). Sign up with an email and p
 
 **Public inquiry form** — a no-login page at `/inquire/[your-user-id]` you can link from a website, Instagram bio, or anywhere else. Submitting it creates a client and an inquiry in your account automatically. Your personal link is shown on the Dashboard with a copy button.
 
+**Bride portal** — a no-login page at `/portal/[bookingId]` for a bride once her booking is confirmed. Share it from her booking's sub-nav ("Bride portal" / "Copy link"). Shows her countdown, getting-ready time/location, day-of timeline, upcoming appointments, payment tracker, booked services, trial notes, and reminders. Read-only — no payment collection.
+
 ## What's not built yet
 
 These need external services this app doesn't have credentials for, so they're intentionally out of scope for now:
 
-- Bride-facing client portal (view contract, pay balance online) — needs a public-facing auth flow.
+- Paying the remaining balance from the bride portal — needs a payment processor.
 - Real payment processing — payments are currently logged manually; wiring up Stripe needs your own Stripe account and API keys.
 - Automated email/SMS sending — emails currently open in your own email client via `mailto:`; true automated sending needs an email provider (e.g. Resend, Postmark, Twilio for SMS).
 - True e-signature on contracts — contracts can be marked sent/signed manually; a real e-signature flow needs a provider like DocuSign or HelloSign.

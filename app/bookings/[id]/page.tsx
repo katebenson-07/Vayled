@@ -67,6 +67,7 @@ function BookingDetail() {
   const [uploadingTag, setUploadingTag] = useState<"inspo" | "trial_result" | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const [newNoteTag, setNewNoteTag] = useState(NOTE_TAGS[0]);
   const [newNoteBody, setNewNoteBody] = useState("");
@@ -384,6 +385,16 @@ function BookingDetail() {
   ];
   const milestonesDone = weddingMilestones.filter((m) => m.done).length;
 
+  const portalUrl = typeof window !== "undefined" ? `${window.location.origin}/portal/${id}` : "";
+  const portalAvailable = booking.status === "booked" || booking.status === "completed";
+
+  function copyPortalLink() {
+    if (!portalUrl) return;
+    navigator.clipboard.writeText(portalUrl);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-1.5 text-xs text-charcoal/50">
@@ -429,6 +440,24 @@ function BookingDetail() {
           <Link href={`/invoices/${id}`} className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white uppercase text-xs tracking-wide">
             Invoice
           </Link>
+          {portalAvailable && (
+            <>
+              <a
+                href={`/portal/${id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white uppercase text-xs tracking-wide"
+              >
+                Bride portal
+              </a>
+              <button
+                onClick={copyPortalLink}
+                className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white uppercase text-xs tracking-wide"
+              >
+                {linkCopied ? "Link copied ✓" : "Copy link"}
+              </button>
+            </>
+          )}
           <button
             onClick={() => setActiveTab("timeline")}
             className="bg-charcoal text-ivory rounded-md px-4 py-2 uppercase text-xs tracking-wide"

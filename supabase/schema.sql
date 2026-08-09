@@ -22,6 +22,7 @@ create table if not exists clients (
 );
 
 alter table clients add column if not exists referral_source text;
+alter table clients add column if not exists partner_name text;
 
 create table if not exists bookings (
   id uuid primary key default uuid_generate_v4(),
@@ -413,6 +414,92 @@ alter table studio_settings enable row level security;
 drop policy if exists "Studios manage their own settings" on studio_settings;
 create policy "Studios manage their own settings" on studio_settings
   for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+-- ============================================================================
+-- Bride portal (public, read-only)
+-- A single security-definer function returns just the fields a bride needs
+-- to see for her own booking. It intentionally does NOT grant broad SELECT
+-- on clients/bookings/payments to anon — only this narrow, booking-scoped
+-- function is exposed, so a portal link only ever reveals the one booking
+-- it points to, and only once that booking is past the inquiry stage.
+-- ============================================================================
+
+create or replace function public.get_bride_portal(p_booking_id uuid)
+returns jsonb
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select jsonb_build_object(
+    'booking', jsonb_build_object(
+      'id', b.id,
+      'status', b.status,
+      'contract_total', b.contract_total,
+      'deposit_amount', b.deposit_amount,
+      'deposit_paid', b.deposit_paid,
+      'ready_by_time', b.ready_by_time,
+      'buffer_minutes', b.buffer_minutes,
+      'ceremony_time', b.ceremony_time,
+      'location', b.location
+    ),
+    'client', jsonb_build_object(
+      'bride_name', c.bride_name,
+      'partner_name', c.partner_name,
+      'wedding_date', c.wedding_date,
+      'venue', c.venue
+    ),
+    'studio', jsonb_build_object(
+      'studio_name', s.studio_name,
+      'contact_email', coalesce(s.contact_email, u.email),
+      'contact_phone', s.contact_phone
+    ),
+    'party_members', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'name', pm.name,
+        'role', pm.role,
+        'hair', pm.hair,
+        'makeup', pm.makeup,
+        'prep_minutes', pm.prep_minutes,
+        'order_index', pm.order_index
+      ) order by pm.order_index)
+      from party_members pm
+      where pm.booking_id = b.id
+    ), '[]'::jsonb),
+    'payments', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'amount', p.amount,
+        'type', p.type,
+        'note', p.note,
+        'paid_at', p.paid_at
+      ) order by p.paid_at)
+      from payments p
+      where p.booking_id = b.id
+    ), '[]'::jsonb),
+    'trial', (
+      select jsonb_build_object(
+        'session_date', t.session_date,
+        'location', t.location,
+        'hair_notes', t.hair_notes,
+        'makeup_notes', t.makeup_notes,
+        'day_of_notes', t.day_of_notes,
+        'products_text', t.products_text,
+        'changes_text', t.changes_text
+      )
+      from trial_sessions t
+      where t.booking_id = b.id
+      limit 1
+    )
+  )
+  from bookings b
+  join clients c on c.id = b.client_id
+  left join studio_settings s on s.studio_id = b.stylist_id
+  left join auth.users u on u.id = b.stylist_id
+  where b.id = p_booking_id
+    and b.status in ('booked', 'completed');
+$$;
+
+grant execute on function public.get_bride_portal(uuid) to anon, authenticated;
 
 -- ============================================================================
 -- Storage: client photos (mood board / trial results)

@@ -4,6 +4,9 @@ Running log of changes requested while testing the app. Newest first.
 
 ## 2026-08-09
 
+- **Bride Portal** — a no-login, front-facing page you can share with a bride once her booking is confirmed. From any booking (once it's "booked" or "completed"), click "Bride portal" in the sub-nav to preview it or "Copy link" to grab the shareable URL (`/portal/[bookingId]`) to text or email her. It shows a countdown to her wedding day, her getting-ready time and location, a day-of timeline (built from the same timeline your studio builds internally), upcoming appointments (trial + wedding day), a payment tracker (paid installments plus any remaining balance), her booked services, her trial notes (collapsible), and a few reminders — plus your studio's phone/email as tap-to-contact buttons. **Requires re-running `supabase/schema.sql`** — it adds `clients.partner_name` and a `get_bride_portal(uuid)` function. That function is intentionally narrow: it only returns the fields the portal needs for one booking at a time, so brides can never browse or query your other clients' data.
+
+
 - **Mileage tracker + category budgets on Expenses** — `/expenses` now has a full mileage log: log trips (date, client, from/to, miles), an editable IRS mileage rate (defaults to $0.70/mile, the 2025 standard), automatic per-trip and monthly deduction totals, and a CSV export formatted for your CPA. The "By category" panel is now a real budget tracker — click any category's amount to set a monthly budget, and the bar turns red with an "over budget" note if you exceed it. **Requires re-running `supabase/schema.sql`** — it adds a `mileage_trips` table and two new columns (`mileage_rate`, `expense_budgets`) on `studio_settings`.
 
 

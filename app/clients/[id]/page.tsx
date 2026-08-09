@@ -75,6 +75,14 @@ function ClientDetail() {
             />
           </div>
           <div>
+            <label className="block text-charcoal/60 mb-1">Partner&apos;s name</label>
+            <input
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={client.partner_name ?? ""}
+              onChange={(e) => updateClient({ partner_name: e.target.value })}
+            />
+          </div>
+          <div>
             <label className="block text-charcoal/60 mb-1">Wedding date</label>
             <input
               type="date"

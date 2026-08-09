@@ -2,6 +2,7 @@ export interface Client {
   id: string;
   stylist_id: string;
   bride_name: string;
+  partner_name: string | null;
   email: string | null;
   phone: string | null;
   wedding_date: string | null;
@@ -219,6 +220,57 @@ export interface Expense {
   vendor: string | null;
   note: string | null;
   created_at: string;
+}
+
+// Shape returned by the get_bride_portal(uuid) Postgres function — a single
+// scoped read for the public /portal/[bookingId] page. Deliberately narrower
+// than the full Booking/Client/Payment tables (see supabase/schema.sql).
+export interface BridePortalData {
+  booking: {
+    id: string;
+    status: BookingStatus;
+    contract_total: number;
+    deposit_amount: number;
+    deposit_paid: boolean;
+    ready_by_time: string | null;
+    buffer_minutes: number;
+    ceremony_time: string | null;
+    location: string | null;
+  };
+  client: {
+    bride_name: string;
+    partner_name: string | null;
+    wedding_date: string | null;
+    venue: string | null;
+  };
+  studio: {
+    studio_name: string | null;
+    contact_email: string | null;
+    contact_phone: string | null;
+  };
+  party_members: {
+    name: string;
+    role: string;
+    hair: boolean;
+    makeup: boolean;
+    prep_minutes: number;
+    order_index: number;
+  }[];
+  payments: {
+    amount: number;
+    type: "deposit" | "balance" | "other";
+    note: string | null;
+    paid_at: string;
+  }[];
+  trial: {
+    session_date: string | null;
+    location: string | null;
+    hair_notes: string | null;
+    makeup_notes: string | null;
+    day_of_notes: string | null;
+    products_text: string | null;
+    changes_text: string | null;
+  } | null;
 }
 
 export interface MileageTrip {
