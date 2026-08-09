@@ -66,7 +66,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex flex-col h-full">
       <div className="px-5 pt-6 pb-5">
         <Logo size="sm" className="text-ivory" />
-        <p className="text-[11px] uppercase tracking-widest-lg text-beige/60 mt-1 ml-0.5">Bridal Studio CRM</p>
+        <p className="text-[11px] uppercase tracking-widest-lg text-beige/60 mt-1 ml-0.5">Bridal Hair &amp; Makeup</p>
       </div>
 
       <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">

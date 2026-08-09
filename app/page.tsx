@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
+import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabaseClient";
 import { Booking, Client, Payment, PartyMember, TrialSession } from "@/lib/types";
 import { fetchInboxItems, InboxItem } from "@/lib/inbox";
@@ -191,6 +192,8 @@ function DashboardContent() {
 
   return (
     <div className="space-y-8">
+      <Logo size="lg" tagline className="text-charcoal" />
+
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
           <h1 className="font-serif italic text-3xl md:text-4xl leading-tight mb-1">

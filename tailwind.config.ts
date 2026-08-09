@@ -18,6 +18,8 @@ const config: Config = {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         script: ["var(--font-script)", "cursive"],
         heading: ["var(--font-heading)", "Georgia", "serif"],
+        logo: ["var(--font-logo)", "Georgia", "serif"],
+        tagline: ["var(--font-tagline)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },
   },
