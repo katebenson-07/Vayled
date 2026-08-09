@@ -103,6 +103,17 @@ export interface Vendor {
   created_at: string;
 }
 
+export interface ClientPhoto {
+  id: string;
+  studio_id: string;
+  client_id: string;
+  booking_id: string | null;
+  storage_path: string;
+  tag: "inspo" | "trial_result";
+  caption: string | null;
+  created_at: string;
+}
+
 export interface TrialSession {
   id: string;
   studio_id: string;

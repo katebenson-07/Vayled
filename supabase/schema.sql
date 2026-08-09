@@ -219,6 +219,24 @@ create table if not exists expenses (
 );
 
 -- ============================================================================
+-- Inspiration / mood board photos
+-- Photos follow the bride (client_id), not a single booking, so they show up
+-- consistently across the client's history. booking_id is optional context
+-- (e.g. "this was the trial result for this booking").
+-- ============================================================================
+
+create table if not exists client_photos (
+  id uuid primary key default uuid_generate_v4(),
+  studio_id uuid not null references auth.users(id) on delete cascade,
+  client_id uuid not null references clients(id) on delete cascade,
+  booking_id uuid references bookings(id) on delete set null,
+  storage_path text not null,
+  tag text not null default 'inspo' check (tag in ('inspo', 'trial_result')),
+  caption text,
+  created_at timestamptz not null default now()
+);
+
+-- ============================================================================
 -- Row Level Security: every studio only ever sees its own data.
 -- ============================================================================
 
@@ -232,6 +250,7 @@ alter table booking_stylists enable row level security;
 alter table client_notes enable row level security;
 alter table vendors enable row level security;
 alter table trial_sessions enable row level security;
+alter table client_photos enable row level security;
 alter table contract_templates enable row level security;
 alter table email_templates enable row level security;
 alter table sent_emails enable row level security;
@@ -275,6 +294,10 @@ create policy "Studios manage their own vendors" on vendors
 
 drop policy if exists "Studios manage their own trial sessions" on trial_sessions;
 create policy "Studios manage their own trial sessions" on trial_sessions
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+drop policy if exists "Studios manage their own client photos" on client_photos;
+create policy "Studios manage their own client photos" on client_photos
   for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
 
 drop policy if exists "Studios manage their own contract template" on contract_templates;
@@ -365,3 +388,19 @@ alter table studio_settings enable row level security;
 drop policy if exists "Studios manage their own settings" on studio_settings;
 create policy "Studios manage their own settings" on studio_settings
   for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+-- ============================================================================
+-- Storage: client photos (mood board / trial results)
+-- Files are stored at {studio_id}/{client_id}/{filename} — the folder-prefix
+-- policies below only let a stylist touch objects under their own studio_id.
+-- ============================================================================
+
+insert into storage.buckets (id, name, public)
+values ('client-photos', 'client-photos', false)
+on conflict (id) do nothing;
+
+drop policy if exists "Studios manage their own photo files" on storage.objects;
+create policy "Studios manage their own photo files" on storage.objects
+  for all
+  using (bucket_id = 'client-photos' and (storage.foldername(name))[1] = auth.uid()::text)
+  with check (bucket_id = 'client-photos' and (storage.foldername(name))[1] = auth.uid()::text);

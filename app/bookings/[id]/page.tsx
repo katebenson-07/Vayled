@@ -16,6 +16,7 @@ import {
   ClientNote,
   Vendor,
   TrialSession,
+  ClientPhoto,
 } from "@/lib/types";
 import { computeTimeline } from "@/lib/timeline";
 import { format, differenceInCalendarDays, parseISO, subDays } from "date-fns";
@@ -62,6 +63,8 @@ function BookingDetail() {
   const [notes, setNotes] = useState<ClientNote[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [trial, setTrial] = useState<TrialSession | null>(null);
+  const [photos, setPhotos] = useState<(ClientPhoto & { url: string | null })[]>([]);
+  const [uploadingTag, setUploadingTag] = useState<"inspo" | "trial_result" | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
 
@@ -121,6 +124,17 @@ function BookingDetail() {
 
       const { data: vendorData } = await supabase.from("vendors").select("*").eq("client_id", clientId);
       setVendors((vendorData as Vendor[]) ?? []);
+
+      const { data: photoData } = await supabase
+        .from("client_photos")
+        .select("*")
+        .eq("client_id", clientId)
+        .order("created_at", { ascending: false });
+      const photoRows = (photoData as ClientPhoto[]) ?? [];
+      const signedUrls = await Promise.all(
+        photoRows.map((p) => supabase.storage.from("client-photos").createSignedUrl(p.storage_path, 3600))
+      );
+      setPhotos(photoRows.map((p, i) => ({ ...p, url: signedUrls[i].data?.signedUrl ?? null })));
     }
 
     const { data: trialData } = await supabase.from("trial_sessions").select("*").eq("booking_id", id).maybeSingle();
@@ -268,6 +282,41 @@ function BookingDetail() {
   async function removeVendor(vendorId: string) {
     const { error } = await supabase.from("vendors").delete().eq("id", vendorId);
     if (!error) setVendors(vendors.filter((v) => v.id !== vendorId));
+  }
+
+  async function uploadPhoto(file: File, tag: "inspo" | "trial_result") {
+    if (!client) return;
+    setUploadingTag(tag);
+    const { data: userData } = await supabase.auth.getUser();
+    const studio_id = userData.user?.id;
+    if (!studio_id) {
+      setUploadingTag(null);
+      return;
+    }
+    const ext = file.name.split(".").pop();
+    const path = `${studio_id}/${client.id}/${crypto.randomUUID()}.${ext}`;
+    const { error: uploadError } = await supabase.storage.from("client-photos").upload(path, file);
+    if (uploadError) {
+      alert(`Upload failed: ${uploadError.message}`);
+      setUploadingTag(null);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("client_photos")
+      .insert({ studio_id, client_id: client.id, booking_id: id, storage_path: path, tag })
+      .select()
+      .single();
+    if (!error && data) {
+      const { data: signed } = await supabase.storage.from("client-photos").createSignedUrl(path, 3600);
+      setPhotos([{ ...(data as ClientPhoto), url: signed?.signedUrl ?? null }, ...photos]);
+    }
+    setUploadingTag(null);
+  }
+
+  async function removePhoto(photo: ClientPhoto) {
+    await supabase.storage.from("client-photos").remove([photo.storage_path]);
+    const { error } = await supabase.from("client_photos").delete().eq("id", photo.id);
+    if (!error) setPhotos(photos.filter((p) => p.id !== photo.id));
   }
 
   if (loading) return <p className="text-charcoal/60">Loading...</p>;
@@ -441,26 +490,62 @@ function BookingDetail() {
             <section className="bg-white border border-charcoal/10 rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Inspiration &amp; photos</h2>
-                <button
-                  onClick={() => alert("Photo uploads aren't wired up yet — planned as a future feature.")}
-                  className="text-gold text-sm hover:underline"
-                >
-                  + Add photo
-                </button>
+                <div className="flex items-center gap-3">
+                  <label className="text-gold text-sm hover:underline cursor-pointer">
+                    {uploadingTag === "inspo" ? "Uploading..." : "+ Add inspo"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={!!uploadingTag}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) uploadPhoto(file, "inspo");
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  <label className="text-gold text-sm hover:underline cursor-pointer">
+                    {uploadingTag === "trial_result" ? "Uploading..." : "+ Add trial result"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={!!uploadingTag}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) uploadPhoto(file, "trial_result");
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                {["Inspo", "Inspo", "Trial result"].map((tag, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square border border-dashed border-charcoal/20 rounded-md flex items-end p-2 bg-ivory/50"
-                  >
-                    <span className="text-[10px] uppercase tracking-wide bg-white/80 text-charcoal/50 rounded px-1.5 py-0.5">
-                      {tag}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-charcoal/40 mt-3">Coming soon — mood board uploads per client.</p>
+              {photos.length === 0 ? (
+                <p className="text-charcoal/60 text-sm">No photos yet — add inspiration pics or trial results.</p>
+              ) : (
+                <div className="grid grid-cols-3 gap-3">
+                  {photos.map((p) => (
+                    <div key={p.id} className="relative aspect-square rounded-md overflow-hidden border border-charcoal/10 group">
+                      {p.url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.url} alt={p.caption ?? p.tag} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-ivory" />
+                      )}
+                      <span className="absolute bottom-2 left-2 text-[10px] uppercase tracking-wide bg-white/80 text-charcoal/50 rounded px-1.5 py-0.5">
+                        {p.tag === "inspo" ? "Inspo" : "Trial result"}
+                      </span>
+                      <button
+                        onClick={() => removePhoto(p)}
+                        className="absolute top-2 right-2 text-[10px] uppercase tracking-wide bg-charcoal/70 text-ivory rounded px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
 
             <section className="bg-white border border-charcoal/10 rounded-xl p-6">
