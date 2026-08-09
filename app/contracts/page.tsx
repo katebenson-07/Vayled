@@ -14,7 +14,8 @@ import ContractFooter from "@/components/ContractFooter";
 function ContractsContent() {
   const [template, setTemplate] = useState<ContractTemplate | null>(null);
   const [sections, setSections] = useState<ContractSection[]>([]);
-  const [studioName, setStudioName] = useState<string>("Your Studio");
+  const [studioName, setStudioName] = useState<string>("");
+  const [studioId, setStudioId] = useState<string | null>(null);
   const [migrated, setMigrated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
@@ -24,6 +25,7 @@ function ContractsContent() {
     async function load() {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
+      setStudioId(uid ?? null);
       if (uid) {
         const { data: profile } = await supabase
           .from("studio_settings")
@@ -91,10 +93,17 @@ function ContractsContent() {
 
   async function save() {
     if (!template) return;
-    await supabase
-      .from("contract_templates")
-      .update({ sections, updated_at: new Date().toISOString() })
-      .eq("id", template.id);
+    await Promise.all([
+      supabase
+        .from("contract_templates")
+        .update({ sections, updated_at: new Date().toISOString() })
+        .eq("id", template.id),
+      studioId
+        ? supabase
+            .from("studio_settings")
+            .upsert({ studio_id: studioId, studio_name: studioName, updated_at: new Date().toISOString() })
+        : Promise.resolve(),
+    ]);
     setMigrated(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -102,7 +111,8 @@ function ContractsContent() {
 
   if (loading) return <p className="text-charcoal/60">Loading...</p>;
 
-  const previewContext = buildMergeContext(null, null, 0, studioName);
+  const displayStudioName = studioName || "Your Studio";
+  const previewContext = buildMergeContext(null, null, 0, displayStudioName);
 
   return (
     <div className="space-y-6">
@@ -131,6 +141,15 @@ function ContractsContent() {
       )}
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-4">
+        <label className="block text-xs uppercase tracking-wide text-charcoal/50 mb-1">
+          Studio name (shown as the contract letterhead)
+        </label>
+        <input
+          className="w-full sm:w-80 border border-charcoal/20 rounded-md px-3 py-2 text-sm mb-4"
+          placeholder="e.g. Kate Benson Beauty"
+          value={studioName}
+          onChange={(e) => setStudioName(e.target.value)}
+        />
         <p className="text-xs text-charcoal/50">{MERGE_FIELD_HELP}</p>
         <p className="text-xs text-charcoal/50 mt-2">
           Inside a section: start a line with <code className="bg-ivory px-1 rounded">- </code> for a bullet point, or{" "}
@@ -195,14 +214,14 @@ function ContractsContent() {
         {showPreview && (
           <div className="lg:sticky lg:top-6">
             <div className="bg-white border border-charcoal/10 rounded-xl p-8">
-              <ContractLetterhead studioName={studioName} />
+              <ContractLetterhead studioName={displayStudioName} />
               {sections.map((section, i) => (
                 <div key={section.id}>
                   <ContractSectionHeading numeral={toRoman(i + 1)} title={section.heading || "Untitled"} />
                   <ContractDocument text={applyTemplateWithMarkers(section.body, previewContext)} />
                 </div>
               ))}
-              <ContractSignatureBlock studioName={studioName} />
+              <ContractSignatureBlock studioName={displayStudioName} />
               <ContractFooter />
             </div>
           </div>
