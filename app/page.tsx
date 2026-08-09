@@ -30,6 +30,14 @@ const ACTIVITY_GLYPH: Record<InboxItem["type"], string> = {
   trial: "✓",
 };
 
+function titleCase(s: string) {
+  return s
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
 function DashboardContent() {
   const [greetingName, setGreetingName] = useState("there");
   const [bookings, setBookings] = useState<BookingWithClient[]>([]);
@@ -52,7 +60,7 @@ function DashboardContent() {
           .eq("studio_id", userData.user.id)
           .maybeSingle();
         const name = profile?.studio_name?.split(" ")[0] || userData.user.email?.split("@")[0] || "there";
-        setGreetingName(name);
+        setGreetingName(titleCase(name));
       }
 
       const [{ data: bookingData }, { data: paymentData }, { data: memberData }, { data: trialData }, inboxItems] =
@@ -185,7 +193,7 @@ function DashboardContent() {
     <div className="space-y-8">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="font-script text-4xl md:text-5xl leading-tight mb-1 capitalize">
+          <h1 className="font-serif italic text-3xl md:text-4xl leading-tight mb-1">
             {greeting}, {greetingName}
           </h1>
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50">{format(now, "EEEE, MMMM d, yyyy")}</p>
