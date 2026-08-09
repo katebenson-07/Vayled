@@ -424,8 +424,10 @@ function BookingDetail() {
       </section>
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
-        <h2 className="font-serif text-lg mb-4">Notes</h2>
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Stylist notes</h2>
+        </div>
+        <div className="flex flex-wrap gap-2 mb-5">
           <select
             className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
             value={newNoteTag}
@@ -450,18 +452,21 @@ function BookingDetail() {
         {notes.length === 0 ? (
           <p className="text-charcoal/60 text-sm">No notes yet.</p>
         ) : (
-          <div className="space-y-2 text-sm">
+          <div className="space-y-3">
             {notes.map((n) => (
-              <div key={n.id} className="flex items-start justify-between border-b border-charcoal/10 pb-2">
-                <div>
-                  <span className="inline-block bg-ivory text-charcoal/70 rounded px-2 py-0.5 text-xs mr-2">
+              <div key={n.id} className="bg-ivory/50 border border-charcoal/10 rounded-md p-4">
+                <p className="text-sm text-charcoal leading-relaxed mb-3">{n.body}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase tracking-wide bg-charcoal/5 text-charcoal/60 rounded px-2 py-1">
                     {n.tag}
                   </span>
-                  {n.body}
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-charcoal/40">{format(parseISO(n.created_at), "MMM d, yyyy")}</span>
+                    <button onClick={() => removeNote(n.id)} className="text-red-600 text-xs">
+                      Remove
+                    </button>
+                  </div>
                 </div>
-                <button onClick={() => removeNote(n.id)} className="text-red-600 text-xs ml-2 shrink-0">
-                  Remove
-                </button>
               </div>
             ))}
           </div>
