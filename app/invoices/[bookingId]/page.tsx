@@ -92,6 +92,7 @@ function InvoiceContent() {
   const [catalog, setCatalog] = useState<ServiceCatalogItem[]>([]);
   const [items, setItems] = useState<InvoiceLineItem[]>([]);
   const [settings, setSettings] = useState<InvoiceSettings>(defaultInvoiceSettings());
+  const [depositFlatAmount, setDepositFlatAmount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
@@ -127,11 +128,10 @@ function InvoiceContent() {
       setPayments((paymentData as Payment[]) ?? []);
 
       const { data: userData } = await supabase.auth.getUser();
-      const { data: catalogData } = await supabase
-        .from("service_catalog")
-        .select("*")
-        .eq("studio_id", userData.user?.id)
-        .order("order_index");
+      const [{ data: catalogData }, { data: studioData }] = await Promise.all([
+        supabase.from("service_catalog").select("*").eq("studio_id", userData.user?.id).order("order_index"),
+        supabase.from("studio_settings").select("*").eq("studio_id", userData.user?.id).maybeSingle(),
+      ]);
       setCatalog((catalogData as ServiceCatalogItem[]) ?? []);
 
       if (b) {
@@ -139,7 +139,19 @@ function InvoiceContent() {
         setItems(
           existingItems.length > 0 ? existingItems : seedLineItemsFromBooking(memberData ?? [], trialSession)
         );
-        setSettings({ ...defaultInvoiceSettings(), ...(b.invoice_settings ?? {}) });
+
+        const isNewInvoice = !b.invoice_settings || Object.keys(b.invoice_settings).length === 0;
+        const nextSettings = { ...defaultInvoiceSettings(), ...(b.invoice_settings ?? {}) };
+        if (isNewInvoice && studioData) {
+          nextSettings.deposit_type = studioData.default_deposit_type ?? "percent";
+          nextSettings.deposit_percent = studioData.default_deposit_percent ?? 25;
+        }
+        setSettings(nextSettings);
+        setDepositFlatAmount(
+          isNewInvoice && studioData?.default_deposit_type === "flat"
+            ? Number(studioData.default_deposit_flat ?? 0)
+            : Number(b.deposit_amount ?? 0)
+        );
       }
 
       setLoading(false);
@@ -158,7 +170,7 @@ function InvoiceContent() {
   const depositAmount =
     settings.deposit_type === "percent"
       ? round2((total * Number(settings.deposit_percent || 0)) / 100)
-      : round2(Number(booking.deposit_amount || 0));
+      : round2(Number(depositFlatAmount || 0));
   const balanceAmount = round2(Math.max(total - depositAmount - trialAmount, 0));
 
   const collected = payments.reduce((sum, p) => sum + Number(p.amount), 0);
@@ -199,10 +211,17 @@ function InvoiceContent() {
         invoice_line_items: items,
         invoice_settings: settings,
         contract_total: subtotal,
+        deposit_amount: depositAmount,
       })
       .eq("id", bookingId);
     if (!error) {
-      setBooking({ ...booking, invoice_line_items: items, invoice_settings: settings, contract_total: subtotal });
+      setBooking({
+        ...booking,
+        invoice_line_items: items,
+        invoice_settings: settings,
+        contract_total: subtotal,
+        deposit_amount: depositAmount,
+      });
       setSavedAt(new Date());
     }
     setSaving(false);
@@ -534,6 +553,45 @@ function InvoiceContent() {
                     )}
                   </div>
                 </div>
+                {row.key === "deposit" && (
+                  <div className="flex flex-wrap items-center gap-2 text-sm mb-2 print:hidden">
+                    <select
+                      className="border border-charcoal/20 rounded-md px-2 py-1"
+                      value={settings.deposit_type}
+                      onChange={(e) =>
+                        setSettings({ ...settings, deposit_type: e.target.value as InvoiceSettings["deposit_type"] })
+                      }
+                    >
+                      <option value="percent">% of total</option>
+                      <option value="flat">Flat $</option>
+                    </select>
+                    {settings.deposit_type === "percent" ? (
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right"
+                          value={settings.deposit_percent}
+                          onChange={(e) => setSettings({ ...settings, deposit_percent: Number(e.target.value) })}
+                        />
+                        <span>%</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <span>$</span>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right"
+                          value={depositFlatAmount}
+                          onChange={(e) => setDepositFlatAmount(Number(e.target.value))}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
                 <DueRuleEditor
                   rule={row.rule}
                   weddingDate={weddingDate}

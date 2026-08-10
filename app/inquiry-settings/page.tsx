@@ -37,7 +37,15 @@ const DEFAULTS: Omit<InquiryFormSettings, "studio_id" | "updated_at"> = {
 
 type ProfileFields = Pick<
   StudioSettings,
-  "studio_name" | "contact_email" | "contact_phone" | "address" | "notify_on_new_inquiry" | "notification_email"
+  | "studio_name"
+  | "contact_email"
+  | "contact_phone"
+  | "address"
+  | "notify_on_new_inquiry"
+  | "notification_email"
+  | "default_deposit_type"
+  | "default_deposit_percent"
+  | "default_deposit_flat"
 >;
 
 const PROFILE_DEFAULTS: ProfileFields = {
@@ -47,6 +55,9 @@ const PROFILE_DEFAULTS: ProfileFields = {
   address: "",
   notify_on_new_inquiry: true,
   notification_email: "",
+  default_deposit_type: "percent",
+  default_deposit_percent: 25,
+  default_deposit_flat: 0,
 };
 
 type Tab = "profile" | "notifications" | "inquiry" | "invoice";
@@ -122,6 +133,9 @@ function InquirySettingsContent() {
             address: profileData.address ?? "",
             notify_on_new_inquiry: profileData.notify_on_new_inquiry,
             notification_email: profileData.notification_email ?? userData.user?.email ?? "",
+            default_deposit_type: profileData.default_deposit_type ?? "percent",
+            default_deposit_percent: profileData.default_deposit_percent ?? 25,
+            default_deposit_flat: profileData.default_deposit_flat ?? 0,
           });
         } else {
           setProfile((p) => ({ ...p, notification_email: userData.user?.email ?? "" }));
@@ -432,6 +446,51 @@ function InquirySettingsContent() {
       </div>
 
       <div className={`space-y-6 ${activeTab === "invoice" ? "" : "hidden"}`}>
+        <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+          <h2 className="font-serif text-lg mb-1">Default deposit</h2>
+          <p className="text-charcoal/60 text-sm mb-4">
+            Applied automatically to the Deposit / Retainer line on every new invoice. You can still change it for
+            an individual booking from that invoice — this just sets the starting point.
+          </p>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <select
+              className="border border-charcoal/20 rounded-md px-2 py-1"
+              value={profile.default_deposit_type}
+              onChange={(e) =>
+                setProfile((p) => ({ ...p, default_deposit_type: e.target.value as "percent" | "flat" }))
+              }
+            >
+              <option value="percent">Percent of invoice total</option>
+              <option value="flat">Flat amount</option>
+            </select>
+            {profile.default_deposit_type === "percent" ? (
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 w-20 text-right"
+                  value={profile.default_deposit_percent}
+                  onChange={(e) => setProfile((p) => ({ ...p, default_deposit_percent: Number(e.target.value) }))}
+                />
+                <span>%</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1">
+                <span>$</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 w-28 text-right"
+                  value={profile.default_deposit_flat}
+                  onChange={(e) => setProfile((p) => ({ ...p, default_deposit_flat: Number(e.target.value) }))}
+                />
+              </div>
+            )}
+          </div>
+        </section>
+
         <section className="bg-white border border-charcoal/10 rounded-xl p-6">
           <h2 className="font-serif text-lg mb-1">Preset services</h2>
           <p className="text-charcoal/60 text-sm mb-4">

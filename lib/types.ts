@@ -277,6 +277,10 @@ export interface StudioSettings {
   notification_email: string | null;
   mileage_rate: number;
   expense_budgets: Record<string, number>;
+  /** Applied automatically to every new invoice's Deposit/Retainer line; still editable per-booking. */
+  default_deposit_type: "percent" | "flat";
+  default_deposit_percent: number;
+  default_deposit_flat: number;
   updated_at: string;
 }
 

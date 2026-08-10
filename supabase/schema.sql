@@ -448,6 +448,16 @@ create table if not exists studio_settings (
 alter table studio_settings add column if not exists mileage_rate numeric not null default 0.70;
 alter table studio_settings add column if not exists expense_budgets jsonb not null default '{}'::jsonb;
 
+-- Default deposit applied to every new invoice's Deposit/Retainer line
+-- (Settings > Invoice tab). Still editable per-booking from the invoice
+-- itself; this only sets what a brand-new invoice starts with.
+alter table studio_settings add column if not exists default_deposit_type text not null default 'percent';
+alter table studio_settings add column if not exists default_deposit_percent numeric not null default 25;
+alter table studio_settings add column if not exists default_deposit_flat numeric not null default 0;
+alter table studio_settings drop constraint if exists studio_settings_default_deposit_type_check;
+alter table studio_settings add constraint studio_settings_default_deposit_type_check
+  check (default_deposit_type in ('percent','flat'));
+
 alter table studio_settings enable row level security;
 
 drop policy if exists "Studios manage their own settings" on studio_settings;

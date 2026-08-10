@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-10 (6)
+
+- **Default deposit** — Settings → Invoice now has a "Default deposit" control (percent of total, or a flat dollar amount) that's applied automatically to the Deposit / Retainer line the first time you open a booking's invoice, so you don't have to set it every time. It's still editable per booking right on the invoice (a new type + amount control under the Deposit row) for the rare case that needs something different. Saving an invoice now also writes the resolved deposit amount back to the booking, so the deposit figure shown on contracts and emails ({{deposit_amount}}) always matches what the invoice actually says. **Requires re-running `supabase/schema.sql`** — adds `default_deposit_type` / `default_deposit_percent` / `default_deposit_flat` to `studio_settings`.
+
 ## 2026-08-10 (5)
 
 - **Invoice item picker redesigned** — instead of a dropdown on every row, there's now one "Search or add a new item" box below the table: type to filter your preset services (from Settings → Invoice), click one to add it as a line, or click "+ New item" to add a one-off item that isn't in your catalog. Once added, a row's description/qty/rate are just plain editable fields, matching how invoicing tools like Bloom handle it.
