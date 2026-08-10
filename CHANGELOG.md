@@ -2,6 +2,12 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-10 (2)
+
+- **Invoice builder + service catalog** — `/invoices/[bookingId]` is now a real invoice builder instead of a read-only summary. It has an itemized services table (qty × rate, with a "fill from service catalog" dropdown per row so you're not typing the same service names every time), a tip section (none / percent / custom), a running subtotal/tip/total summary, a three-part payment schedule (Deposit/Retainer, Trial/Preview, Remaining Balance) where each payment's due date can be a fixed date **or** "N days before the wedding" (e.g. balance due 1 week prior), an auto-remind toggle per payment, and a "Mark paid" button that logs a real payment record. A Collected / Outstanding / Invoice total footer sits above a Notes & Terms box. Saving the invoice keeps `bookings.contract_total` in sync with the line-item subtotal, so the rest of the app (Bride Portal, Dashboard, Analytics) stays accurate.
+- **New: Services page** (`/services`) — each studio manages its own list of services and default rates here (seeded automatically with common bridal services the first time you visit). This is what the invoice's per-row dropdown pulls from.
+- **Requires re-running `supabase/schema.sql`** — adds a new `service_catalog` table (with RLS), a `'trial'` payment type, and two new jsonb columns on `bookings` (`invoice_line_items`, `invoice_settings`) to store the invoice builder's state.
+
 ## 2026-08-10
 
 - **Contract Details quick-fill panel** — the per-booking contract page (`/contracts/[bookingId]`) now has an editable "Contract Details" card above the contract itself, so you can enter or correct the bride's name, wedding date, wedding location, contract total, and deposit amount right there instead of jumping to the client and booking pages first. Saving updates the client record and the booking record, and the contract's merge fields (and the invoice, since it reads the same `contract_total`/`deposit_amount`) reflect the change immediately. No schema changes — this only edits existing columns on `clients` and `bookings`.

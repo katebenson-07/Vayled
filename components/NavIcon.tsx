@@ -68,6 +68,13 @@ const PATHS: Record<string, JSX.Element> = {
       <path d="M9 8h6M9 12h6" />
     </>
   ),
+  services: (
+    <>
+      <path d="M12 2l1.9 4.6L18.5 8l-4.6 1.9L12 14.5l-1.9-4.6L5.5 8l4.6-1.4z" />
+      <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" />
+      <path d="M5 15l.9 2.1L8 18l-2.1.9L5 21l-.9-2.1L2 18l2.1-.9z" />
+    </>
+  ),
   settings: (
     <>
       <circle cx="12" cy="12" r="3" />

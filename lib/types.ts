@@ -31,6 +31,73 @@ export interface Booking {
   contract_signed: boolean;
   contract_signed_at: string | null;
   notes: string | null;
+  invoice_line_items: InvoiceLineItem[];
+  invoice_settings: InvoiceSettings;
+  created_at: string;
+}
+
+export interface InvoiceLineItem {
+  id: string;
+  description: string;
+  qty: number;
+  rate: number;
+}
+
+/** Either a fixed date, or N days before the wedding date (computed at render time). */
+export interface DueRule {
+  mode: "date" | "before_wedding";
+  date: string | null;
+  days_before: number | null;
+}
+
+export function defaultDueRule(): DueRule {
+  return { mode: "date", date: null, days_before: null };
+}
+
+export interface InvoiceSettings {
+  tip_type: "none" | "percent" | "custom";
+  tip_percent: number;
+  tip_amount: number;
+  deposit_type: "percent" | "flat";
+  deposit_percent: number;
+  deposit_due_rule: DueRule;
+  deposit_remind: boolean;
+  deposit_paid: boolean;
+  trial_due_rule: DueRule;
+  trial_remind: boolean;
+  trial_paid: boolean;
+  balance_due_rule: DueRule;
+  balance_remind: boolean;
+  balance_paid: boolean;
+  notes: string;
+}
+
+export function defaultInvoiceSettings(): InvoiceSettings {
+  return {
+    tip_type: "none",
+    tip_percent: 0,
+    tip_amount: 0,
+    deposit_type: "percent",
+    deposit_percent: 25,
+    deposit_due_rule: defaultDueRule(),
+    deposit_remind: true,
+    deposit_paid: false,
+    trial_due_rule: defaultDueRule(),
+    trial_remind: true,
+    trial_paid: false,
+    balance_due_rule: { mode: "before_wedding", date: null, days_before: 7 },
+    balance_remind: true,
+    balance_paid: false,
+    notes: "",
+  };
+}
+
+export interface ServiceCatalogItem {
+  id: string;
+  studio_id: string;
+  name: string;
+  default_rate: number;
+  order_index: number;
   created_at: string;
 }
 
@@ -52,7 +119,7 @@ export interface Payment {
   booking_id: string;
   stylist_id: string;
   amount: number;
-  type: "deposit" | "balance" | "other";
+  type: "deposit" | "balance" | "trial" | "other";
   method: string | null;
   note: string | null;
   paid_at: string;

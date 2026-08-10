@@ -77,11 +77,28 @@ create table if not exists payments (
   stylist_id uuid not null references auth.users(id) on delete cascade,
   booking_id uuid not null references bookings(id) on delete cascade,
   amount numeric not null,
-  type text not null default 'other' check (type in ('deposit','balance','other')),
+  type text not null default 'other' check (type in ('deposit','balance','trial','other')),
   method text,
   note text,
   paid_at timestamptz not null default now()
 );
+
+-- 'trial' added alongside the original deposit/balance/other so the invoice's
+-- Trial/Preview "Mark Paid" button can log its own payment type.
+alter table payments drop constraint if exists payments_type_check;
+alter table payments add constraint payments_type_check
+  check (type in ('deposit','balance','trial','other'));
+
+-- invoice_line_items: [{ id, description, qty, rate }]
+-- invoice_settings: { tip_type, tip_percent, tip_amount,
+--   deposit_type, deposit_percent,
+--   deposit_due_rule / trial_due_rule / balance_due_rule: { mode: 'date'|'before_wedding', date, days_before },
+--   deposit_remind, trial_remind, balance_remind,
+--   deposit_paid, trial_paid, balance_paid, notes }
+-- Kept as jsonb (same pattern as contract_templates.sections) so the invoice
+-- builder can evolve without another migration for every new field.
+alter table bookings add column if not exists invoice_line_items jsonb not null default '[]'::jsonb;
+alter table bookings add column if not exists invoice_settings jsonb not null default '{}'::jsonb;
 
 -- ============================================================================
 -- Team scheduling
@@ -163,6 +180,23 @@ create table if not exists trial_sessions (
   quote text,
   created_at timestamptz not null default now(),
   unique (booking_id)
+);
+
+-- ============================================================================
+-- Service catalog
+-- The dropdown of services (and their default rates) each studio maintains
+-- for itself, so invoice line items don't have to be typed freehand every
+-- time. Seeded with common bridal services on a studio's first visit to the
+-- Services page (app-side, not here, so it only happens once per studio).
+-- ============================================================================
+
+create table if not exists service_catalog (
+  id uuid primary key default uuid_generate_v4(),
+  studio_id uuid not null references auth.users(id) on delete cascade,
+  name text not null,
+  default_rate numeric not null default 0,
+  order_index integer not null default 0,
+  created_at timestamptz not null default now()
 );
 
 -- ============================================================================
@@ -274,6 +308,7 @@ alter table email_templates enable row level security;
 alter table sent_emails enable row level security;
 alter table expenses enable row level security;
 alter table mileage_trips enable row level security;
+alter table service_catalog enable row level security;
 
 drop policy if exists "Stylists manage their own clients" on clients;
 create policy "Stylists manage their own clients" on clients
@@ -337,6 +372,10 @@ create policy "Studios manage their own expenses" on expenses
 
 drop policy if exists "Studios manage their own mileage trips" on mileage_trips;
 create policy "Studios manage their own mileage trips" on mileage_trips
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+drop policy if exists "Studios manage their own service catalog" on service_catalog;
+create policy "Studios manage their own service catalog" on service_catalog
   for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
 
 -- ============================================================================
