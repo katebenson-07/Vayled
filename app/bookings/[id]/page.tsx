@@ -366,7 +366,6 @@ function BookingDetail() {
   const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
   const balanceDue = Number(booking.contract_total) - totalPaid;
 
-  const partyTotal = members.reduce((sum, m) => sum + Number(m.price || 0), 0);
   const chairMinutes = members.reduce((sum, m) => sum + Number(m.prep_minutes || 0), 0);
 
   let timeline: ReturnType<typeof computeTimeline> = [];
@@ -745,13 +744,6 @@ function BookingDetail() {
                         onChange={(e) => updateMember(m.id, { prep_minutes: parseInt(e.target.value) || 0 })}
                       />
                       <span className="text-charcoal/60 text-sm">min</span>
-                      <span className="text-charcoal/60 text-sm">$</span>
-                      <input
-                        type="number"
-                        className="border border-charcoal/20 rounded-md px-2 py-1 text-sm w-20"
-                        value={m.price}
-                        onChange={(e) => updateMember(m.id, { price: parseFloat(e.target.value) || 0 })}
-                      />
                       <button onClick={() => removeMember(m.id)} className="text-red-600 text-sm ml-auto">
                         Remove
                       </button>
@@ -760,11 +752,23 @@ function BookingDetail() {
                 </div>
               )}
               {members.length > 0 && (
-                <div className="flex justify-between text-sm pt-3 mt-1">
-                  <span className="text-charcoal/60">Total chair time: {chairMinutes} min</span>
-                  <span className="font-medium">Party total: ${partyTotal.toFixed(2)}</span>
-                </div>
+                <div className="text-sm pt-3 mt-1 text-charcoal/60">Total chair time: {chairMinutes} min</div>
               )}
+              <div className="flex justify-between items-center pt-4 mt-4 border-t border-charcoal/10">
+                <p className="text-xs text-charcoal/50">
+                  Pricing now lives on the{" "}
+                  <Link href={`/invoices/${id}`} className="text-gold hover:underline">
+                    invoice
+                  </Link>
+                  .
+                </p>
+                <button
+                  onClick={() => setActiveTab("timeline")}
+                  className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm uppercase text-xs tracking-wide"
+                >
+                  Build timeline
+                </button>
+              </div>
             </section>
 
             <section className="bg-white border border-charcoal/10 rounded-xl p-6">

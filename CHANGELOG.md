@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-10 (9)
+
+- **Removed per-person pricing from Wedding party, added a Build timeline button** — now that the invoice has its own pricing (service catalog, qty × rate, tip), the $ field on each wedding party member was duplicate data entry that could drift out of sync with the real invoice. Removed it — Wedding party is now just names, roles, hair/makeup, and chair time, with a note pointing to the invoice for pricing. Added a "Build timeline" button directly under the Wedding party list (in addition to the one already at the top of the page) so you can jump to the timeline right after entering the party. No schema change — `party_members.price` still exists in the database, it's just not edited from this screen anymore.
+
 ## 2026-08-10 (8)
 
 - **"Saved" confirmation on quick-edit fields** — editing a booking's Wedding details (status, contract total, deposit, ready-by time, ceremony time, etc.), the Wedding party list, or a client's Details panel (name, wedding date, venue, contact info, etc.) already saved instantly on every change — there was just no feedback, so it looked like nothing happened. Now a small "Saved h:mm a ✓" note appears (booking page: top-right by the breadcrumb; client page: in the Details card header) right after each save, or a red "Couldn't save" note if a request fails. No schema change — these fields were never missing a save button, they just needed a visible confirmation.
