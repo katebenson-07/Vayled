@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-10 (8)
+
+- **"Saved" confirmation on quick-edit fields** — editing a booking's Wedding details (status, contract total, deposit, ready-by time, ceremony time, etc.), the Wedding party list, or a client's Details panel (name, wedding date, venue, contact info, etc.) already saved instantly on every change — there was just no feedback, so it looked like nothing happened. Now a small "Saved h:mm a ✓" note appears (booking page: top-right by the breadcrumb; client page: in the Details card header) right after each save, or a red "Couldn't save" note if a request fails. No schema change — these fields were never missing a save button, they just needed a visible confirmation.
+
 ## 2026-08-10 (7)
 
 - **Quick-add placeholder bridesmaids** — the Wedding party section on a booking's timeline builder now has a "+ Add bridesmaids" control: enter a count and it adds that many placeholder rows named "Bridesmaid 1," "Bridesmaid 2," etc. (with hair + makeup on, 45 min prep, ready to build the timeline right away). Rename each one whenever you actually know who's in the party — the name field was already editable in place. "+ Add one" still adds a single blank member for bride/mother/other roles. No schema change.

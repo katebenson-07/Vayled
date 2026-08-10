@@ -75,6 +75,8 @@ function BookingDetail() {
   const [newVendorName, setNewVendorName] = useState("");
   const [newVendorContact, setNewVendorContact] = useState("");
   const [bridesmaidCount, setBridesmaidCount] = useState("1");
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const [saveError, setSaveError] = useState(false);
 
   async function loadAll() {
     const { data: bookingData } = await supabase.from("bookings").select("*").eq("id", id).single();
@@ -171,7 +173,13 @@ function BookingDetail() {
   async function updateBooking(fields: Partial<Booking>) {
     if (!booking) return;
     const { error } = await supabase.from("bookings").update(fields).eq("id", booking.id);
-    if (!error) setBooking({ ...booking, ...fields });
+    if (!error) {
+      setBooking({ ...booking, ...fields });
+      setSavedAt(new Date());
+      setSaveError(false);
+    } else {
+      setSaveError(true);
+    }
   }
 
   async function addMember() {
@@ -197,7 +205,13 @@ function BookingDetail() {
 
   async function updateMember(memberId: string, fields: Partial<PartyMember>) {
     const { error } = await supabase.from("party_members").update(fields).eq("id", memberId);
-    if (!error) setMembers(members.map((m) => (m.id === memberId ? { ...m, ...fields } : m)));
+    if (!error) {
+      setMembers(members.map((m) => (m.id === memberId ? { ...m, ...fields } : m)));
+      setSavedAt(new Date());
+      setSaveError(false);
+    } else {
+      setSaveError(true);
+    }
   }
 
   async function removeMember(memberId: string) {
@@ -420,16 +434,23 @@ function BookingDetail() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-1.5 text-xs text-charcoal/50">
-        <button onClick={() => router.back()} className="hover:text-charcoal flex items-center gap-1">
-          ← Back
-        </button>
-        <span>›</span>
-        <Link href="/clients" className="hover:text-charcoal">
-          Clients
-        </Link>
-        <span>›</span>
-        <span className="text-charcoal font-medium">{client?.bride_name ?? "Booking"}</span>
+      <div className="flex items-center justify-between gap-2 text-xs text-charcoal/50">
+        <div className="flex items-center gap-1.5">
+          <button onClick={() => router.back()} className="hover:text-charcoal flex items-center gap-1">
+            ← Back
+          </button>
+          <span>›</span>
+          <Link href="/clients" className="hover:text-charcoal">
+            Clients
+          </Link>
+          <span>›</span>
+          <span className="text-charcoal font-medium">{client?.bride_name ?? "Booking"}</span>
+        </div>
+        {saveError ? (
+          <span className="text-red-600">Couldn&apos;t save last change — try again</span>
+        ) : (
+          savedAt && <span className="text-green-700">Saved {format(savedAt, "h:mm a")} ✓</span>
+        )}
       </div>
 
       <div className="flex items-start justify-between flex-wrap gap-4">

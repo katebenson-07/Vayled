@@ -6,6 +6,7 @@ import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
 import { Client, Booking } from "@/lib/types";
+import { format } from "date-fns";
 
 function ClientDetail() {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,8 @@ function ClientDetail() {
   const [client, setClient] = useState<Client | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const [saveError, setSaveError] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -32,6 +35,10 @@ function ClientDetail() {
     if (error) {
       // revert on failure
       setClient(client);
+      setSaveError(true);
+    } else {
+      setSavedAt(new Date());
+      setSaveError(false);
     }
   }
 
@@ -64,7 +71,14 @@ function ClientDetail() {
       </p>
 
       <div className="bg-white border border-charcoal/10 rounded-xl p-6 mb-6">
-        <h2 className="font-serif text-lg mb-4">Details</h2>
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <h2 className="font-serif text-lg">Details</h2>
+          {saveError ? (
+            <span className="text-xs text-red-600">Couldn&apos;t save last change — try again</span>
+          ) : (
+            savedAt && <span className="text-xs text-green-700">Saved {format(savedAt, "h:mm a")} ✓</span>
+          )}
+        </div>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <label className="block text-charcoal/60 mb-1">Bride&apos;s name</label>
