@@ -276,7 +276,7 @@ function InvoiceContent() {
               Back to booking
             </Link>{" "}
             ·{" "}
-            <Link href="/services" className="text-gold hover:underline">
+            <Link href="/inquiry-settings?tab=invoice" className="text-gold hover:underline">
               Manage services
             </Link>
           </p>
@@ -393,7 +393,7 @@ function InvoiceContent() {
         {catalog.length === 0 && (
           <p className="text-xs text-charcoal/50 -mt-4 mb-6 print:hidden">
             No preset services yet —{" "}
-            <Link href="/services" className="text-gold hover:underline">
+            <Link href="/inquiry-settings?tab=invoice" className="text-gold hover:underline">
               add your service list
             </Link>{" "}
             to get the quick qty-based dropdown here.

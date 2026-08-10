@@ -1,10 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
-import { CustomQuestion, InquiryFormSettings, StudioSettings } from "@/lib/types";
+import { CustomQuestion, InquiryFormSettings, ServiceCatalogItem, StudioSettings } from "@/lib/types";
+
+const STARTER_SERVICES: Array<{ name: string; default_rate: number }> = [
+  { name: "Bridal Hair", default_rate: 200 },
+  { name: "Bridal Makeup", default_rate: 200 },
+  { name: "Bridal Hair + Makeup", default_rate: 375 },
+  { name: "Bridesmaid Hair", default_rate: 95 },
+  { name: "Bridesmaid Makeup", default_rate: 95 },
+  { name: "Bridesmaid Hair + Makeup", default_rate: 180 },
+  { name: "Mother of the Bride/Groom — Hair + Makeup", default_rate: 180 },
+  { name: "Flower Girl — Hair", default_rate: 45 },
+  { name: "Trial — Hair + Makeup", default_rate: 250 },
+];
 
 const DEFAULTS: Omit<InquiryFormSettings, "studio_id" | "updated_at"> = {
   welcome_heading: "Welcome, beautiful bride-to-be",
@@ -36,15 +49,17 @@ const PROFILE_DEFAULTS: ProfileFields = {
   notification_email: "",
 };
 
-type Tab = "profile" | "notifications" | "inquiry";
+type Tab = "profile" | "notifications" | "inquiry" | "invoice";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "profile", label: "Personal Information" },
   { id: "notifications", label: "Notifications" },
   { id: "inquiry", label: "Inquiry Form" },
+  { id: "invoice", label: "Invoice" },
 ];
 
 function InquirySettingsContent() {
+  const searchParams = useSearchParams();
   const [studioId, setStudioId] = useState<string | null>(null);
   const [settings, setSettings] = useState<Omit<InquiryFormSettings, "studio_id" | "updated_at">>(DEFAULTS);
   const [profile, setProfile] = useState<ProfileFields>(PROFILE_DEFAULTS);
@@ -54,6 +69,15 @@ function InquirySettingsContent() {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const [inquiryLink, setInquiryLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [services, setServices] = useState<ServiceCatalogItem[]>([]);
+  const [newServiceName, setNewServiceName] = useState("");
+  const [newServiceRate, setNewServiceRate] = useState("");
+  const [editingService, setEditingService] = useState<Record<string, { name: string; rate: string }>>({});
+
+  useEffect(() => {
+    const requested = searchParams.get("tab");
+    if (requested && TABS.some((t) => t.id === requested)) setActiveTab(requested as Tab);
+  }, [searchParams]);
 
   useEffect(() => {
     async function load() {
@@ -62,10 +86,18 @@ function InquirySettingsContent() {
       setStudioId(uid);
       if (uid) {
         setInquiryLink(`${window.location.origin}/inquire/${uid}`);
-        const [{ data }, { data: profileData }] = await Promise.all([
+        const [{ data }, { data: profileData }, { data: serviceData }] = await Promise.all([
           supabase.from("inquiry_form_settings").select("*").eq("studio_id", uid).maybeSingle(),
           supabase.from("studio_settings").select("*").eq("studio_id", uid).maybeSingle(),
+          supabase.from("service_catalog").select("*").eq("studio_id", uid).order("order_index"),
         ]);
+        let serviceList = (serviceData as ServiceCatalogItem[]) ?? [];
+        if (serviceList.length === 0) {
+          const seeded = STARTER_SERVICES.map((s, i) => ({ ...s, studio_id: uid, order_index: i }));
+          const { data: inserted } = await supabase.from("service_catalog").insert(seeded).select();
+          serviceList = (inserted as ServiceCatalogItem[]) ?? [];
+        }
+        setServices(serviceList);
         if (data) {
           setSettings({
             welcome_heading: data.welcome_heading,
@@ -120,6 +152,52 @@ function InquirySettingsContent() {
 
   function removeQuestion(id: string) {
     setSettings((s) => ({ ...s, custom_questions: s.custom_questions.filter((q) => q.id !== id) }));
+  }
+
+  async function addService(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newServiceName.trim() || !studioId) return;
+    const { data, error } = await supabase
+      .from("service_catalog")
+      .insert({
+        studio_id: studioId,
+        name: newServiceName.trim(),
+        default_rate: newServiceRate ? Number(newServiceRate) : 0,
+        order_index: services.length,
+      })
+      .select()
+      .single();
+    if (!error && data) {
+      setServices([...services, data as ServiceCatalogItem]);
+      setNewServiceName("");
+      setNewServiceRate("");
+    }
+  }
+
+  function startEditService(s: ServiceCatalogItem) {
+    setEditingService({ ...editingService, [s.id]: { name: s.name, rate: String(s.default_rate) } });
+  }
+
+  function cancelEditService(id: string) {
+    const next = { ...editingService };
+    delete next[id];
+    setEditingService(next);
+  }
+
+  async function saveEditService(id: string) {
+    const draft = editingService[id];
+    if (!draft) return;
+    const updates = { name: draft.name.trim(), default_rate: draft.rate ? Number(draft.rate) : 0 };
+    const { error } = await supabase.from("service_catalog").update(updates).eq("id", id);
+    if (!error) {
+      setServices(services.map((s) => (s.id === id ? { ...s, ...updates } : s)));
+      cancelEditService(id);
+    }
+  }
+
+  async function removeService(id: string) {
+    const { error } = await supabase.from("service_catalog").delete().eq("id", id);
+    if (!error) setServices(services.filter((s) => s.id !== id));
   }
 
   async function save() {
@@ -352,6 +430,102 @@ function InquirySettingsContent() {
         )}
       </section>
       </div>
+
+      <div className={`space-y-6 ${activeTab === "invoice" ? "" : "hidden"}`}>
+        <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+          <h2 className="font-serif text-lg mb-1">Preset services</h2>
+          <p className="text-charcoal/60 text-sm mb-4">
+            Add every service you offer and its default rate. When you&apos;re building an invoice, you&apos;ll pick
+            one from a dropdown and just enter a quantity — the rate and amount fill in automatically.
+          </p>
+          <form onSubmit={addService} className="flex flex-wrap gap-2 mb-4 text-sm">
+            <input
+              className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[200px]"
+              placeholder="Service name (e.g. Bridesmaid Hair + Makeup)"
+              value={newServiceName}
+              onChange={(e) => setNewServiceName(e.target.value)}
+            />
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              className="border border-charcoal/20 rounded-md px-2 py-1 w-32"
+              placeholder="Default rate"
+              value={newServiceRate}
+              onChange={(e) => setNewServiceRate(e.target.value)}
+            />
+            <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1">
+              Add
+            </button>
+          </form>
+
+          {services.length === 0 ? (
+            <p className="text-charcoal/60 text-sm">No services yet. Add your first one above.</p>
+          ) : (
+            <div className="space-y-2 text-sm">
+              {services.map((s) => {
+                const draft = editingService[s.id];
+                return (
+                  <div
+                    key={s.id}
+                    className="flex items-center justify-between border-b border-charcoal/10 pb-2 gap-2"
+                  >
+                    {draft ? (
+                      <>
+                        <div className="flex flex-1 gap-2">
+                          <input
+                            className="border border-charcoal/20 rounded-md px-2 py-1 flex-1"
+                            value={draft.name}
+                            onChange={(e) =>
+                              setEditingService({ ...editingService, [s.id]: { ...draft, name: e.target.value } })
+                            }
+                          />
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            className="border border-charcoal/20 rounded-md px-2 py-1 w-28"
+                            value={draft.rate}
+                            onChange={(e) =>
+                              setEditingService({ ...editingService, [s.id]: { ...draft, rate: e.target.value } })
+                            }
+                          />
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <button onClick={() => saveEditService(s.id)} className="text-gold hover:underline">
+                            Save
+                          </button>
+                          <button onClick={() => cancelEditService(s.id)} className="text-charcoal/60">
+                            Cancel
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <span>
+                          {s.name}{" "}
+                          <span className="text-charcoal/60">· ${Number(s.default_rate).toFixed(2)}</span>
+                        </span>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => startEditService(s)}
+                            className="text-charcoal/60 hover:text-charcoal"
+                          >
+                            Edit
+                          </button>
+                          <button onClick={() => removeService(s.id)} className="text-red-600">
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
@@ -359,7 +533,9 @@ function InquirySettingsContent() {
 export default function InquirySettingsPage() {
   return (
     <AuthGuard>
-      <InquirySettingsContent />
+      <Suspense fallback={<p className="text-charcoal/60">Loading...</p>}>
+        <InquirySettingsContent />
+      </Suspense>
     </AuthGuard>
   );
 }

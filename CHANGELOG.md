@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-10 (4)
+
+- **Preset services moved into Settings** — the service catalog (add/edit/remove your services and default rates) now lives under Settings → **Invoice** tab, instead of its own sidebar page. Same add/edit/remove functionality, seeded automatically with common bridal services on first visit. The invoice page's "Manage services" link now opens Settings directly on that tab (`/inquiry-settings?tab=invoice`).
+
 ## 2026-08-10 (3)
 
 - **Invoice service dropdown now drives qty × rate directly** — each line item on `/invoices/[bookingId]` starts with a dropdown of your preset services (from `/services`). Pick one (e.g. "Bridesmaid Hair — $150"), type how many (e.g. 8), and the amount updates instantly (8 × $150 = $1,200) — rate comes straight from your catalog so you're not retyping it per bride. "Custom line item..." is still there for one-off items that aren't in your catalog. No schema change — this reuses the `invoice_line_items` jsonb column added earlier today, with one new optional field (`catalog_id`) so a row remembers which preset it's tied to.
