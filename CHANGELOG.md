@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-10 (7)
+
+- **Quick-add placeholder bridesmaids** — the Wedding party section on a booking's timeline builder now has a "+ Add bridesmaids" control: enter a count and it adds that many placeholder rows named "Bridesmaid 1," "Bridesmaid 2," etc. (with hair + makeup on, 45 min prep, ready to build the timeline right away). Rename each one whenever you actually know who's in the party — the name field was already editable in place. "+ Add one" still adds a single blank member for bride/mother/other roles. No schema change.
+
 ## 2026-08-10 (6)
 
 - **Default deposit** — Settings → Invoice now has a "Default deposit" control (percent of total, or a flat dollar amount) that's applied automatically to the Deposit / Retainer line the first time you open a booking's invoice, so you don't have to set it every time. It's still editable per booking right on the invoice (a new type + amount control under the Deposit row) for the rare case that needs something different. Saving an invoice now also writes the resolved deposit amount back to the booking, so the deposit figure shown on contracts and emails ({{deposit_amount}}) always matches what the invoice actually says. **Requires re-running `supabase/schema.sql`** — adds `default_deposit_type` / `default_deposit_percent` / `default_deposit_flat` to `studio_settings`.

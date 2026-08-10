@@ -74,6 +74,7 @@ function BookingDetail() {
   const [newVendorRole, setNewVendorRole] = useState(VENDOR_ROLES[0]);
   const [newVendorName, setNewVendorName] = useState("");
   const [newVendorContact, setNewVendorContact] = useState("");
+  const [bridesmaidCount, setBridesmaidCount] = useState("1");
 
   async function loadAll() {
     const { data: bookingData } = await supabase.from("bookings").select("*").eq("id", id).single();
@@ -202,6 +203,28 @@ function BookingDetail() {
   async function removeMember(memberId: string) {
     const { error } = await supabase.from("party_members").delete().eq("id", memberId);
     if (!error) setMembers(members.filter((m) => m.id !== memberId));
+  }
+
+  /** Quickly seed N placeholder bridesmaids (Bridesmaid 1, 2, 3...) so the timeline
+   *  can be built before every name is known — rename them in place later. */
+  async function addBridesmaids(count: number) {
+    if (!count || count <= 0) return;
+    const { data: userData } = await supabase.auth.getUser();
+    const stylist_id = userData.user?.id;
+    const alreadyNumbered = members.filter((m) => /^Bridesmaid \d+$/.test(m.name)).length;
+    const rows = Array.from({ length: count }, (_, i) => ({
+      booking_id: id,
+      stylist_id,
+      name: `Bridesmaid ${alreadyNumbered + i + 1}`,
+      role: "bridesmaid",
+      hair: true,
+      makeup: true,
+      prep_minutes: 45,
+      price: 0,
+      order_index: members.length + i,
+    }));
+    const { data, error } = await supabase.from("party_members").insert(rows).select();
+    if (!error && data) setMembers([...members, ...(data as PartyMember[])]);
   }
 
   async function addPayment() {
@@ -627,12 +650,33 @@ function BookingDetail() {
             </section>
 
             <section className="bg-white border border-charcoal/10 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
                 <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Wedding party</h2>
-                <button onClick={addMember} className="text-gold text-sm hover:underline">
-                  + Add member
-                </button>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min="1"
+                      className="border border-charcoal/20 rounded-md px-2 py-1 w-14"
+                      value={bridesmaidCount}
+                      onChange={(e) => setBridesmaidCount(e.target.value)}
+                    />
+                    <button
+                      onClick={() => addBridesmaids(parseInt(bridesmaidCount, 10) || 0)}
+                      className="text-gold hover:underline"
+                    >
+                      + Add bridesmaids
+                    </button>
+                  </div>
+                  <button onClick={addMember} className="text-gold hover:underline">
+                    + Add one
+                  </button>
+                </div>
               </div>
+              <p className="text-xs text-charcoal/50 mb-4">
+                Not sure of names yet? Add a few placeholder bridesmaids to block out the timeline, then rename them
+                below whenever you find out.
+              </p>
               {members.length === 0 ? (
                 <p className="text-charcoal/60 text-sm">No one added yet.</p>
               ) : (
