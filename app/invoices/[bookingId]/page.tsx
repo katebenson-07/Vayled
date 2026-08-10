@@ -169,6 +169,7 @@ function InvoiceContent() {
         description: first ? first.name : "",
         qty: 1,
         rate: first ? Number(first.default_rate) : 0,
+        catalog_id: first ? first.id : null,
       },
     ]);
   }
@@ -178,9 +179,12 @@ function InvoiceContent() {
   }
 
   function applyCatalogChoice(id: string, catalogId: string) {
-    if (!catalogId) return;
+    if (catalogId === "custom") {
+      updateItem(id, { catalog_id: null });
+      return;
+    }
     const svc = catalog.find((c) => c.id === catalogId);
-    if (svc) updateItem(id, { description: svc.name, rate: Number(svc.default_rate) });
+    if (svc) updateItem(id, { catalog_id: svc.id, description: svc.name, rate: Number(svc.default_rate) });
   }
 
   async function saveInvoice() {
@@ -319,7 +323,7 @@ function InvoiceContent() {
           <thead>
             <tr className="border-b border-charcoal/20 text-left text-charcoal/60">
               <th className="py-2">Service</th>
-              <th className="py-2 w-16 text-right">Qty</th>
+              <th className="py-2 w-20 text-right"># of guests</th>
               <th className="py-2 w-24 text-right">Rate</th>
               <th className="py-2 w-28 text-right">Amount</th>
               <th className="py-2 w-8 print:hidden"></th>
@@ -329,34 +333,34 @@ function InvoiceContent() {
             {items.map((item) => (
               <tr key={item.id} className="border-b border-charcoal/10">
                 <td className="py-2 pr-2">
-                  <div className="flex flex-col gap-1">
-                    {catalog.length > 0 && (
-                      <select
-                        className="border border-charcoal/20 rounded-md px-2 py-1 text-xs print:hidden"
-                        defaultValue=""
-                        onChange={(e) => applyCatalogChoice(item.id, e.target.value)}
-                      >
-                        <option value="">Fill from service catalog...</option>
-                        {catalog.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.name} — ${Number(c.default_rate).toFixed(2)}
-                          </option>
-                        ))}
-                      </select>
-                    )}
+                  <select
+                    className="border border-charcoal/20 rounded-md px-2 py-1 w-full print:hidden"
+                    value={item.catalog_id ?? "custom"}
+                    onChange={(e) => applyCatalogChoice(item.id, e.target.value)}
+                  >
+                    <option value="custom">Custom line item...</option>
+                    {catalog.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} — ${Number(c.default_rate).toFixed(2)}
+                      </option>
+                    ))}
+                  </select>
+                  {!item.catalog_id ? (
                     <input
-                      className="border border-charcoal/20 rounded-md px-2 py-1"
+                      className="border border-charcoal/20 rounded-md px-2 py-1 w-full mt-1"
                       value={item.description}
                       onChange={(e) => updateItem(item.id, { description: e.target.value })}
-                      placeholder="Service description"
+                      placeholder="Description"
                     />
-                  </div>
+                  ) : (
+                    <p className="hidden print:block text-sm">{item.description}</p>
+                  )}
                 </td>
                 <td className="py-2">
                   <input
                     type="number"
                     min="0"
-                    className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right"
+                    className="border border-charcoal/20 rounded-md px-2 py-1 w-20 text-right"
                     value={item.qty}
                     onChange={(e) => updateItem(item.id, { qty: Number(e.target.value) })}
                   />
@@ -371,7 +375,9 @@ function InvoiceContent() {
                     onChange={(e) => updateItem(item.id, { rate: Number(e.target.value) })}
                   />
                 </td>
-                <td className="py-2 text-right">${round2(Number(item.qty) * Number(item.rate)).toFixed(2)}</td>
+                <td className="py-2 text-right font-medium">
+                  ${round2(Number(item.qty) * Number(item.rate)).toFixed(2)}
+                </td>
                 <td className="py-2 text-right print:hidden">
                   <button onClick={() => removeItem(item.id)} className="text-red-600 text-xs">
                     Remove
@@ -384,6 +390,15 @@ function InvoiceContent() {
         <button onClick={addItem} className="text-gold text-sm mb-6 print:hidden">
           + Add service
         </button>
+        {catalog.length === 0 && (
+          <p className="text-xs text-charcoal/50 -mt-4 mb-6 print:hidden">
+            No preset services yet —{" "}
+            <Link href="/services" className="text-gold hover:underline">
+              add your service list
+            </Link>{" "}
+            to get the quick qty-based dropdown here.
+          </p>
+        )}
 
         {/* Tip */}
         <div className="mb-6 flex flex-wrap items-center gap-2 text-sm print:hidden">

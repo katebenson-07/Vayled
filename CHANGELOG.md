@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-10 (3)
+
+- **Invoice service dropdown now drives qty × rate directly** — each line item on `/invoices/[bookingId]` starts with a dropdown of your preset services (from `/services`). Pick one (e.g. "Bridesmaid Hair — $150"), type how many (e.g. 8), and the amount updates instantly (8 × $150 = $1,200) — rate comes straight from your catalog so you're not retyping it per bride. "Custom line item..." is still there for one-off items that aren't in your catalog. No schema change — this reuses the `invoice_line_items` jsonb column added earlier today, with one new optional field (`catalog_id`) so a row remembers which preset it's tied to.
+
 ## 2026-08-10 (2)
 
 - **Invoice builder + service catalog** — `/invoices/[bookingId]` is now a real invoice builder instead of a read-only summary. It has an itemized services table (qty × rate, with a "fill from service catalog" dropdown per row so you're not typing the same service names every time), a tip section (none / percent / custom), a running subtotal/tip/total summary, a three-part payment schedule (Deposit/Retainer, Trial/Preview, Remaining Balance) where each payment's due date can be a fixed date **or** "N days before the wedding" (e.g. balance due 1 week prior), an auto-remind toggle per payment, and a "Mark paid" button that logs a real payment record. A Collected / Outstanding / Invoice total footer sits above a Notes & Terms box. Saving the invoice keeps `bookings.contract_total` in sync with the line-item subtotal, so the rest of the app (Bride Portal, Dashboard, Analytics) stays accurate.

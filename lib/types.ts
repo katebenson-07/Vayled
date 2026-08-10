@@ -41,6 +41,8 @@ export interface InvoiceLineItem {
   description: string;
   qty: number;
   rate: number;
+  /** service_catalog.id this row was filled from, or null/undefined for a one-off custom line. */
+  catalog_id?: string | null;
 }
 
 /** Either a fixed date, or N days before the wedding date (computed at render time). */
