@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-10
+
+- **Contract Details quick-fill panel** — the per-booking contract page (`/contracts/[bookingId]`) now has an editable "Contract Details" card above the contract itself, so you can enter or correct the bride's name, wedding date, wedding location, contract total, and deposit amount right there instead of jumping to the client and booking pages first. Saving updates the client record and the booking record, and the contract's merge fields (and the invoice, since it reads the same `contract_total`/`deposit_amount`) reflect the change immediately. No schema changes — this only edits existing columns on `clients` and `bookings`.
+
 ## 2026-08-09
 
 - **Bride Portal** — a no-login, front-facing page you can share with a bride once her booking is confirmed. From any booking (once it's "booked" or "completed"), click "Bride portal" in the sub-nav to preview it or "Copy link" to grab the shareable URL (`/portal/[bookingId]`) to text or email her. It shows a countdown to her wedding day, her getting-ready time and location, a day-of timeline (built from the same timeline your studio builds internally), upcoming appointments (trial + wedding day), a payment tracker (paid installments plus any remaining balance), her booked services, her trial notes (collapsible), and a few reminders — plus your studio's phone/email as tap-to-contact buttons. **Requires re-running `supabase/schema.sql`** — it adds `clients.partner_name` and a `get_bride_portal(uuid)` function. That function is intentionally narrow: it only returns the fields the portal needs for one booking at a time, so brides can never browse or query your other clients' data.

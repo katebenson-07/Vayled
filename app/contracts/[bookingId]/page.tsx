@@ -22,8 +22,17 @@ function ContractContent() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [studioName, setStudioName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [dateInput, setDateInput] = useState("");
-  const [savingDate, setSavingDate] = useState(false);
+
+  // Contract Details quick-fill panel — lets the stylist enter/correct the
+  // bride's name, wedding date, venue, and invoice figures right from the
+  // contract screen instead of hopping to the client/booking pages first.
+  const [brideNameInput, setBrideNameInput] = useState("");
+  const [weddingDateInput, setWeddingDateInput] = useState("");
+  const [venueInput, setVenueInput] = useState("");
+  const [contractTotalInput, setContractTotalInput] = useState("");
+  const [depositInput, setDepositInput] = useState("");
+  const [savingDetails, setSavingDetails] = useState(false);
+  const [detailsSaved, setDetailsSaved] = useState(false);
 
   async function load() {
     const { data: bookingData } = await supabase.from("bookings").select("*").eq("id", bookingId).single();
@@ -57,6 +66,20 @@ function ContractContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookingId]);
 
+  // Populate the quick-fill panel once the client/booking records come in,
+  // so stylists see (and can correct) the real current values, not blanks.
+  useEffect(() => {
+    if (client) {
+      setBrideNameInput(client.bride_name ?? "");
+      setWeddingDateInput(client.wedding_date ?? "");
+      setVenueInput(client.venue ?? "");
+    }
+    if (booking) {
+      setContractTotalInput(booking.contract_total != null ? String(booking.contract_total) : "");
+      setDepositInput(booking.deposit_amount != null ? String(booking.deposit_amount) : "");
+    }
+  }, [client, booking]);
+
   async function markSent() {
     if (!booking) return;
     await supabase.from("bookings").update({ contract_sent: true }).eq("id", booking.id);
@@ -70,12 +93,29 @@ function ContractContent() {
     setBooking({ ...booking, contract_signed: true, contract_signed_at: signed_at });
   }
 
-  async function saveWeddingDate() {
-    if (!client || !dateInput) return;
-    setSavingDate(true);
-    await supabase.from("clients").update({ wedding_date: dateInput }).eq("id", client.id);
-    setClient({ ...client, wedding_date: dateInput });
-    setSavingDate(false);
+  async function saveContractDetails() {
+    if (!client || !booking) return;
+    setSavingDetails(true);
+    setDetailsSaved(false);
+
+    const clientUpdates = {
+      bride_name: brideNameInput.trim(),
+      wedding_date: weddingDateInput || null,
+      venue: venueInput.trim() || null,
+    };
+    const bookingUpdates = {
+      contract_total: contractTotalInput ? Number(contractTotalInput) : 0,
+      deposit_amount: depositInput ? Number(depositInput) : 0,
+    };
+
+    await supabase.from("clients").update(clientUpdates).eq("id", client.id);
+    await supabase.from("bookings").update(bookingUpdates).eq("id", booking.id);
+
+    setClient({ ...client, ...clientUpdates });
+    setBooking({ ...booking, ...bookingUpdates });
+    setSavingDetails(false);
+    setDetailsSaved(true);
+    setTimeout(() => setDetailsSaved(false), 2500);
   }
 
   if (loading || !booking) return <p className="text-charcoal/60">Loading...</p>;
@@ -122,24 +162,80 @@ function ContractContent() {
         </div>
       </div>
 
-      {!client?.wedding_date && (
-        <div className="flex items-center gap-2 text-sm bg-beige/30 border border-gold/30 rounded-md px-4 py-3 print:hidden">
-          <span className="text-charcoal/70">No wedding date set for {client?.bride_name ?? "this client"} yet —</span>
-          <input
-            type="date"
-            className="border border-charcoal/20 rounded-md px-2 py-1"
-            value={dateInput}
-            onChange={(e) => setDateInput(e.target.value)}
-          />
-          <button
-            onClick={saveWeddingDate}
-            disabled={!dateInput || savingDate}
-            className="bg-charcoal text-ivory rounded-md px-3 py-1 disabled:opacity-50"
-          >
-            {savingDate ? "Saving..." : "Add date"}
-          </button>
+      <section className="bg-white border border-charcoal/10 rounded-xl p-6 print:hidden">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-serif text-lg">Contract Details</h2>
+          <span className="text-xs text-charcoal/50">
+            Fills in the merge fields below — bride/venue/date also update the client profile, and
+            the invoice total also updates this booking&apos;s invoice.
+          </span>
         </div>
-      )}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <label className="text-sm">
+            <span className="block text-charcoal/60 mb-1">Bride&apos;s name</span>
+            <input
+              type="text"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={brideNameInput}
+              onChange={(e) => setBrideNameInput(e.target.value)}
+              placeholder="Bride's full name"
+            />
+          </label>
+          <label className="text-sm">
+            <span className="block text-charcoal/60 mb-1">Wedding date</span>
+            <input
+              type="date"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={weddingDateInput}
+              onChange={(e) => setWeddingDateInput(e.target.value)}
+            />
+          </label>
+          <label className="text-sm">
+            <span className="block text-charcoal/60 mb-1">Wedding location</span>
+            <input
+              type="text"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={venueInput}
+              onChange={(e) => setVenueInput(e.target.value)}
+              placeholder="Venue name, city"
+            />
+          </label>
+          <label className="text-sm">
+            <span className="block text-charcoal/60 mb-1">Contract total ($)</span>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={contractTotalInput}
+              onChange={(e) => setContractTotalInput(e.target.value)}
+              placeholder="0.00"
+            />
+          </label>
+          <label className="text-sm">
+            <span className="block text-charcoal/60 mb-1">Deposit amount ($)</span>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={depositInput}
+              onChange={(e) => setDepositInput(e.target.value)}
+              placeholder="0.00"
+            />
+          </label>
+        </div>
+        <div className="flex items-center gap-3 mt-4">
+          <button
+            onClick={saveContractDetails}
+            disabled={savingDetails}
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-50"
+          >
+            {savingDetails ? "Saving..." : "Save details"}
+          </button>
+          {detailsSaved && <span className="text-sm text-gold">Saved — contract updated below.</span>}
+        </div>
+      </section>
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-8 md:p-12">
         <ContractLetterhead
