@@ -27,6 +27,12 @@ import { format } from "date-fns";
 
 type ScheduleKey = "deposit" | "trial" | "balance";
 
+function tipCardClass(active: boolean) {
+  return `border rounded-lg px-4 py-3 text-left transition-colors ${
+    active ? "border-charcoal ring-1 ring-charcoal" : "border-charcoal/20 hover:border-charcoal/40"
+  }`;
+}
+
 function DueRuleEditor({
   rule,
   weddingDate,
@@ -89,6 +95,8 @@ function InvoiceContent() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const [itemQuery, setItemQuery] = useState("");
+  const [itemPickerOpen, setItemPickerOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -160,31 +168,26 @@ function InvoiceContent() {
     setItems(items.map((i) => (i.id === id ? { ...i, ...patch } : i)));
   }
 
-  function addItem() {
-    const first = catalog[0];
-    setItems([
-      ...items,
-      {
-        id: crypto.randomUUID(),
-        description: first ? first.name : "",
-        qty: 1,
-        rate: first ? Number(first.default_rate) : 0,
-        catalog_id: first ? first.id : null,
-      },
-    ]);
-  }
-
   function removeItem(id: string) {
     setItems(items.filter((i) => i.id !== id));
   }
 
-  function applyCatalogChoice(id: string, catalogId: string) {
-    if (catalogId === "custom") {
-      updateItem(id, { catalog_id: null });
-      return;
-    }
-    const svc = catalog.find((c) => c.id === catalogId);
-    if (svc) updateItem(id, { catalog_id: svc.id, description: svc.name, rate: Number(svc.default_rate) });
+  const filteredCatalog = catalog.filter((c) => c.name.toLowerCase().includes(itemQuery.trim().toLowerCase()));
+
+  function addItemFromCatalog(svc: ServiceCatalogItem) {
+    setItems([
+      ...items,
+      { id: crypto.randomUUID(), description: svc.name, qty: 1, rate: Number(svc.default_rate), catalog_id: svc.id },
+    ]);
+    setItemQuery("");
+  }
+
+  function addBlankItem() {
+    setItems([
+      ...items,
+      { id: crypto.randomUUID(), description: itemQuery.trim() || "New item", qty: 1, rate: 0, catalog_id: null },
+    ]);
+    setItemQuery("");
   }
 
   async function saveInvoice() {
@@ -322,39 +325,30 @@ function InvoiceContent() {
         <table className="w-full text-sm mb-2">
           <thead>
             <tr className="border-b border-charcoal/20 text-left text-charcoal/60">
-              <th className="py-2">Service</th>
-              <th className="py-2 w-20 text-right"># of guests</th>
+              <th className="py-2">Item</th>
+              <th className="py-2 w-20 text-right">Qty</th>
               <th className="py-2 w-24 text-right">Rate</th>
               <th className="py-2 w-28 text-right">Amount</th>
               <th className="py-2 w-8 print:hidden"></th>
             </tr>
           </thead>
           <tbody>
+            {items.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-4 text-charcoal/50 text-sm">
+                  No items yet — search or add one below.
+                </td>
+              </tr>
+            )}
             {items.map((item) => (
               <tr key={item.id} className="border-b border-charcoal/10">
                 <td className="py-2 pr-2">
-                  <select
-                    className="border border-charcoal/20 rounded-md px-2 py-1 w-full print:hidden"
-                    value={item.catalog_id ?? "custom"}
-                    onChange={(e) => applyCatalogChoice(item.id, e.target.value)}
-                  >
-                    <option value="custom">Custom line item...</option>
-                    {catalog.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} — ${Number(c.default_rate).toFixed(2)}
-                      </option>
-                    ))}
-                  </select>
-                  {!item.catalog_id ? (
-                    <input
-                      className="border border-charcoal/20 rounded-md px-2 py-1 w-full mt-1"
-                      value={item.description}
-                      onChange={(e) => updateItem(item.id, { description: e.target.value })}
-                      placeholder="Description"
-                    />
-                  ) : (
-                    <p className="hidden print:block text-sm">{item.description}</p>
-                  )}
+                  <input
+                    className="border border-charcoal/20 rounded-md px-2 py-1 w-full print:border-none"
+                    value={item.description}
+                    onChange={(e) => updateItem(item.id, { description: e.target.value })}
+                    placeholder="Description"
+                  />
                 </td>
                 <td className="py-2">
                   <input
@@ -387,56 +381,112 @@ function InvoiceContent() {
             ))}
           </tbody>
         </table>
-        <button onClick={addItem} className="text-gold text-sm mb-6 print:hidden">
-          + Add service
-        </button>
+
+        {/* Search-or-add item picker, styled after the reference: type to filter your
+            preset services, or add a one-off item that isn't in the catalog. */}
+        <div
+          className="relative mb-6 print:hidden"
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) setItemPickerOpen(false);
+          }}
+        >
+          <input
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+            placeholder="Search or add a new item"
+            value={itemQuery}
+            onFocus={() => setItemPickerOpen(true)}
+            onChange={(e) => {
+              setItemQuery(e.target.value);
+              setItemPickerOpen(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter") return;
+              e.preventDefault();
+              if (filteredCatalog.length > 0) addItemFromCatalog(filteredCatalog[0]);
+              else addBlankItem();
+            }}
+          />
+          {itemPickerOpen && (
+            <div className="absolute z-10 mt-1 w-full bg-white border border-charcoal/10 rounded-md shadow-lg max-h-64 overflow-y-auto text-sm">
+              <button
+                type="button"
+                onClick={addBlankItem}
+                className="w-full text-left px-3 py-2 flex items-center gap-2 text-gold hover:bg-ivory"
+              >
+                <span>+</span>
+                <span>New item{itemQuery.trim() && `: "${itemQuery.trim()}"`}</span>
+              </button>
+              {filteredCatalog.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => addItemFromCatalog(c)}
+                  className="w-full text-left px-3 py-2 hover:bg-ivory flex items-center justify-between"
+                >
+                  <span>{c.name}</span>
+                  <span className="text-charcoal/50">${Number(c.default_rate).toFixed(2)}</span>
+                </button>
+              ))}
+              {filteredCatalog.length === 0 && catalog.length > 0 && (
+                <p className="px-3 py-2 text-charcoal/40 text-xs">No matching preset services</p>
+              )}
+            </div>
+          )}
+        </div>
         {catalog.length === 0 && (
           <p className="text-xs text-charcoal/50 -mt-4 mb-6 print:hidden">
             No preset services yet —{" "}
             <Link href="/inquiry-settings?tab=invoice" className="text-gold hover:underline">
               add your service list
             </Link>{" "}
-            to get the quick qty-based dropdown here.
+            so they show up here.
           </p>
         )}
 
         {/* Tip */}
-        <div className="mb-6 flex flex-wrap items-center gap-2 text-sm print:hidden">
-          <span className="text-charcoal/60">Tip / gratuity</span>
-          <select
-            className="border border-charcoal/20 rounded-md px-2 py-1"
-            value={settings.tip_type}
-            onChange={(e) => setSettings({ ...settings, tip_type: e.target.value as InvoiceSettings["tip_type"] })}
+        <div className="mb-8 print:hidden">
+          <p className="text-sm text-charcoal/60 mb-2">Leave a tip</p>
+          <div className="grid grid-cols-2 gap-2 max-w-sm">
+            <button
+              type="button"
+              onClick={() => setSettings({ ...settings, tip_type: "none" })}
+              className={`${tipCardClass(settings.tip_type === "none")} flex flex-col gap-0.5`}
+            >
+              <span className="font-medium">No tip</span>
+              <span className="text-charcoal/50 text-xs">$0.00</span>
+            </button>
+            {[10, 15, 20].map((pct) => (
+              <button
+                key={pct}
+                type="button"
+                onClick={() => setSettings({ ...settings, tip_type: "percent", tip_percent: pct })}
+                className={`${tipCardClass(settings.tip_type === "percent" && settings.tip_percent === pct)} flex flex-col gap-0.5`}
+              >
+                <span className="font-medium">{pct}%</span>
+                <span className="text-charcoal/50 text-xs">${round2((subtotal * pct) / 100).toFixed(2)}</span>
+              </button>
+            ))}
+          </div>
+          <div
+            onClick={() => setSettings({ ...settings, tip_type: "custom" })}
+            className={`${tipCardClass(settings.tip_type === "custom")} max-w-sm w-full mt-2 flex flex-row items-center justify-between cursor-pointer`}
           >
-            <option value="none">None</option>
-            <option value="percent">Percent of subtotal</option>
-            <option value="custom">Custom amount</option>
-          </select>
-          {settings.tip_type === "percent" && (
-            <div className="flex items-center gap-1">
-              <input
-                type="number"
-                min="0"
-                className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right"
-                value={settings.tip_percent}
-                onChange={(e) => setSettings({ ...settings, tip_percent: Number(e.target.value) })}
-              />
-              <span>%</span>
-            </div>
-          )}
-          {settings.tip_type === "custom" && (
-            <div className="flex items-center gap-1">
-              <span>$</span>
+            <span className="font-medium">Custom tip</span>
+            {settings.tip_type === "custom" ? (
               <input
                 type="number"
                 min="0"
                 step="0.01"
-                className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right"
+                autoFocus
+                className="border border-charcoal/20 rounded-md px-2 py-1 w-28 text-right"
                 value={settings.tip_amount}
+                onClick={(e) => e.stopPropagation()}
                 onChange={(e) => setSettings({ ...settings, tip_amount: Number(e.target.value) })}
               />
-            </div>
-          )}
+            ) : (
+              <span className="text-charcoal/40 text-xs">Enter amount</span>
+            )}
+          </div>
         </div>
 
         {/* Summary */}

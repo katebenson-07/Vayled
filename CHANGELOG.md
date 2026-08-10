@@ -2,6 +2,11 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-10 (5)
+
+- **Invoice item picker redesigned** — instead of a dropdown on every row, there's now one "Search or add a new item" box below the table: type to filter your preset services (from Settings → Invoice), click one to add it as a line, or click "+ New item" to add a one-off item that isn't in your catalog. Once added, a row's description/qty/rate are just plain editable fields, matching how invoicing tools like Bloom handle it.
+- **Tip section redesigned as tap cards** — "Leave a tip" now shows No tip / 10% / 15% / 20% as selectable cards with the live dollar amount under each (based on the current subtotal), plus a Custom tip card that reveals a dollar-amount field when selected.
+
 ## 2026-08-10 (4)
 
 - **Preset services moved into Settings** — the service catalog (add/edit/remove your services and default rates) now lives under Settings → **Invoice** tab, instead of its own sidebar page. Same add/edit/remove functionality, seeded automatically with common bridal services on first visit. The invoice page's "Manage services" link now opens Settings directly on that tab (`/inquiry-settings?tab=invoice`).
