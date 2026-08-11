@@ -75,8 +75,8 @@ function BookingDetail() {
   const [newVendorRole, setNewVendorRole] = useState(VENDOR_ROLES[0]);
   const [newVendorName, setNewVendorName] = useState("");
   const [newVendorContact, setNewVendorContact] = useState("");
-  const [bridesmaidCount, setBridesmaidCount] = useState("1");
   const [quickAssignCounts, setQuickAssignCounts] = useState<Record<string, string>>({});
+  const [draggedMemberId, setDraggedMemberId] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
 
@@ -221,28 +221,6 @@ function BookingDetail() {
     if (!error) setMembers(members.filter((m) => m.id !== memberId));
   }
 
-  /** Quickly seed N placeholder bridesmaids (Bridesmaid 1, 2, 3...) so the timeline
-   *  can be built before every name is known — rename them in place later. */
-  async function addBridesmaids(count: number) {
-    if (!count || count <= 0) return;
-    const { data: userData } = await supabase.auth.getUser();
-    const stylist_id = userData.user?.id;
-    const alreadyNumbered = members.filter((m) => /^Bridesmaid \d+$/.test(m.name)).length;
-    const rows = Array.from({ length: count }, (_, i) => ({
-      booking_id: id,
-      stylist_id,
-      name: `Bridesmaid ${alreadyNumbered + i + 1}`,
-      role: "bridesmaid",
-      hair: true,
-      makeup: true,
-      prep_minutes: 45,
-      price: 0,
-      order_index: members.length + i,
-    }));
-    const { data, error } = await supabase.from("party_members").insert(rows).select();
-    if (!error && data) setMembers([...members, ...(data as PartyMember[])]);
-  }
-
   /** Instead of assigning each wedding party member one at a time, enter how many
    *  people each stylist on the job is doing. Fills from anyone not yet assigned
    *  first, then adds placeholder bridesmaids for any shortfall, and jumps to the
@@ -303,6 +281,52 @@ function BookingDetail() {
     });
     setQuickAssignCounts({});
     setActiveTab("timeline");
+  }
+
+  /** Drag-and-drop on the Timeline tab: move a person onto another stylist's
+   *  schedule (or back to Unassigned), optionally dropping them right before
+   *  a specific person to reorder within that schedule. Renumbers order_index
+   *  across the whole party so relative order within each stylist's group
+   *  stays correct. */
+  async function reorderAndAssign(
+    draggedId: string | null,
+    targetStylistId: string | null,
+    beforeMemberId: string | null
+  ) {
+    if (!draggedId || draggedId === beforeMemberId) {
+      setDraggedMemberId(null);
+      return;
+    }
+    const current = [...members].sort((a, b) => a.order_index - b.order_index);
+    const draggedIdx = current.findIndex((m) => m.id === draggedId);
+    if (draggedIdx === -1) {
+      setDraggedMemberId(null);
+      return;
+    }
+    const [dragged] = current.splice(draggedIdx, 1);
+    let insertAt = current.length;
+    if (beforeMemberId) {
+      const targetIdx = current.findIndex((m) => m.id === beforeMemberId);
+      if (targetIdx !== -1) insertAt = targetIdx;
+    }
+    const reassigned = dragged.assigned_stylist_id !== targetStylistId;
+    dragged.assigned_stylist_id = targetStylistId;
+    current.splice(insertAt, 0, dragged);
+
+    const next = current.map((m, i) => ({ ...m, order_index: i }));
+    setMembers(next);
+    setDraggedMemberId(null);
+
+    await Promise.all(
+      next
+        .filter((m, i) => m.order_index !== members.find((orig) => orig.id === m.id)?.order_index || (m.id === draggedId && reassigned))
+        .map((m) =>
+          supabase
+            .from("party_members")
+            .update({ order_index: m.order_index, ...(m.id === draggedId ? { assigned_stylist_id: targetStylistId } : {}) })
+            .eq("id", m.id)
+        )
+    );
   }
 
   async function addPayment() {
@@ -764,33 +788,19 @@ function BookingDetail() {
             <section className="bg-white border border-charcoal/10 rounded-xl p-5">
               <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
                 <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Wedding party</h2>
-                <div className="flex items-center gap-3 text-sm">
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      min="1"
-                      className="border border-charcoal/20 rounded-md px-2 py-1 w-14"
-                      value={bridesmaidCount}
-                      onChange={(e) => setBridesmaidCount(e.target.value)}
-                    />
-                    <button
-                      onClick={() => addBridesmaids(parseInt(bridesmaidCount, 10) || 0)}
-                      className="text-gold hover:underline"
-                    >
-                      + Add bridesmaids
-                    </button>
-                  </div>
-                  <button onClick={addMember} className="text-gold hover:underline">
-                    + Add one
-                  </button>
-                </div>
+                {members.length > 0 && (
+                  <span className="text-xs text-charcoal/50">
+                    {members.length} added
+                    {members.some((m) => !m.assigned_stylist_id) ? " · some unassigned" : ""}
+                  </span>
+                )}
               </div>
-              <p className="text-xs text-charcoal/50 mb-4">
-                Not sure of names yet? Add a few placeholder bridesmaids to block out the timeline, then rename them
-                below whenever you find out.
-              </p>
-              {jobStylists.length > 0 && (
-                <div className="bg-ivory rounded-lg p-3 mb-4">
+              {jobStylists.length === 0 ? (
+                <p className="text-charcoal/60 text-sm mt-3">
+                  Assign stylists to this job below, then come back here to quick-assign how many people each is doing.
+                </p>
+              ) : (
+                <div className="bg-ivory rounded-lg p-3 mt-3">
                   <div className="flex flex-wrap items-end gap-3 text-xs">
                     <span className="text-charcoal/50 uppercase tracking-wide">Quick assign</span>
                     {jobStylists.map((s) => (
@@ -815,109 +825,11 @@ function BookingDetail() {
                   </div>
                   <p className="text-xs text-charcoal/50 mt-2">
                     Enter how many people each stylist is doing. Fills anyone not yet assigned first, adds placeholder
-                    bridesmaids for the rest, then jumps to the timeline.
+                    bridesmaids for the rest, then jumps to the timeline — where you can rename, adjust, or drag anyone
+                    to a different stylist.
                   </p>
                 </div>
               )}
-              {members.length === 0 ? (
-                <p className="text-charcoal/60 text-sm">No one added yet.</p>
-              ) : (
-                <div className="space-y-2.5">
-                  {members.map((m) => (
-                    <div key={m.id} className="border-b border-charcoal/10 pb-2.5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-beige text-charcoal text-xs font-medium flex items-center justify-center shrink-0">
-                          {initials(m.name)}
-                        </div>
-                        <input
-                          className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[100px]"
-                          value={m.name}
-                          onChange={(e) => updateMember(m.id, { name: e.target.value })}
-                        />
-                        <select
-                          className="border border-charcoal/20 rounded-md px-2 py-1 text-sm text-charcoal/70"
-                          value={m.role}
-                          onChange={(e) => updateMember(m.id, { role: e.target.value })}
-                        >
-                          <option value="bride">Bride</option>
-                          <option value="bridesmaid">Bridesmaid</option>
-                          <option value="mother">Mother</option>
-                          <option value="other">Other</option>
-                        </select>
-                        <button onClick={() => removeMember(m.id)} className="text-red-600 text-xs shrink-0">
-                          Remove
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-4 mt-2 pl-11 text-xs text-charcoal/60">
-                        <label className="flex items-center gap-1.5">
-                          <input
-                            type="checkbox"
-                            checked={m.hair}
-                            onChange={(e) => updateMember(m.id, { hair: e.target.checked })}
-                          />
-                          Hair
-                        </label>
-                        <label className="flex items-center gap-1.5">
-                          <input
-                            type="checkbox"
-                            checked={m.makeup}
-                            onChange={(e) => updateMember(m.id, { makeup: e.target.checked })}
-                          />
-                          Makeup
-                        </label>
-                        <div className="flex items-center gap-1.5">
-                          <input
-                            type="number"
-                            className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-xs w-14"
-                            value={m.prep_minutes}
-                            onChange={(e) => updateMember(m.id, { prep_minutes: parseInt(e.target.value) || 0 })}
-                          />
-                          <span>min prep</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 ml-auto">
-                          <span>Stylist</span>
-                          <select
-                            className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-xs"
-                            value={m.assigned_stylist_id ?? ""}
-                            onChange={(e) => updateMember(m.id, { assigned_stylist_id: e.target.value || null })}
-                            disabled={jobStylists.length === 0}
-                          >
-                            <option value="">Unassigned</option>
-                            {jobStylists.map((s) => (
-                              <option key={s.id} value={s.id}>
-                                {s.name} ({roleForStylist(s.id) === "lead" ? "Lead" : "Assist"})
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {members.length > 0 && jobStylists.length === 0 && (
-                <p className="text-xs text-charcoal/50 mt-2">
-                  Assign stylists to this job below to split the party between them and get separate timelines for each.
-                </p>
-              )}
-              {members.length > 0 && (
-                <div className="text-sm pt-3 mt-1 text-charcoal/60">Total chair time: {chairMinutes} min</div>
-              )}
-              <div className="flex justify-between items-center pt-4 mt-4 border-t border-charcoal/10">
-                <p className="text-xs text-charcoal/50">
-                  Pricing now lives on the{" "}
-                  <Link href={`/invoices/${id}`} className="text-gold hover:underline">
-                    invoice
-                  </Link>
-                  .
-                </p>
-                <button
-                  onClick={() => setActiveTab("timeline")}
-                  className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm uppercase text-xs tracking-wide"
-                >
-                  Build timeline
-                </button>
-              </div>
             </section>
 
             <section className="bg-white border border-charcoal/10 rounded-xl p-5">
@@ -1140,16 +1052,27 @@ function BookingDetail() {
         <section className="bg-white border border-charcoal/10 rounded-xl p-5">
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
             <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Wedding-day timeline</h2>
-            {jobStylists.length > 1 && (
-              <span className="text-xs text-charcoal/50">
-                Split across {jobStylists.length} stylists — each has their own schedule below.
-              </span>
-            )}
+            <div className="flex items-center gap-3">
+              {jobStylists.length > 1 && (
+                <span className="text-xs text-charcoal/50">
+                  Split across {jobStylists.length} stylists — drag anyone to move them.
+                </span>
+              )}
+              <button onClick={addMember} className="text-gold text-xs hover:underline">
+                + Add person
+              </button>
+            </div>
           </div>
           {!booking.ready_by_time ? (
             <p className="text-charcoal/60 text-sm">Set a ready-by time above to generate the timeline.</p>
           ) : stylistTimelines.length === 0 ? (
-            <p className="text-charcoal/60 text-sm">Add wedding party members to generate the timeline.</p>
+            <p className="text-charcoal/60 text-sm">
+              No one added yet — use Quick assign on the Wedding party section, or{" "}
+              <button onClick={addMember} className="text-gold hover:underline">
+                add a person
+              </button>{" "}
+              here.
+            </p>
           ) : (
             <div className="space-y-6 text-sm">
               <div className="grid grid-cols-3 gap-3 text-center mb-2">
@@ -1212,30 +1135,92 @@ function BookingDetail() {
                     </div>
                     {st.stylistId === null && (
                       <p className="text-xs text-red-700/80 px-4 pt-2">
-                        Assign a stylist to these people in Wedding party to split them onto their own timeline.
+                        Drag these onto a stylist above to split them onto that stylist's own timeline.
                       </p>
                     )}
-                    <div className="p-4 space-y-2">
-                      {st.entries.map((entry, i) => (
-                        <div key={entry.member.id} className="flex items-center gap-3 border-b border-charcoal/10 pb-2 last:border-b-0 last:pb-0">
-                          <span
-                            className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-                            style={{
-                              backgroundColor: ["#33181C", "#6F5F4D", "#DDD9C9", "#33181C"][i % 4],
-                            }}
-                          />
-                          <span className="flex-1 text-sm">
-                            {entry.member.name} <span className="text-charcoal/60">({entry.member.role})</span>
-                          </span>
-                          <span className="text-charcoal/60 text-sm whitespace-nowrap">
-                            {format(entry.start, "h:mm a")} – {format(entry.end, "h:mm a")}
-                          </span>
+                    <div
+                      className="p-4 space-y-2 min-h-[3rem]"
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        reorderAndAssign(draggedMemberId, st.stylistId, null);
+                      }}
+                    >
+                      {st.entries.length === 0 && (
+                        <p className="text-xs text-charcoal/40 text-center py-2">Drop someone here</p>
+                      )}
+                      {st.entries.map((entry) => (
+                        <div
+                          key={entry.member.id}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            reorderAndAssign(draggedMemberId, st.stylistId, entry.member.id);
+                          }}
+                          className="border-b border-charcoal/10 pb-2 last:border-b-0 last:pb-0"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span
+                              draggable
+                              onDragStart={() => setDraggedMemberId(entry.member.id)}
+                              onDragEnd={() => setDraggedMemberId(null)}
+                              className="text-charcoal/30 select-none cursor-grab active:cursor-grabbing"
+                              title="Drag to move"
+                            >
+                              ⠿
+                            </span>
+                            <input
+                              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-0"
+                              value={entry.member.name}
+                              onChange={(e) => updateMember(entry.member.id, { name: e.target.value })}
+                            />
+                            <span className="text-charcoal/60 text-xs whitespace-nowrap">
+                              {format(entry.start, "h:mm a")}–{format(entry.end, "h:mm a")}
+                            </span>
+                            <button
+                              onClick={() => removeMember(entry.member.id)}
+                              className="text-red-600 text-xs shrink-0"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-3 mt-1.5 pl-5 text-xs text-charcoal/60">
+                            <label className="flex items-center gap-1">
+                              <input
+                                type="checkbox"
+                                checked={entry.member.hair}
+                                onChange={(e) => updateMember(entry.member.id, { hair: e.target.checked })}
+                              />
+                              Hair
+                            </label>
+                            <label className="flex items-center gap-1">
+                              <input
+                                type="checkbox"
+                                checked={entry.member.makeup}
+                                onChange={(e) => updateMember(entry.member.id, { makeup: e.target.checked })}
+                              />
+                              Makeup
+                            </label>
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="number"
+                                className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-xs w-12"
+                                value={entry.member.prep_minutes}
+                                onChange={(e) =>
+                                  updateMember(entry.member.id, { prep_minutes: parseInt(e.target.value) || 0 })
+                                }
+                              />
+                              <span>min</span>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 ))}
               </div>
+              <p className="text-charcoal/50 text-xs">Total chair time: {chairMinutes} min across {members.length} people.</p>
 
               <p className="text-charcoal/60 pt-2 border-t border-charcoal/10">
                 Everyone ready by {format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}

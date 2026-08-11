@@ -2,6 +2,12 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (10)
+
+- **Wedding party is now just Quick assign** — the per-person list (name, role, hair/makeup, prep time, stylist dropdown) is gone from the Overview tab. All of that editing moved to the Timeline tab instead, right next to the schedule it actually affects.
+- **Timeline tab is fully editable** — each person's card now has an editable name, Hair/Makeup checkboxes, and a prep-time field, plus a Remove button, right there on their timeline entry. There's also a "+ Add person" button for anyone Quick assign doesn't cover.
+- **Drag to reassign** — grab the ⠿ handle on anyone's timeline card and drop them onto a different stylist's schedule (or back to Unassigned) to move them, or drop them next to someone else in the same schedule to reorder. The schedule recalculates instantly. No schema change — this uses the existing `assigned_stylist_id` and `order_index` columns.
+
 ## 2026-08-11 (9)
 
 - **Removed the Wedding details box** — replaced with a small bar right above the tabs with just Status and Ready-by time, since those are the two things you actually touch day to day. Contract total and deposit amount are dropped from this page (they're already editable from Contract details and auto-sync from the Invoice, so this was duplicate entry). Buffer between people and Ceremony time moved to the Timeline tab, right where they're used. The "Deposit paid" checkbox is gone too — the pipeline and milestone tracker now mark the deposit paid automatically once a real deposit payment is recorded (via the invoice's "Mark paid" or a manual payment), instead of needing a separate manual toggle.
