@@ -72,12 +72,6 @@ create table if not exists party_members (
 
 alter table party_members add column if not exists price numeric not null default 0;
 
--- Which team member is actually doing this person's hair/makeup. Nullable —
--- unassigned members still show up on the timeline under "Unassigned" until
--- someone claims them. Set null (not cascaded) if the stylist is removed, so
--- the party member itself is never deleted as a side effect.
-alter table party_members add column if not exists assigned_stylist_id uuid references stylists(id) on delete set null;
-
 create table if not exists payments (
   id uuid primary key default uuid_generate_v4(),
   stylist_id uuid not null references auth.users(id) on delete cascade,
@@ -125,6 +119,14 @@ create table if not exists stylists (
 -- figuring out what to pay them after a wedding.
 alter table stylists add column if not exists is_1099 boolean not null default true;
 alter table stylists add column if not exists pay_percentage numeric not null default 0;
+
+-- Which team member is actually doing this person's hair/makeup. Nullable —
+-- unassigned members still show up on the timeline under "Unassigned" until
+-- someone claims them. Set null (not cascaded) if the stylist is removed, so
+-- the party member itself is never deleted as a side effect. Lives here
+-- (after stylists exists) rather than next to the rest of party_members'
+-- columns above, since it references this table.
+alter table party_members add column if not exists assigned_stylist_id uuid references stylists(id) on delete set null;
 
 create table if not exists stylist_time_off (
   id uuid primary key default uuid_generate_v4(),
