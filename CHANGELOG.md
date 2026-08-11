@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (2)
+
+- **Multiple stylists on one job, each with their own timeline** — the Wedding party section now has a "Stylist" dropdown per person (populated from whoever's assigned to that job under "Stylists on this job"), so you can split the party between however many people are working it. The Timeline tab now builds a separate, parallel schedule for each stylist instead of one long sequential list — each section shows that stylist's own start time and person-by-person schedule, all working backward from the same ready-by time. Anyone not yet assigned to a stylist shows up under "Unassigned" so nothing gets missed. The bride-facing portal still shows one combined schedule, since that's what she needs to see. **Requires re-running `supabase/schema.sql`** — adds `party_members.assigned_stylist_id`.
+
 ## 2026-08-11
 
 - **1099 contractor tracking on the Stylists page** — each person on your team now has a "1099" flag (on by default, since that's most of your team) and a pay % — their cut of a job's contract total. Editing the % saves instantly, same as the other quick-edit fields. This builds on what was already there rather than duplicating it: you already assign people to jobs from each booking's "Stylists on this job" section, and that assignment already shows up on the calendar — now that section also shows each assigned contractor's cut in dollars for that specific job (e.g. "40% · $320.00 on this job"), so you can see at a glance what everyone's owed. **Requires re-running `supabase/schema.sql`** — adds `is_1099` and `pay_percentage` columns to `stylists`.

@@ -114,6 +114,8 @@ export interface PartyMember {
   prep_minutes: number;
   price: number;
   order_index: number;
+  /** Which team member (from `stylists`) is doing this person's hair/makeup — null until assigned. */
+  assigned_stylist_id: string | null;
 }
 
 export interface Payment {

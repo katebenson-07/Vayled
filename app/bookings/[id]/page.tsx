@@ -361,6 +361,7 @@ function BookingDetail() {
   if (!booking) return <p className="text-charcoal/60">Booking not found.</p>;
 
   const assignedIds = new Set(assignedStylists.map((a) => a.stylist_id));
+  const jobStylists = allStylists.filter((s) => assignedIds.has(s.id));
   const conflictMap = new Map(conflicts.map((c) => [c.stylist_id, c.bride_name]));
 
   const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
@@ -368,11 +369,37 @@ function BookingDetail() {
 
   const chairMinutes = members.reduce((sum, m) => sum + Number(m.prep_minutes || 0), 0);
 
-  let timeline: ReturnType<typeof computeTimeline> = [];
+  type StylistTimeline = {
+    stylistId: string | null;
+    stylistName: string;
+    entries: ReturnType<typeof computeTimeline>;
+  };
+
+  let stylistTimelines: StylistTimeline[] = [];
   if (booking.ready_by_time && client?.wedding_date && members.length > 0) {
     const readyBy = new Date(`${client.wedding_date}T${booking.ready_by_time}`);
     if (!isNaN(readyBy.getTime())) {
-      timeline = computeTimeline(readyBy, members, booking.buffer_minutes ?? 10);
+      const buffer = booking.buffer_minutes ?? 10;
+      const groups = new Map<string, PartyMember[]>();
+      for (const m of members) {
+        const key = m.assigned_stylist_id ?? "unassigned";
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key)!.push(m);
+      }
+      stylistTimelines = Array.from(groups.entries())
+        .map(([key, groupMembers]) => {
+          const stylist = key === "unassigned" ? null : allStylists.find((s) => s.id === key) ?? null;
+          return {
+            stylistId: stylist?.id ?? null,
+            stylistName: stylist ? stylist.name : "Unassigned",
+            entries: computeTimeline(readyBy, groupMembers, buffer),
+          };
+        })
+        .sort((a, b) => {
+          if (a.stylistId === null) return 1;
+          if (b.stylistId === null) return -1;
+          return a.stylistName.localeCompare(b.stylistName);
+        });
     }
   }
 
@@ -744,12 +771,30 @@ function BookingDetail() {
                         onChange={(e) => updateMember(m.id, { prep_minutes: parseInt(e.target.value) || 0 })}
                       />
                       <span className="text-charcoal/60 text-sm">min</span>
+                      <select
+                        className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
+                        value={m.assigned_stylist_id ?? ""}
+                        onChange={(e) => updateMember(m.id, { assigned_stylist_id: e.target.value || null })}
+                        disabled={jobStylists.length === 0}
+                      >
+                        <option value="">Unassigned</option>
+                        {jobStylists.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
                       <button onClick={() => removeMember(m.id)} className="text-red-600 text-sm ml-auto">
                         Remove
                       </button>
                     </div>
                   ))}
                 </div>
+              )}
+              {members.length > 0 && jobStylists.length === 0 && (
+                <p className="text-xs text-charcoal/50 mt-2">
+                  Assign stylists to this job below to split the party between them and get separate timelines for each.
+                </p>
               )}
               {members.length > 0 && (
                 <div className="text-sm pt-3 mt-1 text-charcoal/60">Total chair time: {chairMinutes} min</div>
@@ -1005,18 +1050,21 @@ function BookingDetail() {
 
       {activeTab === "timeline" && (
         <section className="bg-white border border-charcoal/10 rounded-xl p-6">
-          <h2 className="font-serif text-lg mb-4">Wedding-day timeline</h2>
+          <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
+            <h2 className="font-serif text-lg">Wedding-day timeline</h2>
+            {jobStylists.length > 1 && (
+              <span className="text-xs text-charcoal/50">
+                Split across {jobStylists.length} stylists — each has their own schedule below.
+              </span>
+            )}
+          </div>
           {!booking.ready_by_time ? (
             <p className="text-charcoal/60 text-sm">Set a ready-by time above to generate the timeline.</p>
-          ) : timeline.length === 0 ? (
+          ) : stylistTimelines.length === 0 ? (
             <p className="text-charcoal/60 text-sm">Add wedding party members to generate the timeline.</p>
           ) : (
-            <div className="space-y-2 text-sm">
-              <div className="grid grid-cols-3 gap-3 text-center mb-4">
-                <div className="bg-ivory rounded-lg p-3">
-                  <p className="text-xs text-charcoal/60">Start</p>
-                  <p className="font-medium">{format(timeline[0].start, "h:mm a")}</p>
-                </div>
+            <div className="space-y-6 text-sm">
+              <div className="grid grid-cols-2 gap-3 text-center mb-2">
                 <div className="bg-ivory rounded-lg p-3">
                   <p className="text-xs text-charcoal/60">Ready by</p>
                   <p className="font-medium">
@@ -1024,31 +1072,51 @@ function BookingDetail() {
                   </p>
                 </div>
                 <div className="bg-ivory rounded-lg p-3">
-                  <p className="text-xs text-charcoal/60">Buffer</p>
+                  <p className="text-xs text-charcoal/60">Buffer between people</p>
                   <p className="font-medium">{booking.buffer_minutes ?? 10} min</p>
                 </div>
               </div>
-              {timeline.map((entry, i) => (
-                <div
-                  key={entry.member.id}
-                  className="flex items-center gap-3 border-b border-charcoal/10 pb-2"
-                >
-                  <span
-                    className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{
-                      backgroundColor: ["#33181C", "#6F5F4D", "#DDD9C9", "#33181C"][i % 4],
-                    }}
-                  />
-                  <span className="flex-1">
-                    {entry.member.name} <span className="text-charcoal/60">({entry.member.role})</span>
-                  </span>
-                  <span className="text-charcoal/60">
-                    {format(entry.start, "h:mm a")} – {format(entry.end, "h:mm a")}
-                  </span>
+
+              {stylistTimelines.map((st) => (
+                <div key={st.stylistId ?? "unassigned"}>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-serif text-base">
+                      {st.stylistName}
+                      {st.stylistId === null && (
+                        <span className="text-charcoal/50 text-xs font-sans ml-2">
+                          assign a stylist in Wedding party to split this off
+                        </span>
+                      )}
+                    </p>
+                    {st.entries.length > 0 && (
+                      <span className="text-charcoal/60 text-xs">
+                        Starts {format(st.entries[0].start, "h:mm a")}
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    {st.entries.map((entry, i) => (
+                      <div key={entry.member.id} className="flex items-center gap-3 border-b border-charcoal/10 pb-2">
+                        <span
+                          className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{
+                            backgroundColor: ["#33181C", "#6F5F4D", "#DDD9C9", "#33181C"][i % 4],
+                          }}
+                        />
+                        <span className="flex-1">
+                          {entry.member.name} <span className="text-charcoal/60">({entry.member.role})</span>
+                        </span>
+                        <span className="text-charcoal/60">
+                          {format(entry.start, "h:mm a")} – {format(entry.end, "h:mm a")}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
-              <p className="text-charcoal/60 pt-2">
-                Ready by {format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}
+
+              <p className="text-charcoal/60 pt-2 border-t border-charcoal/10">
+                Everyone ready by {format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}
                 {booking.ceremony_time ? ` · Ceremony ${format(new Date(`${client?.wedding_date}T${booking.ceremony_time}`), "h:mm a")}` : ""}
               </p>
             </div>
