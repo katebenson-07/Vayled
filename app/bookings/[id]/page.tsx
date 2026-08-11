@@ -77,6 +77,7 @@ function BookingDetail() {
   const [newVendorContact, setNewVendorContact] = useState("");
   const [quickAssignCounts, setQuickAssignCounts] = useState<Record<string, string>>({});
   const [draggedMemberId, setDraggedMemberId] = useState<string | null>(null);
+  const [timelineMode, setTimelineMode] = useState<"view" | "edit">("view");
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
 
@@ -1053,25 +1054,40 @@ function BookingDetail() {
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
             <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Wedding-day timeline</h2>
             <div className="flex items-center gap-3">
-              {jobStylists.length > 1 && (
+              {timelineMode === "edit" && jobStylists.length > 1 && (
                 <span className="text-xs text-charcoal/50">
                   Split across {jobStylists.length} stylists — drag anyone to move them.
                 </span>
               )}
-              <button onClick={addMember} className="text-gold text-xs hover:underline">
-                + Add person
-              </button>
+              {timelineMode === "edit" && (
+                <button onClick={addMember} className="text-gold text-xs hover:underline">
+                  + Add person
+                </button>
+              )}
+              <div className="flex gap-1 bg-beige/40 rounded-lg p-1">
+                {(["view", "edit"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setTimelineMode(m)}
+                    className={`px-3 py-1 rounded-md text-xs capitalize ${
+                      timelineMode === m ? "bg-charcoal text-ivory" : "text-charcoal/60"
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           {!booking.ready_by_time ? (
             <p className="text-charcoal/60 text-sm">Set a ready-by time above to generate the timeline.</p>
           ) : stylistTimelines.length === 0 ? (
             <p className="text-charcoal/60 text-sm">
-              No one added yet — use Quick assign on the Wedding party section, or{" "}
-              <button onClick={addMember} className="text-gold hover:underline">
-                add a person
+              No one added yet — use Quick assign on the Wedding party section, or switch to{" "}
+              <button onClick={() => setTimelineMode("edit")} className="text-gold hover:underline">
+                Edit
               </button>{" "}
-              here.
+              to add a person here.
             </p>
           ) : (
             <div className="space-y-6 text-sm">
@@ -1133,90 +1149,114 @@ function BookingDetail() {
                         </span>
                       )}
                     </div>
-                    {st.stylistId === null && (
+                    {st.stylistId === null && timelineMode === "edit" && (
                       <p className="text-xs text-red-700/80 px-4 pt-2">
                         Drag these onto a stylist above to split them onto that stylist&apos;s own timeline.
                       </p>
                     )}
-                    <div
-                      className="p-4 space-y-2 min-h-[3rem]"
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        reorderAndAssign(draggedMemberId, st.stylistId, null);
-                      }}
-                    >
-                      {st.entries.length === 0 && (
-                        <p className="text-xs text-charcoal/40 text-center py-2">Drop someone here</p>
-                      )}
-                      {st.entries.map((entry) => (
-                        <div
-                          key={entry.member.id}
-                          onDragOver={(e) => e.preventDefault()}
-                          onDrop={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            reorderAndAssign(draggedMemberId, st.stylistId, entry.member.id);
-                          }}
-                          className="border-b border-charcoal/10 pb-2 last:border-b-0 last:pb-0"
-                        >
-                          <div className="flex items-center gap-2">
+                    {timelineMode === "view" ? (
+                      <div className="p-4 space-y-2">
+                        {st.entries.map((entry, i) => (
+                          <div
+                            key={entry.member.id}
+                            className="flex items-center gap-3 border-b border-charcoal/10 pb-2 last:border-b-0 last:pb-0"
+                          >
                             <span
-                              draggable
-                              onDragStart={() => setDraggedMemberId(entry.member.id)}
-                              onDragEnd={() => setDraggedMemberId(null)}
-                              className="text-charcoal/30 select-none cursor-grab active:cursor-grabbing"
-                              title="Drag to move"
-                            >
-                              ⠿
-                            </span>
-                            <input
-                              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-0"
-                              value={entry.member.name}
-                              onChange={(e) => updateMember(entry.member.id, { name: e.target.value })}
+                              className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                              style={{
+                                backgroundColor: ["#33181C", "#6F5F4D", "#DDD9C9", "#33181C"][i % 4],
+                              }}
                             />
-                            <span className="text-charcoal/60 text-xs whitespace-nowrap">
-                              {format(entry.start, "h:mm a")}–{format(entry.end, "h:mm a")}
+                            <span className="flex-1 text-sm">
+                              {entry.member.name} <span className="text-charcoal/60">({entry.member.role})</span>
                             </span>
-                            <button
-                              onClick={() => removeMember(entry.member.id)}
-                              className="text-red-600 text-xs shrink-0"
-                            >
-                              Remove
-                            </button>
+                            <span className="text-charcoal/60 text-sm whitespace-nowrap">
+                              {format(entry.start, "h:mm a")} – {format(entry.end, "h:mm a")}
+                            </span>
                           </div>
-                          <div className="flex flex-wrap items-center gap-3 mt-1.5 pl-5 text-xs text-charcoal/60">
-                            <label className="flex items-center gap-1">
+                        ))}
+                      </div>
+                    ) : (
+                      <div
+                        className="p-4 space-y-2 min-h-[3rem]"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          reorderAndAssign(draggedMemberId, st.stylistId, null);
+                        }}
+                      >
+                        {st.entries.length === 0 && (
+                          <p className="text-xs text-charcoal/40 text-center py-2">Drop someone here</p>
+                        )}
+                        {st.entries.map((entry) => (
+                          <div
+                            key={entry.member.id}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              reorderAndAssign(draggedMemberId, st.stylistId, entry.member.id);
+                            }}
+                            className="border-b border-charcoal/10 pb-2 last:border-b-0 last:pb-0"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span
+                                draggable
+                                onDragStart={() => setDraggedMemberId(entry.member.id)}
+                                onDragEnd={() => setDraggedMemberId(null)}
+                                className="text-charcoal/30 select-none cursor-grab active:cursor-grabbing"
+                                title="Drag to move"
+                              >
+                                ⠿
+                              </span>
                               <input
-                                type="checkbox"
-                                checked={entry.member.hair}
-                                onChange={(e) => updateMember(entry.member.id, { hair: e.target.checked })}
+                                className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-0"
+                                value={entry.member.name}
+                                onChange={(e) => updateMember(entry.member.id, { name: e.target.value })}
                               />
-                              Hair
-                            </label>
-                            <label className="flex items-center gap-1">
-                              <input
-                                type="checkbox"
-                                checked={entry.member.makeup}
-                                onChange={(e) => updateMember(entry.member.id, { makeup: e.target.checked })}
-                              />
-                              Makeup
-                            </label>
-                            <div className="flex items-center gap-1">
-                              <input
-                                type="number"
-                                className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-xs w-12"
-                                value={entry.member.prep_minutes}
-                                onChange={(e) =>
-                                  updateMember(entry.member.id, { prep_minutes: parseInt(e.target.value) || 0 })
-                                }
-                              />
-                              <span>min</span>
+                              <span className="text-charcoal/60 text-xs whitespace-nowrap">
+                                {format(entry.start, "h:mm a")}–{format(entry.end, "h:mm a")}
+                              </span>
+                              <button
+                                onClick={() => removeMember(entry.member.id)}
+                                className="text-red-600 text-xs shrink-0"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-3 mt-1.5 pl-5 text-xs text-charcoal/60">
+                              <label className="flex items-center gap-1">
+                                <input
+                                  type="checkbox"
+                                  checked={entry.member.hair}
+                                  onChange={(e) => updateMember(entry.member.id, { hair: e.target.checked })}
+                                />
+                                Hair
+                              </label>
+                              <label className="flex items-center gap-1">
+                                <input
+                                  type="checkbox"
+                                  checked={entry.member.makeup}
+                                  onChange={(e) => updateMember(entry.member.id, { makeup: e.target.checked })}
+                                />
+                                Makeup
+                              </label>
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="number"
+                                  className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-xs w-12"
+                                  value={entry.member.prep_minutes}
+                                  onChange={(e) =>
+                                    updateMember(entry.member.id, { prep_minutes: parseInt(e.target.value) || 0 })
+                                  }
+                                />
+                                <span>min</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

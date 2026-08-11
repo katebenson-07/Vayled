@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (12)
+
+- **Timeline tab has View / Edit modes** — View is back to the original clean look (colored dot, name, role, start–end time, read-only), and is now the default when you open the tab. Switch to Edit to get the editable/draggable version — rename, hair/makeup, prep time, remove, drag to reassign or reorder. Same data either way, just a toggle for which view you want.
+
 ## 2026-08-11 (11)
 
 - **Fixed the failed deploy** — the last push broke Vercel's build over an unescaped apostrophe in a Timeline tab hint ("stylist's" → `stylist&apos;s`), an ESLint rule that only runs during the actual production build, not the local typecheck. Also ran the full lint pass locally this time to make sure nothing else was hiding the same way.
