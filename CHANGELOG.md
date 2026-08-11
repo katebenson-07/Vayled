@@ -2,6 +2,14 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (8)
+
+- **Quick assign by headcount** — Wedding party now has a "Quick assign" box (once stylists are on the job): enter how many people each stylist is doing (e.g. Sullivan: 3, Trevor: 2) and hit Generate. It fills anyone not yet assigned first, adds placeholder bridesmaids for any shortfall, and jumps straight to the Timeline tab — no more setting each person's dropdown one at a time. No schema change.
+
+## 2026-08-11 (7)
+
+- **Tightened up the booking page** — reduced padding and spacing across every section, standardized section headers to one consistent style (was a mix of serif headings and small caps labels), and reworked the Wedding party rows into two tiers (name/role up top, hair/makeup/prep/stylist as a lighter secondary row below) instead of one long wrapping line of controls. Same information, same tabs — just less visual noise. No functional or schema change.
+
 ## 2026-08-11 (6)
 
 - **Lead vs. assisting stylist** — each stylist assigned to a job ("Stylists on this job") now has a Lead/Assist toggle instead of just being "Assigned." The first person you assign defaults to Lead, anyone added after defaults to Assist — flip either one anytime. That role now shows up everywhere the stylist does: the per-person dropdown in Wedding party ("Sullivan (Lead)"), each stylist's card on the Timeline tab, and next to each job on the Payroll page, with Lead cards/timelines listed first. **Requires re-running `supabase/schema.sql`** — adds `role` to `booking_stylists` (defaults to `'lead'`).

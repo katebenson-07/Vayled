@@ -75,6 +75,7 @@ function BookingDetail() {
   const [newVendorName, setNewVendorName] = useState("");
   const [newVendorContact, setNewVendorContact] = useState("");
   const [bridesmaidCount, setBridesmaidCount] = useState("1");
+  const [quickAssignCounts, setQuickAssignCounts] = useState<Record<string, string>>({});
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
 
@@ -239,6 +240,68 @@ function BookingDetail() {
     }));
     const { data, error } = await supabase.from("party_members").insert(rows).select();
     if (!error && data) setMembers([...members, ...(data as PartyMember[])]);
+  }
+
+  /** Instead of assigning each wedding party member one at a time, enter how many
+   *  people each stylist on the job is doing. Fills from anyone not yet assigned
+   *  first, then adds placeholder bridesmaids for any shortfall, and jumps to the
+   *  timeline once done. */
+  async function quickAssignByCount() {
+    const plan = jobStylists
+      .map((s) => ({ stylistId: s.id, count: parseInt(quickAssignCounts[s.id] || "0", 10) || 0 }))
+      .filter((p) => p.count > 0);
+    if (plan.length === 0) return;
+
+    const { data: userData } = await supabase.auth.getUser();
+    const stylist_id = userData.user?.id;
+
+    const unassigned = members.filter((m) => !m.assigned_stylist_id);
+    let poolIndex = 0;
+    const updates: { id: string; assigned_stylist_id: string }[] = [];
+    const newRows: Record<string, unknown>[] = [];
+    let placeholderNum = members.filter((m) => /^Bridesmaid \d+$/.test(m.name)).length;
+
+    for (const { stylistId, count } of plan) {
+      for (let i = 0; i < count; i++) {
+        if (poolIndex < unassigned.length) {
+          updates.push({ id: unassigned[poolIndex].id, assigned_stylist_id: stylistId });
+          poolIndex++;
+        } else {
+          placeholderNum++;
+          newRows.push({
+            booking_id: id,
+            stylist_id,
+            name: `Bridesmaid ${placeholderNum}`,
+            role: "bridesmaid",
+            hair: true,
+            makeup: true,
+            prep_minutes: 45,
+            price: 0,
+            order_index: members.length + newRows.length,
+            assigned_stylist_id: stylistId,
+          });
+        }
+      }
+    }
+
+    await Promise.all(
+      updates.map((u) => supabase.from("party_members").update({ assigned_stylist_id: u.assigned_stylist_id }).eq("id", u.id))
+    );
+    let insertedRows: PartyMember[] = [];
+    if (newRows.length > 0) {
+      const { data } = await supabase.from("party_members").insert(newRows).select();
+      insertedRows = (data as PartyMember[]) ?? [];
+    }
+
+    setMembers((prev) => {
+      const updated = prev.map((m) => {
+        const u = updates.find((x) => x.id === m.id);
+        return u ? { ...m, assigned_stylist_id: u.assigned_stylist_id } : m;
+      });
+      return [...updated, ...insertedRows];
+    });
+    setQuickAssignCounts({});
+    setActiveTab("timeline");
   }
 
   async function addPayment() {
@@ -478,7 +541,7 @@ function BookingDetail() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center justify-between gap-2 text-xs text-charcoal/50">
         <div className="flex items-center gap-1.5">
           <button onClick={() => router.back()} className="hover:text-charcoal flex items-center gap-1">
@@ -520,13 +583,13 @@ function BookingDetail() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2 text-sm">
-          <Link href={`/emails?booking=${id}`} className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white uppercase text-xs tracking-wide">
+          <Link href={`/emails?booking=${id}`} className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide">
             Message
           </Link>
-          <Link href={`/contracts/${id}`} className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white uppercase text-xs tracking-wide">
+          <Link href={`/contracts/${id}`} className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide">
             Contract{booking.contract_signed ? " ✓" : ""}
           </Link>
-          <Link href={`/invoices/${id}`} className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white uppercase text-xs tracking-wide">
+          <Link href={`/invoices/${id}`} className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide">
             Invoice
           </Link>
           {portalAvailable && (
@@ -535,13 +598,13 @@ function BookingDetail() {
                 href={`/portal/${id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white uppercase text-xs tracking-wide"
+                className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide"
               >
                 Bride portal
               </a>
               <button
                 onClick={copyPortalLink}
-                className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-white uppercase text-xs tracking-wide"
+                className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide"
               >
                 {linkCopied ? "Link copied ✓" : "Copy link"}
               </button>
@@ -563,7 +626,7 @@ function BookingDetail() {
           return (
             <div
               key={step}
-              className={`flex items-center gap-2 px-4 py-3 text-xs flex-1 min-w-[140px] border-r border-charcoal/10 last:border-r-0 ${
+              className={`flex items-center gap-2 px-3 py-2.5 text-xs flex-1 min-w-[140px] border-r border-charcoal/10 last:border-r-0 ${
                 current ? "bg-charcoal text-ivory" : ""
               }`}
             >
@@ -603,9 +666,9 @@ function BookingDetail() {
       </div>
 
       {activeTab === "overview" && (
-        <div className="grid lg:grid-cols-[1fr_360px] gap-6 items-start">
-          <div className="space-y-6">
-            <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <div className="grid lg:grid-cols-[1fr_340px] gap-5 items-start">
+          <div className="space-y-5">
+            <section className="bg-white border border-charcoal/10 rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Inspiration &amp; photos</h2>
                 <div className="flex items-center gap-3">
@@ -666,8 +729,8 @@ function BookingDetail() {
               )}
             </section>
 
-            <section className="bg-white border border-charcoal/10 rounded-xl p-6">
-              <h2 className="font-serif text-lg mb-4">Vendor team</h2>
+            <section className="bg-white border border-charcoal/10 rounded-xl p-5">
+              <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Vendor team</h2>
               <div className="flex flex-wrap gap-2 mb-4">
                 <select
                   className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
@@ -715,7 +778,7 @@ function BookingDetail() {
               )}
             </section>
 
-            <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+            <section className="bg-white border border-charcoal/10 rounded-xl p-5">
               <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
                 <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Wedding party</h2>
                 <div className="flex items-center gap-3 text-sm">
@@ -743,74 +806,108 @@ function BookingDetail() {
                 Not sure of names yet? Add a few placeholder bridesmaids to block out the timeline, then rename them
                 below whenever you find out.
               </p>
+              {jobStylists.length > 0 && (
+                <div className="bg-ivory rounded-lg p-3 mb-4">
+                  <div className="flex flex-wrap items-end gap-3 text-xs">
+                    <span className="text-charcoal/50 uppercase tracking-wide">Quick assign</span>
+                    {jobStylists.map((s) => (
+                      <div key={s.id} className="flex items-center gap-1.5">
+                        <span className="text-charcoal/70">{s.name}</span>
+                        <input
+                          type="number"
+                          min="0"
+                          className="border border-charcoal/20 rounded-md px-1.5 py-0.5 w-12 text-xs"
+                          placeholder="0"
+                          value={quickAssignCounts[s.id] ?? ""}
+                          onChange={(e) => setQuickAssignCounts({ ...quickAssignCounts, [s.id]: e.target.value })}
+                        />
+                      </div>
+                    ))}
+                    <button
+                      onClick={quickAssignByCount}
+                      className="bg-charcoal text-ivory rounded-md px-3 py-1 text-xs uppercase tracking-wide ml-auto"
+                    >
+                      Generate
+                    </button>
+                  </div>
+                  <p className="text-xs text-charcoal/50 mt-2">
+                    Enter how many people each stylist is doing. Fills anyone not yet assigned first, adds placeholder
+                    bridesmaids for the rest, then jumps to the timeline.
+                  </p>
+                </div>
+              )}
               {members.length === 0 ? (
                 <p className="text-charcoal/60 text-sm">No one added yet.</p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {members.map((m) => (
-                    <div key={m.id} className="flex flex-wrap items-center gap-3 border-b border-charcoal/10 pb-3">
-                      <div className="w-9 h-9 rounded-lg bg-beige text-charcoal text-xs font-medium flex items-center justify-center shrink-0">
-                        {initials(m.name)}
-                      </div>
-                      <input
-                        className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[100px]"
-                        value={m.name}
-                        onChange={(e) => updateMember(m.id, { name: e.target.value })}
-                      />
-                      <select
-                        className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
-                        value={m.role}
-                        onChange={(e) => updateMember(m.id, { role: e.target.value })}
-                      >
-                        <option value="bride">Bride</option>
-                        <option value="bridesmaid">Bridesmaid</option>
-                        <option value="mother">Mother</option>
-                        <option value="other">Other</option>
-                      </select>
-                      <label className="flex items-center gap-1 text-sm">
+                    <div key={m.id} className="border-b border-charcoal/10 pb-2.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-beige text-charcoal text-xs font-medium flex items-center justify-center shrink-0">
+                          {initials(m.name)}
+                        </div>
                         <input
-                          type="checkbox"
-                          checked={m.hair}
-                          onChange={(e) => updateMember(m.id, { hair: e.target.checked })}
+                          className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[100px]"
+                          value={m.name}
+                          onChange={(e) => updateMember(m.id, { name: e.target.value })}
                         />
-                        Hair
-                      </label>
-                      <label className="flex items-center gap-1 text-sm">
-                        <input
-                          type="checkbox"
-                          checked={m.makeup}
-                          onChange={(e) => updateMember(m.id, { makeup: e.target.checked })}
-                        />
-                        Makeup
-                      </label>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          className="border border-charcoal/20 rounded-md px-2 py-1 text-sm w-16"
-                          value={m.prep_minutes}
-                          onChange={(e) => updateMember(m.id, { prep_minutes: parseInt(e.target.value) || 0 })}
-                        />
-                        <span className="text-charcoal/60 text-sm">min</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-charcoal/60 text-sm">Stylist</span>
                         <select
-                          className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
-                          value={m.assigned_stylist_id ?? ""}
-                          onChange={(e) => updateMember(m.id, { assigned_stylist_id: e.target.value || null })}
-                          disabled={jobStylists.length === 0}
+                          className="border border-charcoal/20 rounded-md px-2 py-1 text-sm text-charcoal/70"
+                          value={m.role}
+                          onChange={(e) => updateMember(m.id, { role: e.target.value })}
                         >
-                          <option value="">Unassigned</option>
-                          {jobStylists.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.name} ({roleForStylist(s.id) === "lead" ? "Lead" : "Assist"})
-                            </option>
-                          ))}
+                          <option value="bride">Bride</option>
+                          <option value="bridesmaid">Bridesmaid</option>
+                          <option value="mother">Mother</option>
+                          <option value="other">Other</option>
                         </select>
+                        <button onClick={() => removeMember(m.id)} className="text-red-600 text-xs shrink-0">
+                          Remove
+                        </button>
                       </div>
-                      <button onClick={() => removeMember(m.id)} className="text-red-600 text-sm ml-auto">
-                        Remove
-                      </button>
+                      <div className="flex flex-wrap items-center gap-4 mt-2 pl-11 text-xs text-charcoal/60">
+                        <label className="flex items-center gap-1.5">
+                          <input
+                            type="checkbox"
+                            checked={m.hair}
+                            onChange={(e) => updateMember(m.id, { hair: e.target.checked })}
+                          />
+                          Hair
+                        </label>
+                        <label className="flex items-center gap-1.5">
+                          <input
+                            type="checkbox"
+                            checked={m.makeup}
+                            onChange={(e) => updateMember(m.id, { makeup: e.target.checked })}
+                          />
+                          Makeup
+                        </label>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="number"
+                            className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-xs w-14"
+                            value={m.prep_minutes}
+                            onChange={(e) => updateMember(m.id, { prep_minutes: parseInt(e.target.value) || 0 })}
+                          />
+                          <span>min prep</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 ml-auto">
+                          <span>Stylist</span>
+                          <select
+                            className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-xs"
+                            value={m.assigned_stylist_id ?? ""}
+                            onChange={(e) => updateMember(m.id, { assigned_stylist_id: e.target.value || null })}
+                            disabled={jobStylists.length === 0}
+                          >
+                            <option value="">Unassigned</option>
+                            {jobStylists.map((s) => (
+                              <option key={s.id} value={s.id}>
+                                {s.name} ({roleForStylist(s.id) === "lead" ? "Lead" : "Assist"})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -840,8 +937,8 @@ function BookingDetail() {
               </div>
             </section>
 
-            <section className="bg-white border border-charcoal/10 rounded-xl p-6">
-              <h2 className="font-serif text-lg mb-4">Stylists on this job</h2>
+            <section className="bg-white border border-charcoal/10 rounded-xl p-5">
+              <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Stylists on this job</h2>
               {!client?.wedding_date ? (
                 <p className="text-charcoal/60 text-sm">Set a wedding date on this client to see stylist availability.</p>
               ) : allStylists.length === 0 ? (
@@ -918,8 +1015,8 @@ function BookingDetail() {
             </section>
           </div>
 
-          <div className="space-y-6 lg:sticky lg:top-6">
-            <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+          <div className="space-y-5 lg:sticky lg:top-6">
+            <section className="bg-white border border-charcoal/10 rounded-xl p-5">
               <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Wedding details</h2>
               <div className="space-y-4 text-sm">
                 <div>
@@ -1003,7 +1100,7 @@ function BookingDetail() {
               </div>
             </section>
 
-            <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+            <section className="bg-white border border-charcoal/10 rounded-xl p-5">
               <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-1">Timeline to wedding</h2>
               <p className="font-serif text-2xl mb-3">
                 {daysToWedding !== null ? (daysToWedding >= 0 ? `${daysToWedding} days away` : "Wedding passed") : "No date set"}
@@ -1037,7 +1134,7 @@ function BookingDetail() {
               Open full trial session (fee, ratings, quote) →
             </Link>
           </div>
-          <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+          <section className="bg-white border border-charcoal/10 rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Stylist notes</h2>
             </div>
@@ -1090,9 +1187,9 @@ function BookingDetail() {
       )}
 
       {activeTab === "timeline" && (
-        <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <section className="bg-white border border-charcoal/10 rounded-xl p-5">
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
-            <h2 className="font-serif text-lg">Wedding-day timeline</h2>
+            <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Wedding-day timeline</h2>
             {jobStylists.length > 1 && (
               <span className="text-xs text-charcoal/50">
                 Split across {jobStylists.length} stylists — each has their own schedule below.
@@ -1182,10 +1279,10 @@ function BookingDetail() {
       )}
 
       {activeTab === "payments" && (
-        <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <section className="bg-white border border-charcoal/10 rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-serif text-lg">Payments</h2>
-            <button onClick={addPayment} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+            <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Payments</h2>
+            <button onClick={addPayment} className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs uppercase tracking-wide">
               Record payment
             </button>
           </div>
