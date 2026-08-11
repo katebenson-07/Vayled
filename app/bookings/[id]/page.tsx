@@ -1135,7 +1135,7 @@ function BookingDetail() {
                     </div>
                     {st.stylistId === null && (
                       <p className="text-xs text-red-700/80 px-4 pt-2">
-                        Drag these onto a stylist above to split them onto that stylist's own timeline.
+                        Drag these onto a stylist above to split them onto that stylist&apos;s own timeline.
                       </p>
                     )}
                     <div

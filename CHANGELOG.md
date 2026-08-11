@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (11)
+
+- **Fixed the failed deploy** — the last push broke Vercel's build over an unescaped apostrophe in a Timeline tab hint ("stylist's" → `stylist&apos;s`), an ESLint rule that only runs during the actual production build, not the local typecheck. Also ran the full lint pass locally this time to make sure nothing else was hiding the same way.
+
 ## 2026-08-11 (10)
 
 - **Wedding party is now just Quick assign** — the per-person list (name, role, hair/makeup, prep time, stylist dropdown) is gone from the Overview tab. All of that editing moved to the Timeline tab instead, right next to the schedule it actually affects.
