@@ -20,6 +20,7 @@ type PayoutRow = {
   cut: number;
   paid: boolean;
   paidAt: string | null;
+  role: "lead" | "assist";
 };
 
 type FilterId = "all" | "unpaid" | "paid";
@@ -72,6 +73,7 @@ function PayrollContent() {
           cut: (contractTotal * payPercentage) / 100,
           paid: bs.payout_paid ?? false,
           paidAt: bs.payout_paid_at ?? null,
+          role: bs.role ?? "lead",
         });
       }
     }
@@ -217,6 +219,9 @@ function PayrollContent() {
                         </Link>
                         <span className="text-charcoal/60 ml-2">
                           {j.weddingDate ? format(parseISO(j.weddingDate), "MMM d, yyyy") : "No date set"}
+                        </span>
+                        <span className="text-[10px] uppercase tracking-wide bg-beige text-charcoal/70 px-1.5 py-0.5 rounded ml-2">
+                          {j.role === "lead" ? "Lead" : "Assist"}
                         </span>
                       </div>
                       <div className="flex items-center gap-4">

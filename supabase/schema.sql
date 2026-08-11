@@ -152,6 +152,13 @@ create table if not exists booking_stylists (
 alter table booking_stylists add column if not exists payout_paid boolean not null default false;
 alter table booking_stylists add column if not exists payout_paid_at timestamptz;
 
+-- Lead vs. assisting stylist on a job. Defaults every existing/new assignment
+-- to 'lead' so nothing looks unset; the booking page lets you flip any
+-- assignment to 'assist' once a second person is added.
+alter table booking_stylists add column if not exists role text not null default 'lead';
+alter table booking_stylists drop constraint if exists booking_stylists_role_check;
+alter table booking_stylists add constraint booking_stylists_role_check check (role in ('lead', 'assist'));
+
 -- ============================================================================
 -- Client profile upgrade: notes, vendor team
 -- ============================================================================

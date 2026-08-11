@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (6)
+
+- **Lead vs. assisting stylist** — each stylist assigned to a job ("Stylists on this job") now has a Lead/Assist toggle instead of just being "Assigned." The first person you assign defaults to Lead, anyone added after defaults to Assist — flip either one anytime. That role now shows up everywhere the stylist does: the per-person dropdown in Wedding party ("Sullivan (Lead)"), each stylist's card on the Timeline tab, and next to each job on the Payroll page, with Lead cards/timelines listed first. **Requires re-running `supabase/schema.sql`** — adds `role` to `booking_stylists` (defaults to `'lead'`).
+
 ## 2026-08-11 (5)
 
 - **New Payroll page** — a "Payroll" tab in the sidebar shows what every 1099 contractor is owed, grouped by stylist. Each job they're assigned to shows the contract total, their pay % (from the Stylists page), and the dollar amount that % works out to, with a "Mark paid" button per job. Summary cards at the top total what's currently owed and what's been paid all-time, and you can filter by contractor or by paid/unpaid. This is the same per-job cut math already shown on each booking's "Stylists on this job" section — Payroll just rolls it up across every job so you don't have to click into each booking to add it up yourself. **Requires re-running `supabase/schema.sql`** — adds `payout_paid` / `payout_paid_at` to `booking_stylists`.

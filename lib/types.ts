@@ -161,6 +161,8 @@ export interface BookingStylist {
   /** Whether this contractor's cut for this specific job has been paid out. */
   payout_paid: boolean;
   payout_paid_at: string | null;
+  /** Lead vs. assisting stylist on this specific job. */
+  role: "lead" | "assist";
 }
 
 export interface ClientNote {

@@ -259,9 +259,12 @@ function BookingDetail() {
   async function assignStylist(stylistId: string) {
     const { data: userData } = await supabase.auth.getUser();
     const studio_id = userData.user?.id;
+    // First person assigned to a job defaults to lead; anyone added after
+    // that defaults to assist (easy to flip either way afterward).
+    const role = assignedStylists.length === 0 ? "lead" : "assist";
     const { data, error } = await supabase
       .from("booking_stylists")
-      .insert({ booking_id: id, stylist_id: stylistId, studio_id })
+      .insert({ booking_id: id, stylist_id: stylistId, studio_id, role })
       .select()
       .single();
     if (!error && data) setAssignedStylists([...assignedStylists, data as BookingStylist]);
@@ -272,6 +275,19 @@ function BookingDetail() {
     if (!row) return;
     const { error } = await supabase.from("booking_stylists").delete().eq("id", row.id);
     if (!error) setAssignedStylists(assignedStylists.filter((a) => a.id !== row.id));
+  }
+
+  async function setStylistRole(stylistId: string, role: "lead" | "assist") {
+    const row = assignedStylists.find((a) => a.stylist_id === stylistId);
+    if (!row) return;
+    const { error } = await supabase.from("booking_stylists").update({ role }).eq("id", row.id);
+    if (!error) {
+      setAssignedStylists(assignedStylists.map((a) => (a.id === row.id ? { ...a, role } : a)));
+    }
+  }
+
+  function roleForStylist(stylistId: string): "lead" | "assist" {
+    return assignedStylists.find((a) => a.stylist_id === stylistId)?.role ?? "lead";
   }
 
   function isOff(stylistId: string): boolean {
@@ -398,6 +414,9 @@ function BookingDetail() {
         .sort((a, b) => {
           if (a.stylistId === null) return 1;
           if (b.stylistId === null) return -1;
+          const roleA = roleForStylist(a.stylistId);
+          const roleB = roleForStylist(b.stylistId);
+          if (roleA !== roleB) return roleA === "lead" ? -1 : 1;
           return a.stylistName.localeCompare(b.stylistName);
         });
     }
@@ -784,7 +803,7 @@ function BookingDetail() {
                           <option value="">Unassigned</option>
                           {jobStylists.map((s) => (
                             <option key={s.id} value={s.id}>
-                              {s.name}
+                              {s.name} ({roleForStylist(s.id) === "lead" ? "Lead" : "Assist"})
                             </option>
                           ))}
                         </select>
@@ -854,6 +873,7 @@ function BookingDetail() {
                       ? "text-amber-600"
                       : "text-charcoal/60";
                     const cut = (Number(booking.contract_total) || 0) * (Number(s.pay_percentage) || 0) / 100;
+                    const role = roleForStylist(s.id);
                     return (
                       <div key={s.id} className="flex items-center justify-between border-b border-charcoal/10 pb-2">
                         <span>
@@ -865,7 +885,23 @@ function BookingDetail() {
                           )}
                         </span>
                         <div className="flex items-center gap-3">
-                          <span className={statusClass}>{statusLabel}</span>
+                          {assigned ? (
+                            <div className="flex gap-1 bg-beige/40 rounded-md p-0.5">
+                              {(["lead", "assist"] as const).map((r) => (
+                                <button
+                                  key={r}
+                                  onClick={() => setStylistRole(s.id, r)}
+                                  className={`px-2 py-0.5 rounded text-xs capitalize ${
+                                    role === r ? "bg-charcoal text-ivory" : "text-charcoal/60"
+                                  }`}
+                                >
+                                  {r}
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className={statusClass}>{statusLabel}</span>
+                          )}
                           <button
                             onClick={() => (assigned ? unassignStylist(s.id) : assignStylist(s.id))}
                             disabled={!assigned && (off || !!busyWith)}
@@ -1097,6 +1133,11 @@ function BookingDetail() {
                     >
                       <p className={`font-serif text-base ${st.stylistId === null ? "text-red-700" : "text-ivory"}`}>
                         {st.stylistName}
+                        {st.stylistId !== null && (
+                          <span className="text-xs font-sans font-normal text-ivory/60 ml-2">
+                            {roleForStylist(st.stylistId) === "lead" ? "Lead" : "Assist"}
+                          </span>
+                        )}
                       </p>
                       {st.entries.length > 0 && (
                         <span className={`text-xs ${st.stylistId === null ? "text-red-700" : "text-ivory/70"}`}>
