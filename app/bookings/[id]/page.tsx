@@ -45,6 +45,7 @@ const TABS = [
   { id: "overview", label: "Overview" },
   { id: "notes", label: "Trial notes" },
   { id: "timeline", label: "Timeline" },
+  { id: "vendors", label: "Vendors" },
   { id: "payments", label: "Payments" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
@@ -489,10 +490,16 @@ function BookingDetail() {
     ? differenceInCalendarDays(parseISO(client.wedding_date), new Date())
     : null;
 
+  // A deposit counts as paid once there's a real payment recorded for it (from
+  // the invoice's "Mark paid" or a manual payment), falling back to the legacy
+  // booking.deposit_paid flag for older bookings set before that existed.
+  const depositPayment = payments.find((p) => p.type === "deposit");
+  const depositPaid = !!depositPayment || booking.deposit_paid;
+
   const pipelineDone: Record<(typeof PIPELINE_STEPS)[number], boolean> = {
     "Inquiry received": true,
     "Contract signed": booking.contract_signed,
-    "Deposit paid": booking.deposit_paid,
+    "Deposit paid": depositPaid,
     "Trial done": !!trial?.completed,
     "Week of wedding": daysToWedding !== null && daysToWedding <= 7 && daysToWedding >= 0,
     "Wedding day": daysToWedding === 0,
@@ -500,7 +507,6 @@ function BookingDetail() {
   };
   const currentStepIndex = PIPELINE_STEPS.findIndex((step) => !pipelineDone[step]);
 
-  const depositPayment = payments.find((p) => p.type === "deposit");
   const weddingMilestones = [
     {
       label: "Contract signed",
@@ -509,7 +515,7 @@ function BookingDetail() {
     },
     {
       label: "Deposit received",
-      done: booking.deposit_paid,
+      done: depositPaid,
       date: depositPayment ? format(parseISO(depositPayment.paid_at), "MMM d") : null,
     },
     {
@@ -649,6 +655,32 @@ function BookingDetail() {
         })}
       </div>
 
+      <div className="flex flex-wrap items-center gap-4 bg-white border border-charcoal/10 rounded-xl px-4 py-2.5 text-sm">
+        <div className="flex items-center gap-2">
+          <label className="text-charcoal/50 text-xs uppercase tracking-wide">Status</label>
+          <select
+            className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
+            value={booking.status}
+            onChange={(e) => updateBooking({ status: e.target.value as Booking["status"] })}
+          >
+            <option value="inquiry">Inquiry</option>
+            <option value="booked">Booked</option>
+            <option value="completed">Completed</option>
+            <option value="ghosted">Ghosted</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-charcoal/50 text-xs uppercase tracking-wide">Ready by</label>
+          <input
+            type="time"
+            className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
+            value={booking.ready_by_time ?? ""}
+            onChange={(e) => updateBooking({ ready_by_time: e.target.value })}
+          />
+        </div>
+      </div>
+
       <div className="flex gap-1 border-b border-charcoal/10">
         {TABS.map((tab) => (
           <button
@@ -721,55 +753,6 @@ function BookingDetail() {
                         onClick={() => removePhoto(p)}
                         className="absolute top-2 right-2 text-[10px] uppercase tracking-wide bg-charcoal/70 text-ivory rounded px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            <section className="bg-white border border-charcoal/10 rounded-xl p-5">
-              <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Vendor team</h2>
-              <div className="flex flex-wrap gap-2 mb-4">
-                <select
-                  className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
-                  value={newVendorRole}
-                  onChange={(e) => setNewVendorRole(e.target.value)}
-                >
-                  {VENDOR_ROLES.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[140px]"
-                  placeholder="Name"
-                  value={newVendorName}
-                  onChange={(e) => setNewVendorName(e.target.value)}
-                />
-                <input
-                  className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[140px]"
-                  placeholder="Contact info"
-                  value={newVendorContact}
-                  onChange={(e) => setNewVendorContact(e.target.value)}
-                />
-                <button onClick={addVendor} className="bg-charcoal text-ivory rounded-md px-4 py-1 text-sm">
-                  Add
-                </button>
-              </div>
-              {vendors.length === 0 ? (
-                <p className="text-charcoal/60 text-sm">No vendors added yet.</p>
-              ) : (
-                <div className="space-y-2 text-sm">
-                  {vendors.map((v) => (
-                    <div key={v.id} className="flex items-center justify-between border-b border-charcoal/10 pb-2">
-                      <span>
-                        <span className="text-charcoal/60">{v.role}:</span> {v.name}
-                        {v.contact ? ` · ${v.contact}` : ""}
-                      </span>
-                      <button onClick={() => removeVendor(v.id)} className="text-red-600 text-xs">
                         Remove
                       </button>
                     </div>
@@ -1017,90 +1000,6 @@ function BookingDetail() {
 
           <div className="space-y-5 lg:sticky lg:top-6">
             <section className="bg-white border border-charcoal/10 rounded-xl p-5">
-              <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Wedding details</h2>
-              <div className="space-y-4 text-sm">
-                <div>
-                  <label className="block text-charcoal/60 mb-1">Status</label>
-                  <select
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2"
-                    value={booking.status}
-                    onChange={(e) => updateBooking({ status: e.target.value as Booking["status"] })}
-                  >
-                    <option value="inquiry">Inquiry</option>
-                    <option value="booked">Booked</option>
-                    <option value="completed">Completed</option>
-                    <option value="ghosted">Ghosted</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-charcoal/60 mb-1">Contract total ($)</label>
-                  <input
-                    type="number"
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2"
-                    value={booking.contract_total}
-                    onChange={(e) => updateBooking({ contract_total: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-charcoal/60 mb-1">Deposit amount ($)</label>
-                  <input
-                    type="number"
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2"
-                    value={booking.deposit_amount}
-                    onChange={(e) => updateBooking({ deposit_amount: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-                <label className="flex items-center gap-2 text-charcoal/60">
-                  <input
-                    type="checkbox"
-                    checked={booking.deposit_paid}
-                    onChange={(e) => updateBooking({ deposit_paid: e.target.checked })}
-                  />
-                  Deposit paid
-                </label>
-                <div>
-                  <label className="block text-charcoal/60 mb-1">Ready-by time (wedding day)</label>
-                  <input
-                    type="time"
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2"
-                    value={booking.ready_by_time ?? ""}
-                    onChange={(e) => updateBooking({ ready_by_time: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-charcoal/60 mb-1">Buffer between people (min)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2"
-                    value={booking.buffer_minutes ?? 10}
-                    onChange={(e) => updateBooking({ buffer_minutes: parseInt(e.target.value) || 0 })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-charcoal/60 mb-1">Ceremony time</label>
-                  <input
-                    type="time"
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2"
-                    value={booking.ceremony_time ?? ""}
-                    onChange={(e) => updateBooking({ ceremony_time: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-charcoal/60 mb-1">Travel time to venue (min)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2"
-                    value={booking.travel_minutes ?? 0}
-                    onChange={(e) => updateBooking({ travel_minutes: parseInt(e.target.value) || 0 })}
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="bg-white border border-charcoal/10 rounded-xl p-5">
               <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-1">Timeline to wedding</h2>
               <p className="font-serif text-2xl mb-3">
                 {daysToWedding !== null ? (daysToWedding >= 0 ? `${daysToWedding} days away` : "Wedding passed") : "No date set"}
@@ -1186,6 +1085,57 @@ function BookingDetail() {
         </>
       )}
 
+      {activeTab === "vendors" && (
+        <section className="bg-white border border-charcoal/10 rounded-xl p-5">
+          <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Vendor team</h2>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <select
+              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
+              value={newVendorRole}
+              onChange={(e) => setNewVendorRole(e.target.value)}
+            >
+              {VENDOR_ROLES.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+            <input
+              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[140px]"
+              placeholder="Name"
+              value={newVendorName}
+              onChange={(e) => setNewVendorName(e.target.value)}
+            />
+            <input
+              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[140px]"
+              placeholder="Contact info"
+              value={newVendorContact}
+              onChange={(e) => setNewVendorContact(e.target.value)}
+            />
+            <button onClick={addVendor} className="bg-charcoal text-ivory rounded-md px-4 py-1 text-sm">
+              Add
+            </button>
+          </div>
+          {vendors.length === 0 ? (
+            <p className="text-charcoal/60 text-sm">No vendors added yet.</p>
+          ) : (
+            <div className="space-y-2 text-sm">
+              {vendors.map((v) => (
+                <div key={v.id} className="flex items-center justify-between border-b border-charcoal/10 pb-2">
+                  <span>
+                    <span className="text-charcoal/60">{v.role}:</span> {v.name}
+                    {v.contact ? ` · ${v.contact}` : ""}
+                  </span>
+                  <button onClick={() => removeVendor(v.id)} className="text-red-600 text-xs">
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
       {activeTab === "timeline" && (
         <section className="bg-white border border-charcoal/10 rounded-xl p-5">
           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
@@ -1202,7 +1152,7 @@ function BookingDetail() {
             <p className="text-charcoal/60 text-sm">Add wedding party members to generate the timeline.</p>
           ) : (
             <div className="space-y-6 text-sm">
-              <div className="grid grid-cols-2 gap-3 text-center mb-2">
+              <div className="grid grid-cols-3 gap-3 text-center mb-2">
                 <div className="bg-ivory rounded-lg p-3">
                   <p className="text-xs text-charcoal/60">Ready by</p>
                   <p className="font-medium">
@@ -1210,8 +1160,26 @@ function BookingDetail() {
                   </p>
                 </div>
                 <div className="bg-ivory rounded-lg p-3">
-                  <p className="text-xs text-charcoal/60">Buffer between people</p>
-                  <p className="font-medium">{booking.buffer_minutes ?? 10} min</p>
+                  <p className="text-xs text-charcoal/60 mb-1">Buffer between people</p>
+                  <div className="flex items-center justify-center gap-1">
+                    <input
+                      type="number"
+                      min={0}
+                      className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-sm w-14 text-center"
+                      value={booking.buffer_minutes ?? 10}
+                      onChange={(e) => updateBooking({ buffer_minutes: parseInt(e.target.value) || 0 })}
+                    />
+                    <span className="font-medium text-sm">min</span>
+                  </div>
+                </div>
+                <div className="bg-ivory rounded-lg p-3">
+                  <p className="text-xs text-charcoal/60 mb-1">Ceremony time</p>
+                  <input
+                    type="time"
+                    className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-sm w-full"
+                    value={booking.ceremony_time ?? ""}
+                    onChange={(e) => updateBooking({ ceremony_time: e.target.value })}
+                  />
                 </div>
               </div>
 

@@ -2,6 +2,11 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (9)
+
+- **Removed the Wedding details box** — replaced with a small bar right above the tabs with just Status and Ready-by time, since those are the two things you actually touch day to day. Contract total and deposit amount are dropped from this page (they're already editable from Contract details and auto-sync from the Invoice, so this was duplicate entry). Buffer between people and Ceremony time moved to the Timeline tab, right where they're used. The "Deposit paid" checkbox is gone too — the pipeline and milestone tracker now mark the deposit paid automatically once a real deposit payment is recorded (via the invoice's "Mark paid" or a manual payment), instead of needing a separate manual toggle.
+- **Vendor team is now its own tab** — pulled it out of Overview into a new "Vendors" tab alongside Trial notes, Timeline, and Payments, so Overview isn't as crowded.
+
 ## 2026-08-11 (8)
 
 - **Quick assign by headcount** — Wedding party now has a "Quick assign" box (once stylists are on the job): enter how many people each stylist is doing (e.g. Sullivan: 3, Trevor: 2) and hit Generate. It fills anyone not yet assigned first, adds placeholder bridesmaids for any shortfall, and jumps straight to the Timeline tab — no more setting each person's dropdown one at a time. No schema change.
