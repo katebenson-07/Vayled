@@ -803,9 +803,17 @@ function BookingDetail() {
                       : busyWith
                       ? "text-amber-600"
                       : "text-charcoal/60";
+                    const cut = (Number(booking.contract_total) || 0) * (Number(s.pay_percentage) || 0) / 100;
                     return (
                       <div key={s.id} className="flex items-center justify-between border-b border-charcoal/10 pb-2">
-                        <span>{s.name}</span>
+                        <span>
+                          {s.name}
+                          {s.is_1099 && s.pay_percentage > 0 && (
+                            <span className="text-charcoal/50 text-xs ml-2">
+                              {s.pay_percentage}% · ${cut.toFixed(2)} on this job
+                            </span>
+                          )}
+                        </span>
                         <div className="flex items-center gap-3">
                           <span className={statusClass}>{statusLabel}</span>
                           <button

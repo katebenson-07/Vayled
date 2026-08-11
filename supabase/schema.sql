@@ -114,6 +114,12 @@ create table if not exists stylists (
   created_at timestamptz not null default now()
 );
 
+-- Most team members added here are 1099 contractors rather than employees;
+-- pay_percentage is their cut of a job's contract total, referenced when
+-- figuring out what to pay them after a wedding.
+alter table stylists add column if not exists is_1099 boolean not null default true;
+alter table stylists add column if not exists pay_percentage numeric not null default 0;
+
 create table if not exists stylist_time_off (
   id uuid primary key default uuid_generate_v4(),
   studio_id uuid not null references auth.users(id) on delete cascade,

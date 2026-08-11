@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11
+
+- **1099 contractor tracking on the Stylists page** — each person on your team now has a "1099" flag (on by default, since that's most of your team) and a pay % — their cut of a job's contract total. Editing the % saves instantly, same as the other quick-edit fields. This builds on what was already there rather than duplicating it: you already assign people to jobs from each booking's "Stylists on this job" section, and that assignment already shows up on the calendar — now that section also shows each assigned contractor's cut in dollars for that specific job (e.g. "40% · $320.00 on this job"), so you can see at a glance what everyone's owed. **Requires re-running `supabase/schema.sql`** — adds `is_1099` and `pay_percentage` columns to `stylists`.
+
 ## 2026-08-10 (9)
 
 - **Removed per-person pricing from Wedding party, added a Build timeline button** — now that the invoice has its own pricing (service catalog, qty × rate, tip), the $ field on each wedding party member was duplicate data entry that could drift out of sync with the real invoice. Removed it — Wedding party is now just names, roles, hair/makeup, and chair time, with a note pointing to the invoice for pricing. Added a "Build timeline" button directly under the Wedding party list (in addition to the one already at the top of the page) so you can jump to the timeline right after entering the party. No schema change — `party_members.price` still exists in the database, it's just not edited from this screen anymore.

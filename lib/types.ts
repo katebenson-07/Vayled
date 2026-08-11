@@ -134,6 +134,10 @@ export interface Stylist {
   email: string | null;
   phone: string | null;
   active: boolean;
+  /** True for 1099 contractors (the default for most teams); false for W-2 employees. */
+  is_1099: boolean;
+  /** Their cut of a job's contract total, e.g. 40 for 40%. */
+  pay_percentage: number;
   created_at: string;
 }
 
