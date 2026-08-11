@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (4)
+
+- **Labeled the per-person stylist dropdown** — on the Wedding party section, the "min" text next to the prep-time field was sitting right next to the new stylist dropdown too, making it look like it labeled the wrong thing. The prep-time field and its "min" label are now grouped together, and the stylist dropdown has its own "Stylist" label next to it. No functional change.
+
 ## 2026-08-11 (3)
 
 - **Timeline cards are now visually separated** — each stylist's schedule on the Timeline tab is its own bordered card with their name in a solid header bar at the top (plus their start time), laid out in a grid instead of just stacked sections. "Unassigned" gets a red-tinted card so it stands out as something to fix before the wedding.

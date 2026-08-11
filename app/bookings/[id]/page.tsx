@@ -764,26 +764,31 @@ function BookingDetail() {
                         />
                         Makeup
                       </label>
-                      <input
-                        type="number"
-                        className="border border-charcoal/20 rounded-md px-2 py-1 text-sm w-16"
-                        value={m.prep_minutes}
-                        onChange={(e) => updateMember(m.id, { prep_minutes: parseInt(e.target.value) || 0 })}
-                      />
-                      <span className="text-charcoal/60 text-sm">min</span>
-                      <select
-                        className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
-                        value={m.assigned_stylist_id ?? ""}
-                        onChange={(e) => updateMember(m.id, { assigned_stylist_id: e.target.value || null })}
-                        disabled={jobStylists.length === 0}
-                      >
-                        <option value="">Unassigned</option>
-                        {jobStylists.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          className="border border-charcoal/20 rounded-md px-2 py-1 text-sm w-16"
+                          value={m.prep_minutes}
+                          onChange={(e) => updateMember(m.id, { prep_minutes: parseInt(e.target.value) || 0 })}
+                        />
+                        <span className="text-charcoal/60 text-sm">min</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-charcoal/60 text-sm">Stylist</span>
+                        <select
+                          className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
+                          value={m.assigned_stylist_id ?? ""}
+                          onChange={(e) => updateMember(m.id, { assigned_stylist_id: e.target.value || null })}
+                          disabled={jobStylists.length === 0}
+                        >
+                          <option value="">Unassigned</option>
+                          {jobStylists.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                       <button onClick={() => removeMember(m.id)} className="text-red-600 text-sm ml-auto">
                         Remove
                       </button>
