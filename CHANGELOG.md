@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (3)
+
+- **Timeline cards are now visually separated** — each stylist's schedule on the Timeline tab is its own bordered card with their name in a solid header bar at the top (plus their start time), laid out in a grid instead of just stacked sections. "Unassigned" gets a red-tinted card so it stands out as something to fix before the wedding.
+
 ## 2026-08-11 (2)
 
 - **Multiple stylists on one job, each with their own timeline** — the Wedding party section now has a "Stylist" dropdown per person (populated from whoever's assigned to that job under "Stylists on this job"), so you can split the party between however many people are working it. The Timeline tab now builds a separate, parallel schedule for each stylist instead of one long sequential list — each section shows that stylist's own start time and person-by-person schedule, all working backward from the same ready-by time. Anyone not yet assigned to a stylist shows up under "Unassigned" so nothing gets missed. The bride-facing portal still shows one combined schedule, since that's what she needs to see. **Requires re-running `supabase/schema.sql`** — adds `party_members.assigned_stylist_id`.

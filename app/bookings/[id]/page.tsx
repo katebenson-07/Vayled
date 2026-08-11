@@ -1077,43 +1077,54 @@ function BookingDetail() {
                 </div>
               </div>
 
-              {stylistTimelines.map((st) => (
-                <div key={st.stylistId ?? "unassigned"}>
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-serif text-base">
-                      {st.stylistName}
-                      {st.stylistId === null && (
-                        <span className="text-charcoal/50 text-xs font-sans ml-2">
-                          assign a stylist in Wedding party to split this off
+              <div className="grid gap-4 sm:grid-cols-2">
+                {stylistTimelines.map((st) => (
+                  <div
+                    key={st.stylistId ?? "unassigned"}
+                    className={`rounded-lg border overflow-hidden ${
+                      st.stylistId === null ? "border-red-200" : "border-charcoal/10"
+                    }`}
+                  >
+                    <div
+                      className={`flex items-center justify-between px-4 py-2.5 ${
+                        st.stylistId === null ? "bg-red-50" : "bg-charcoal"
+                      }`}
+                    >
+                      <p className={`font-serif text-base ${st.stylistId === null ? "text-red-700" : "text-ivory"}`}>
+                        {st.stylistName}
+                      </p>
+                      {st.entries.length > 0 && (
+                        <span className={`text-xs ${st.stylistId === null ? "text-red-700" : "text-ivory/70"}`}>
+                          Starts {format(st.entries[0].start, "h:mm a")}
                         </span>
                       )}
-                    </p>
-                    {st.entries.length > 0 && (
-                      <span className="text-charcoal/60 text-xs">
-                        Starts {format(st.entries[0].start, "h:mm a")}
-                      </span>
+                    </div>
+                    {st.stylistId === null && (
+                      <p className="text-xs text-red-700/80 px-4 pt-2">
+                        Assign a stylist to these people in Wedding party to split them onto their own timeline.
+                      </p>
                     )}
+                    <div className="p-4 space-y-2">
+                      {st.entries.map((entry, i) => (
+                        <div key={entry.member.id} className="flex items-center gap-3 border-b border-charcoal/10 pb-2 last:border-b-0 last:pb-0">
+                          <span
+                            className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                            style={{
+                              backgroundColor: ["#33181C", "#6F5F4D", "#DDD9C9", "#33181C"][i % 4],
+                            }}
+                          />
+                          <span className="flex-1 text-sm">
+                            {entry.member.name} <span className="text-charcoal/60">({entry.member.role})</span>
+                          </span>
+                          <span className="text-charcoal/60 text-sm whitespace-nowrap">
+                            {format(entry.start, "h:mm a")} – {format(entry.end, "h:mm a")}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    {st.entries.map((entry, i) => (
-                      <div key={entry.member.id} className="flex items-center gap-3 border-b border-charcoal/10 pb-2">
-                        <span
-                          className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-                          style={{
-                            backgroundColor: ["#33181C", "#6F5F4D", "#DDD9C9", "#33181C"][i % 4],
-                          }}
-                        />
-                        <span className="flex-1">
-                          {entry.member.name} <span className="text-charcoal/60">({entry.member.role})</span>
-                        </span>
-                        <span className="text-charcoal/60">
-                          {format(entry.start, "h:mm a")} – {format(entry.end, "h:mm a")}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
 
               <p className="text-charcoal/60 pt-2 border-t border-charcoal/10">
                 Everyone ready by {format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}
