@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (5)
+
+- **New Payroll page** — a "Payroll" tab in the sidebar shows what every 1099 contractor is owed, grouped by stylist. Each job they're assigned to shows the contract total, their pay % (from the Stylists page), and the dollar amount that % works out to, with a "Mark paid" button per job. Summary cards at the top total what's currently owed and what's been paid all-time, and you can filter by contractor or by paid/unpaid. This is the same per-job cut math already shown on each booking's "Stylists on this job" section — Payroll just rolls it up across every job so you don't have to click into each booking to add it up yourself. **Requires re-running `supabase/schema.sql`** — adds `payout_paid` / `payout_paid_at` to `booking_stylists`.
+
 ## 2026-08-11 (4)
 
 - **Labeled the per-person stylist dropdown** — on the Wedding party section, the "min" text next to the prep-time field was sitting right next to the new stylist dropdown too, making it look like it labeled the wrong thing. The prep-time field and its "min" label are now grouped together, and the stylist dropdown has its own "Stylist" label next to it. No functional change.

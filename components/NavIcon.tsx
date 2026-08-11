@@ -68,6 +68,14 @@ const PATHS: Record<string, JSX.Element> = {
       <path d="M9 8h6M9 12h6" />
     </>
   ),
+  payroll: (
+    <>
+      <rect x="2" y="6" width="20" height="14" rx="2" />
+      <path d="M2 10h20" />
+      <path d="M6 15h4" />
+      <circle cx="16" cy="15" r="1.5" />
+    </>
+  ),
   services: (
     <>
       <path d="M12 2l1.9 4.6L18.5 8l-4.6 1.9L12 14.5l-1.9-4.6L5.5 8l4.6-1.4z" />

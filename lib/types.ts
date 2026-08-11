@@ -158,6 +158,9 @@ export interface BookingStylist {
   booking_id: string;
   stylist_id: string;
   created_at: string;
+  /** Whether this contractor's cut for this specific job has been paid out. */
+  payout_paid: boolean;
+  payout_paid_at: string | null;
 }
 
 export interface ClientNote {

@@ -146,6 +146,12 @@ create table if not exists booking_stylists (
   unique (booking_id, stylist_id)
 );
 
+-- Payroll: whether this contractor's cut for this specific job has been paid
+-- out yet. Lives on the assignment row (not a separate payouts table) since
+-- there's exactly one payout per stylist per job.
+alter table booking_stylists add column if not exists payout_paid boolean not null default false;
+alter table booking_stylists add column if not exists payout_paid_at timestamptz;
+
 -- ============================================================================
 -- Client profile upgrade: notes, vendor team
 -- ============================================================================
