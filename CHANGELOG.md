@@ -2,6 +2,14 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (14)
+
+- **New "Reminders" panel on the Dashboard** — surfaces what needs to go out today, with a one-click Send (or Schedule) button right there:
+  - **Balance/invoice reminders** — flagged once a booking's balance due date (the same rule set on its invoice, defaulting to 7 days before the wedding) is within a week out or overdue. Clicking Send opens your email app pre-filled with the "Balance due reminder" template and logs it, same as sending from the Emails page — it just won't nag again for 5 days.
+  - **Book-a-preview reminders** — any booked wedding with no trial session scheduled yet shows up with a "Schedule" button straight to that booking's Trial page.
+  - **Trial questionnaire reminders** — the day before a scheduled trial, a reminder appears to send the new "Trial prep questionnaire" template (hair type, skin sensitivities, inspo photos, vibe, plus-ones) — one click, logged, won't repeat once sent.
+  - No new email service was added — this still uses the same mailto-based send-and-log flow as the Emails page (per your call on the "smart reminders, I still click send" approach). Email templates now live in one shared file so the Dashboard and Emails page always agree on template names. No schema change.
+
 ## 2026-08-11 (13)
 
 - **Calendar dates are now clickable** — click any day on the Calendar to open a panel listing every booking on that date (bride name, status, venue, party size, assigned stylists), each linking straight to that booking. Empty days show a "+ New job" link instead. Handy for days with more than a couple bookings, since the little pills in the grid truncate. Close with the × button, click outside, or Escape. No schema change.
