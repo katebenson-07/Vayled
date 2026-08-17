@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (13)
+
+- **Calendar dates are now clickable** — click any day on the Calendar to open a panel listing every booking on that date (bride name, status, venue, party size, assigned stylists), each linking straight to that booking. Empty days show a "+ New job" link instead. Handy for days with more than a couple bookings, since the little pills in the grid truncate. Close with the × button, click outside, or Escape. No schema change.
+
 ## 2026-08-11 (12)
 
 - **Timeline tab has View / Edit modes** — View is back to the original clean look (colored dot, name, role, start–end time, read-only), and is now the default when you open the tab. Switch to Edit to get the editable/draggable version — rename, hair/makeup, prep time, remove, drag to reassign or reorder. Same data either way, just a toggle for which view you want.

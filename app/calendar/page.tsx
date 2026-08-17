@@ -49,6 +49,15 @@ function CalendarContent() {
   const [selectedStylistId, setSelectedStylistId] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setSelectedDay(null);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -259,9 +268,11 @@ function CalendarContent() {
                 const inMonth = isSameMonth(day, currentMonth);
                 const isToday = isSameDay(day, new Date());
                 return (
-                  <div
+                  <button
                     key={day.toISOString()}
-                    className={`min-h-[90px] border-b border-r border-charcoal/10 p-2 text-xs ${
+                    type="button"
+                    onClick={() => setSelectedDay(day)}
+                    className={`min-h-[90px] border-b border-r border-charcoal/10 p-2 text-xs text-left hover:bg-white/60 transition-colors ${
                       inMonth ? "" : "bg-ivory/50 text-charcoal/30"
                     }`}
                   >
@@ -277,18 +288,17 @@ function CalendarContent() {
                       const idx = ids.length > 0 ? stylists.findIndex((s) => s.id === ids[0]) : -1;
                       const color = idx >= 0 ? colorForStylist(idx) : "#8A8A85";
                       return (
-                        <Link
+                        <span
                           key={b.id}
-                          href={`/bookings/${b.id}`}
                           className="block rounded px-1.5 py-0.5 mb-1 truncate"
                           style={{ backgroundColor: `${color}26`, color }}
                           title={b.clients?.bride_name ?? "Booking"}
                         >
                           {b.clients?.bride_name?.split(" ")[0] ?? "Booking"}
-                        </Link>
+                        </span>
                       );
                     })}
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -368,6 +378,77 @@ function CalendarContent() {
           </div>
         </div>
       </div>
+
+      {selectedDay && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setSelectedDay(null)} />
+          <div className="relative bg-white rounded-xl border border-charcoal/10 w-full max-w-md max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-charcoal/10">
+              <p className="font-serif text-lg">{format(selectedDay, "EEEE, MMMM d, yyyy")}</p>
+              <button
+                onClick={() => setSelectedDay(null)}
+                aria-label="Close"
+                className="text-charcoal/50 hover:text-charcoal text-xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-5">
+              {bookingsForDay(selectedDay).length === 0 ? (
+                <div className="text-sm text-charcoal/60">
+                  <p className="mb-3">No bookings on this date.</p>
+                  <Link href="/clients" className="text-gold hover:underline">
+                    + New job
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {bookingsForDay(selectedDay).map((b) => {
+                    const ids = stylistsForBooking(b.id);
+                    return (
+                      <Link
+                        key={b.id}
+                        href={`/bookings/${b.id}`}
+                        className="block border border-charcoal/10 rounded-lg p-3 hover:bg-ivory/50 transition-colors"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-medium">{b.clients?.bride_name ?? "Unknown"}</p>
+                          <span className="text-[10px] uppercase tracking-wide bg-beige text-charcoal/70 px-1.5 py-0.5 rounded">
+                            {b.status}
+                          </span>
+                        </div>
+                        <p className="text-xs text-charcoal/50 mt-0.5 mb-2">
+                          {b.clients?.venue ? `${b.clients.venue} · ` : ""}Party of {partySize(b.id)}
+                        </p>
+                        <div className="flex gap-1">
+                          {ids.length === 0 ? (
+                            <span className="text-xs text-charcoal/40">No stylists assigned</span>
+                          ) : (
+                            ids.map((id) => {
+                              const idx = stylists.findIndex((s) => s.id === id);
+                              const s = stylists[idx];
+                              if (!s) return null;
+                              return (
+                                <span
+                                  key={id}
+                                  className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-medium"
+                                  style={{ backgroundColor: `${colorForStylist(idx)}26`, color: colorForStylist(idx) }}
+                                >
+                                  {initials(s.name)}
+                                </span>
+                              );
+                            })
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
