@@ -9,6 +9,7 @@ import { Booking, Client, Payment, PartyMember, TrialSession, EmailTemplate, Sen
 import { fetchInboxItems, InboxItem } from "@/lib/inbox";
 import { buildMergeContext, applyTemplate } from "@/lib/merge";
 import { DEFAULT_TEMPLATES } from "@/lib/emailTemplates";
+import { sendEmail, openMailto } from "@/lib/sendEmail";
 import {
   format,
   parseISO,
@@ -53,6 +54,8 @@ function DashboardContent() {
   const [activity, setActivity] = useState<InboxItem[]>([]);
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [sentEmails, setSentEmails] = useState<SentEmail[]>([]);
+  const [studioContactEmail, setStudioContactEmail] = useState<string | null>(null);
+  const [reminderStatus, setReminderStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -62,10 +65,11 @@ function DashboardContent() {
       if (userData.user) {
         const { data: profile } = await supabase
           .from("studio_settings")
-          .select("studio_name")
+          .select("studio_name, contact_email")
           .eq("studio_id", userData.user.id)
           .maybeSingle();
         setStudioName(profile?.studio_name ?? null);
+        setStudioContactEmail(profile?.contact_email ?? null);
         const name = profile?.studio_name?.split(" ")[0] || userData.user.email?.split("@")[0] || "there";
         setGreetingName(titleCase(name));
       }
@@ -130,9 +134,10 @@ function DashboardContent() {
     return [`Party of ${party.length}`, service].filter(Boolean).join(" · ");
   }
 
-  /** One-click send from a Reminders row — same mailto + logging pattern as
-   *  the Emails page, just triggered from the Dashboard instead of picked by
-   *  hand, so a reminder never needs a second trip to /emails first. */
+  /** One-click send from a Reminders row — same send-and-log flow as the
+   *  Emails page (real send via Resend once configured, mailto fallback
+   *  until then), just triggered right from the Dashboard so a reminder
+   *  never needs a second trip to /emails first. */
   async function sendReminderEmail(booking: BookingWithClient, templateName: string) {
     const template = templates.find((t) => t.name === templateName);
     if (!template || !booking.clients) return;
@@ -140,17 +145,42 @@ function DashboardContent() {
     const context = buildMergeContext(booking.clients, booking, balance, studioName);
     const subject = applyTemplate(template.subject, context);
     const body = applyTemplate(template.body, context);
-    const mailto = `mailto:${booking.clients.email ?? ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
+    const to = booking.clients.email ?? "";
 
-    const { data: userData } = await supabase.auth.getUser();
-    const studio_id = userData.user?.id;
-    const { data: logged } = await supabase
-      .from("sent_emails")
-      .insert({ studio_id, booking_id: booking.id, template_name: template.name, subject })
-      .select()
-      .single();
-    if (logged) setSentEmails((prev) => [logged as SentEmail, ...prev]);
+    setReminderStatus(null);
+    const result = await sendEmail({
+      to,
+      subject,
+      body,
+      replyTo: studioContactEmail,
+      fromName: studioName,
+      bookingId: booking.id,
+      templateName: template.name,
+    });
+
+    if (result.ok) {
+      setReminderStatus(`Sent to ${booking.clients.bride_name} ✓`);
+      // Full refetch (not scoped to this booking) since sentEmails here also
+      // drives de-duplication for every other reminder on the dashboard.
+      const { data } = await supabase.from("sent_emails").select("*");
+      setSentEmails((data as SentEmail[]) ?? []);
+      return;
+    }
+
+    if (result.reason === "not_configured") {
+      openMailto(to, subject, body);
+      const { data: userData } = await supabase.auth.getUser();
+      const studio_id = userData.user?.id;
+      const { data: logged } = await supabase
+        .from("sent_emails")
+        .insert({ studio_id, booking_id: booking.id, template_name: template.name, subject })
+        .select()
+        .single();
+      if (logged) setSentEmails((prev) => [logged as SentEmail, ...prev]);
+      return;
+    }
+
+    setReminderStatus(`Couldn't send: ${result.message ?? "unknown error"}`);
   }
 
   if (loading) return <p className="text-charcoal/60">Loading...</p>;
@@ -363,6 +393,7 @@ function DashboardContent() {
       {reminders.length > 0 && (
         <section className="bg-white border border-charcoal/10 rounded-xl p-6">
           <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Reminders</h2>
+          {reminderStatus && <p className="text-xs text-charcoal/70 mb-3">{reminderStatus}</p>}
           <div className="space-y-2">
             {reminders.map((r) => (
               <div

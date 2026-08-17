@@ -2,6 +2,16 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-11 (15)
+
+- **Real email sending, via Resend** — templates and Dashboard reminders now send for real (no more opening your own email app) once Resend is connected. Emails go out from Vayled with your studio name as the sender and your own contact email as Reply-To, so a bride's reply lands in your inbox, not ours. Until Resend is connected, everything still works exactly as before — it automatically falls back to the mailto flow, so nothing breaks in the meantime.
+  - New `app/api/send-email` route calls Resend server-side. No service-role key involved — it authenticates as the studio making the request, so Postgres's existing row-level security is what actually decides which bookings/logs it can touch.
+  - **You'll need to do a few things outside the code to turn this on** (I can't do these for you — they need your own accounts/credentials):
+    1. Sign up at resend.com (free tier: 3,000 emails/month).
+    2. Add and verify `vayled.com` as a sending domain in Resend (it'll give you DNS records to add wherever vayled.com's DNS is managed).
+    3. In Vercel → Settings → Environment Variables, add `RESEND_API_KEY` (from Resend) and optionally `RESEND_FROM_EMAIL` (defaults to `notifications@vayled.com`).
+    4. Redeploy — Vercel only picks up new environment variables on a fresh deploy.
+
 ## 2026-08-11 (14)
 
 - **New "Reminders" panel on the Dashboard** — surfaces what needs to go out today, with a one-click Send (or Schedule) button right there:

@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { Booking, Client, EmailTemplate, SentEmail } from "@/lib/types";
 import { buildMergeContext, applyTemplate, MERGE_FIELD_HELP } from "@/lib/merge";
 import { DEFAULT_TEMPLATES } from "@/lib/emailTemplates";
+import { sendEmail, openMailto } from "@/lib/sendEmail";
 import { format } from "date-fns";
 
 function EmailsContent() {
@@ -18,14 +19,37 @@ function EmailsContent() {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [client, setClient] = useState<Client | null>(null);
   const [sentLog, setSentLog] = useState<SentEmail[]>([]);
+  const [studioName, setStudioName] = useState<string | null>(null);
+  const [studioContactEmail, setStudioContactEmail] = useState<string | null>(null);
+  const [sendStatus, setSendStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [editing, setEditing] = useState<EmailTemplate | null>(null);
   const [form, setForm] = useState({ name: "", subject: "", body: "" });
 
+  async function refreshSentLog() {
+    if (!bookingId) return;
+    const { data } = await supabase
+      .from("sent_emails")
+      .select("*")
+      .eq("booking_id", bookingId)
+      .order("sent_at", { ascending: false });
+    setSentLog((data as SentEmail[]) ?? []);
+  }
+
   async function load() {
     const { data: userData } = await supabase.auth.getUser();
     const studio_id = userData.user?.id;
+
+    if (studio_id) {
+      const { data: profile } = await supabase
+        .from("studio_settings")
+        .select("studio_name, contact_email")
+        .eq("studio_id", studio_id)
+        .maybeSingle();
+      setStudioName(profile?.studio_name ?? null);
+      setStudioContactEmail(profile?.contact_email ?? null);
+    }
 
     let { data: templateData } = await supabase.from("email_templates").select("*").order("created_at");
     if (!templateData || templateData.length === 0) {
@@ -93,21 +117,37 @@ function EmailsContent() {
     const totalPaidRes = await supabase.from("payments").select("amount").eq("booking_id", booking.id);
     const totalPaid = (totalPaidRes.data ?? []).reduce((sum, p: any) => sum + Number(p.amount), 0);
     const balanceDue = Number(booking.contract_total) - totalPaid;
-    const context = buildMergeContext(client, booking, balanceDue);
+    const context = buildMergeContext(client, booking, balanceDue, studioName);
     const subject = applyTemplate(t.subject, context);
     const body = applyTemplate(t.body, context);
 
-    const mailto = `mailto:${client.email ?? ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
+    setSendStatus(null);
+    const result = await sendEmail({
+      to: client.email ?? "",
+      subject,
+      body,
+      replyTo: studioContactEmail,
+      fromName: studioName,
+      bookingId: booking.id,
+      templateName: t.name,
+    });
 
-    const { data: userData } = await supabase.auth.getUser();
-    const studio_id = userData.user?.id;
-    const { data: logged } = await supabase
-      .from("sent_emails")
-      .insert({ studio_id, booking_id: booking.id, template_name: t.name, subject })
-      .select()
-      .single();
-    if (logged) setSentLog([logged as SentEmail, ...sentLog]);
+    if (result.ok) {
+      setSendStatus(`Sent to ${client.email} ✓`);
+      await refreshSentLog();
+      return;
+    }
+
+    if (result.reason === "not_configured") {
+      openMailto(client.email ?? "", subject, body);
+      const { data: userData } = await supabase.auth.getUser();
+      const studio_id = userData.user?.id;
+      await supabase.from("sent_emails").insert({ studio_id, booking_id: booking.id, template_name: t.name, subject });
+      await refreshSentLog();
+      return;
+    }
+
+    setSendStatus(`Couldn't send: ${result.message ?? "unknown error"}`);
   }
 
   if (loading) return <p className="text-charcoal/60">Loading...</p>;
@@ -123,7 +163,8 @@ function EmailsContent() {
         <section className="bg-white border border-charcoal/10 rounded-xl p-6">
           <h2 className="font-serif text-lg mb-1">Send to {client.bride_name}</h2>
           <p className="text-charcoal/60 text-sm mb-4">
-            Pick a template — it opens in your email app pre-filled, and logs here once sent.{" "}
+            Pick a template — it sends automatically once Vayled&apos;s email is set up, or opens in your own email app
+            pre-filled until then. Either way it logs here once sent.{" "}
             <Link href={`/bookings/${bookingId}`} className="text-gold hover:underline">
               Back to booking
             </Link>
@@ -139,6 +180,7 @@ function EmailsContent() {
               </button>
             ))}
           </div>
+          {sendStatus && <p className="text-sm text-charcoal/70 mb-4">{sendStatus}</p>}
           {sentLog.length > 0 && (
             <div>
               <p className="text-xs text-charcoal/50 mb-2">Sent log</p>
