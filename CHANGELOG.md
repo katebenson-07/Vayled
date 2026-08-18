@@ -2,6 +2,18 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (16)
+
+- **Public marketing site, separate from the app** — `vayled.com` used to load straight into the (login-gated) dashboard, which meant search engines and anyone signed out just saw a blank "Loading..." shell with nothing to index. Fixed by giving the site an actual public front door:
+  - Moved the dashboard from `/` to `/dashboard`. Updated the login redirect, Sidebar's Dashboard link, and nothing else needed to change — every other app route (`/bookings`, `/payroll`, etc.) was already at its own path.
+  - New public marketing site at `/`, `/features`, `/pricing`, `/about` — server-rendered, real copy about what Vayled does, aimed at hair & makeup artists as the audience (not brides). Shares the sidebar's charcoal/gold/ivory brand styling but has its own top nav + footer (`MarketingNav`, `MarketingFooter`).
+  - `/login` now accepts `?mode=signup` so "Sign up" buttons land directly in account-creation mode instead of sign-in.
+  - Each public page has its own title/description (`generateMetadata` per route) instead of one generic title for the whole site.
+  - Added `app/sitemap.ts` and `app/robots.ts` — the sitemap only lists the public pages; robots explicitly disallows every authenticated app route plus `/portal` and `/inquire` (those are meant to be shared via a direct link with one client, not surfaced in search).
+  - Feature sections use a `FeatureVisual` component that renders a real screenshot if you drop one in `public/marketing/`, and a branded placeholder panel if not — so the site ships looking finished today, and screenshots can be swapped in without touching any page code.
+  - **Screenshots are the one thing I didn't do**: the moment I checked the live app to grab one, real client data showed up (a client's name and a $2,000 contract amount, on the Payroll page). I didn't save or use that screenshot — publishing an actual client's name/financials on a public marketing page isn't a call I should make for you. Easiest fix: add a couple of bookings with clearly fake info (e.g. "Demo Bride") before I (or you) screenshot the timeline builder, payroll, calendar, invoicing, and bride portal pages. Once those exist, save them into `public/marketing/` using the filenames already referenced in `app/(marketing)/features/page.tsx` (`timeline-builder.png`, `calendar.png`, `contracts.png`, `invoicing.png`, `bride-portal.png`, `payroll.png`) plus `dashboard.png` for the homepage — they'll show up automatically.
+  - **Also worth doing once this is live**: verify `vayled.com` in Google Search Console (DNS TXT record, similar to the Resend setup) and submit the sitemap — that's what actually gets it crawled; nothing about the code triggers indexing on its own.
+
 ## 2026-08-11 (15)
 
 - **Real email sending, via Resend** — templates and Dashboard reminders now send for real (no more opening your own email app) once Resend is connected. Emails go out from Vayled with your studio name as the sender and your own contact email as Reply-To, so a bride's reply lands in your inbox, not ours. Until Resend is connected, everything still works exactly as before — it automatically falls back to the mailto flow, so nothing breaks in the meantime.

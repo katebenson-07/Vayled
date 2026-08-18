@@ -9,7 +9,7 @@ import NavIcon from "./NavIcon";
 import { fetchInboxItems, getInboxLastSeen } from "@/lib/inbox";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Dashboard", icon: "dashboard" },
+  { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   { href: "/inbox", label: "Inbox", icon: "inbox" },
   { href: "/clients", label: "Clients", icon: "clients" },
   { href: "/bookings", label: "Bookings", icon: "bookings" },

@@ -46,7 +46,11 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Vayled",
+  metadataBase: new URL("https://vayled.com"),
+  title: {
+    default: "Vayled",
+    template: "%s · Vayled",
+  },
   description: "CRM for bridal hair & makeup stylists",
 };
 
