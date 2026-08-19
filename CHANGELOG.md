@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (41)
+
+- **Re-captured calendar marketing screenshot** now that more jobs have stylists assigned.
+
 ## 2026-08-19 (40)
 
 - **Re-captured invoicing marketing screenshot** with real line-item pricing ($3,150 bridesmaid hair + makeup, $200 trial) instead of the earlier $0 placeholder state.
