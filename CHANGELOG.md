@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (37)
+
+- **Re-captured trial-scheduling marketing screenshot** to remove a stray mouse cursor.
+
 ## 2026-08-19 (36)
 
 - **Re-captured dashboard marketing screenshot** to remove a stray mouse cursor that was visible in the top-left corner of the previous version.
