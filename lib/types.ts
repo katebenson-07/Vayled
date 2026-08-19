@@ -200,6 +200,7 @@ export interface TrialSession {
   studio_id: string;
   booking_id: string;
   session_date: string | null;
+  session_time: string | null;
   duration_minutes: number;
   location: string | null;
   fee: number;
@@ -214,6 +215,16 @@ export interface TrialSession {
   hair_rating: number | null;
   makeup_rating: number | null;
   quote: string | null;
+  created_at: string;
+}
+
+export interface TrialSlotOffer {
+  id: string;
+  studio_id: string;
+  booking_id: string;
+  slot_date: string;
+  slot_time: string | null;
+  status: "open" | "selected" | "withdrawn";
   created_at: string;
 }
 

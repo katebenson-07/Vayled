@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
-import { Booking, Client, TrialSession } from "@/lib/types";
+import { Booking, Client, TrialSession, TrialSlotOffer } from "@/lib/types";
+import { format, parseISO } from "date-fns";
 
 function Stars({ value, onChange }: { value: number | null; onChange: (v: number) => void }) {
   return (
@@ -29,7 +30,21 @@ function TrialContent() {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [client, setClient] = useState<Client | null>(null);
   const [trial, setTrial] = useState<TrialSession | null>(null);
+  const [slots, setSlots] = useState<TrialSlotOffer[]>([]);
+  const [newSlotDate, setNewSlotDate] = useState("");
+  const [newSlotTime, setNewSlotTime] = useState("");
+  const [linkCopied, setLinkCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  async function loadSlots() {
+    const { data } = await supabase
+      .from("trial_slot_offers")
+      .select("*")
+      .eq("booking_id", bookingId)
+      .order("slot_date")
+      .order("slot_time");
+    setSlots((data as TrialSlotOffer[]) ?? []);
+  }
 
   async function load() {
     const { data: bookingData } = await supabase.from("bookings").select("*").eq("id", bookingId).single();
@@ -55,6 +70,7 @@ function TrialContent() {
       trialData = created;
     }
     setTrial(trialData as TrialSession);
+    await loadSlots();
     setLoading(false);
   }
 
@@ -67,6 +83,48 @@ function TrialContent() {
     if (!trial) return;
     setTrial({ ...trial, ...fields });
     await supabase.from("trial_sessions").update(fields).eq("id", trial.id);
+  }
+
+  async function addSlot() {
+    if (!newSlotDate) return;
+    const { data: userData } = await supabase.auth.getUser();
+    const studio_id = userData.user?.id;
+    const { data } = await supabase
+      .from("trial_slot_offers")
+      .insert({
+        studio_id,
+        booking_id: bookingId,
+        slot_date: newSlotDate,
+        slot_time: newSlotTime || null,
+      })
+      .select()
+      .single();
+    if (data) setSlots([...slots, data as TrialSlotOffer].sort((a, b) => a.slot_date.localeCompare(b.slot_date)));
+    setNewSlotDate("");
+    setNewSlotTime("");
+  }
+
+  async function removeSlot(id: string) {
+    await supabase.from("trial_slot_offers").delete().eq("id", id);
+    setSlots(slots.filter((s) => s.id !== id));
+  }
+
+  function formatSlot(s: TrialSlotOffer) {
+    const d = format(parseISO(s.slot_date), "EEE, MMM d");
+    if (!s.slot_time) return d;
+    const [h, m] = s.slot_time.split(":");
+    const t = new Date();
+    t.setHours(parseInt(h), parseInt(m));
+    return `${d} · ${format(t, "h:mm a")}`;
+  }
+
+  const pickerUrl = typeof window !== "undefined" ? `${window.location.origin}/trials/${bookingId}/pick` : "";
+
+  function copyPickerLink() {
+    if (!pickerUrl) return;
+    navigator.clipboard.writeText(pickerUrl);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
   }
 
   if (loading || !trial) return <p className="text-charcoal/60">Loading...</p>;
@@ -102,6 +160,15 @@ function TrialContent() {
             />
           </div>
           <div>
+            <label className="block text-charcoal/60 mb-1">Time</label>
+            <input
+              type="time"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              value={trial.session_time ?? ""}
+              onChange={(e) => update({ session_time: e.target.value })}
+            />
+          </div>
+          <div>
             <label className="block text-charcoal/60 mb-1">Duration (min)</label>
             <input
               type="number"
@@ -134,6 +201,80 @@ function TrialContent() {
             </label>
           </div>
         </div>
+      </section>
+
+      <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
+          <h2 className="font-serif text-lg">Offer times to pick from</h2>
+          <button
+            onClick={copyPickerLink}
+            className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-ivory uppercase text-xs tracking-wide"
+          >
+            {linkCopied ? "Link copied ✓" : "Copy link to send"}
+          </button>
+        </div>
+        <p className="text-xs text-charcoal/50 mb-4">
+          Add a few open times below, then send the link to your client — she picks one and it fills in the date
+          &amp; time above automatically.
+        </p>
+
+        <div className="flex flex-wrap items-end gap-2 mb-4">
+          <div>
+            <label className="block text-charcoal/60 mb-1 text-sm">Date</label>
+            <input
+              type="date"
+              className="border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+              value={newSlotDate}
+              onChange={(e) => setNewSlotDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-charcoal/60 mb-1 text-sm">Time (optional)</label>
+            <input
+              type="time"
+              className="border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+              value={newSlotTime}
+              onChange={(e) => setNewSlotTime(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={addSlot}
+            disabled={!newSlotDate}
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-40"
+          >
+            Add time
+          </button>
+        </div>
+
+        {slots.length === 0 ? (
+          <p className="text-sm text-charcoal/50">No times offered yet.</p>
+        ) : (
+          <div className="space-y-1.5 text-sm">
+            {slots.map((s) => (
+              <div
+                key={s.id}
+                className={`flex items-center justify-between border rounded-md px-3 py-2 ${
+                  s.status === "selected"
+                    ? "border-gold bg-gold/10"
+                    : s.status === "withdrawn"
+                    ? "border-charcoal/10 text-charcoal/40"
+                    : "border-charcoal/10"
+                }`}
+              >
+                <span>
+                  {formatSlot(s)}
+                  {s.status === "selected" && <span className="ml-2 text-xs uppercase tracking-wide text-gold">Picked</span>}
+                  {s.status === "withdrawn" && <span className="ml-2 text-xs uppercase tracking-wide">Not picked</span>}
+                </span>
+                {s.status === "open" && (
+                  <button onClick={() => removeSlot(s.id)} className="text-red-600 text-xs uppercase tracking-wide">
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">

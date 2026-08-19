@@ -209,6 +209,36 @@ create table if not exists trial_sessions (
   unique (booking_id)
 );
 
+-- Time-of-day to go with session_date. Added separately since session_date
+-- originally only tracked the day, not a time — kept as its own column
+-- rather than widening session_date to a timestamp, so existing date-only
+-- rows don't need backfilling.
+alter table trial_sessions add column if not exists session_time time;
+
+-- ============================================================================
+-- Trial slot offers
+-- Candidate date/time options a stylist proposes for a client's trial, sent
+-- as a link the client opens (no login) to pick one from. Kept as its own
+-- table rather than a jsonb column on trial_sessions, since trial_sessions
+-- has a unique(booking_id) constraint built around exactly one confirmed
+-- session, not a list of options. Selecting a slot writes the confirmed
+-- date/time onto trial_sessions via the select_trial_slot() function below.
+-- ============================================================================
+
+create table if not exists trial_slot_offers (
+  id uuid primary key default uuid_generate_v4(),
+  studio_id uuid not null references auth.users(id) on delete cascade,
+  booking_id uuid not null references bookings(id) on delete cascade,
+  slot_date date not null,
+  slot_time time,
+  status text not null default 'open',
+  created_at timestamptz not null default now()
+);
+
+alter table trial_slot_offers drop constraint if exists trial_slot_offers_status_check;
+alter table trial_slot_offers add constraint trial_slot_offers_status_check
+  check (status in ('open', 'selected', 'withdrawn'));
+
 -- ============================================================================
 -- Service catalog
 -- The dropdown of services (and their default rates) each studio maintains
@@ -329,6 +359,7 @@ alter table booking_stylists enable row level security;
 alter table client_notes enable row level security;
 alter table vendors enable row level security;
 alter table trial_sessions enable row level security;
+alter table trial_slot_offers enable row level security;
 alter table client_photos enable row level security;
 alter table contract_templates enable row level security;
 alter table email_templates enable row level security;
@@ -375,6 +406,10 @@ create policy "Studios manage their own vendors" on vendors
 
 drop policy if exists "Studios manage their own trial sessions" on trial_sessions;
 create policy "Studios manage their own trial sessions" on trial_sessions
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+drop policy if exists "Studios manage their own trial slot offers" on trial_slot_offers;
+create policy "Studios manage their own trial slot offers" on trial_slot_offers
   for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
 
 drop policy if exists "Studios manage their own client photos" on client_photos;
@@ -576,6 +611,89 @@ as $$
 $$;
 
 grant execute on function public.get_bride_portal(uuid) to anon, authenticated;
+
+-- ============================================================================
+-- Trial slot picker (public, read + one narrow write)
+-- Same shape as the bride portal above: no broad RLS grant to anon on
+-- trial_slot_offers or trial_sessions, just two narrow security-definer
+-- functions scoped to one booking_id at a time. get_trial_slot_offers is
+-- read-only; select_trial_slot is the only write path anon ever gets, and it
+-- re-validates the slot belongs to the booking and is still open before
+-- touching anything.
+-- ============================================================================
+
+create or replace function public.get_trial_slot_offers(p_booking_id uuid)
+returns jsonb
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select jsonb_build_object(
+    'bride_name', c.bride_name,
+    'studio_name', coalesce(s.studio_name, 'Your studio'),
+    'confirmed_date', t.session_date,
+    'confirmed_time', t.session_time,
+    'slots', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'id', o.id,
+        'date', o.slot_date,
+        'time', o.slot_time
+      ) order by o.slot_date, o.slot_time)
+      from trial_slot_offers o
+      where o.booking_id = b.id and o.status = 'open'
+    ), '[]'::jsonb)
+  )
+  from bookings b
+  join clients c on c.id = b.client_id
+  left join trial_sessions t on t.booking_id = b.id
+  left join studio_settings s on s.studio_id = b.stylist_id
+  where b.id = p_booking_id
+    and b.status in ('booked', 'completed');
+$$;
+
+grant execute on function public.get_trial_slot_offers(uuid) to anon, authenticated;
+
+create or replace function public.select_trial_slot(p_booking_id uuid, p_slot_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_slot trial_slot_offers%rowtype;
+  v_updated integer;
+begin
+  select * into v_slot
+  from trial_slot_offers
+  where id = p_slot_id and booking_id = p_booking_id and status = 'open'
+  for update;
+
+  if not found then
+    return jsonb_build_object('ok', false, 'error', 'That time is no longer available — pick another one below.');
+  end if;
+
+  update trial_slot_offers set status = 'withdrawn'
+  where booking_id = p_booking_id and status = 'open';
+
+  update trial_slot_offers set status = 'selected'
+  where id = p_slot_id;
+
+  update trial_sessions
+  set session_date = v_slot.slot_date, session_time = v_slot.slot_time
+  where booking_id = p_booking_id;
+  get diagnostics v_updated = row_count;
+
+  if v_updated = 0 then
+    insert into trial_sessions (studio_id, booking_id, session_date, session_time)
+    values (v_slot.studio_id, p_booking_id, v_slot.slot_date, v_slot.slot_time);
+  end if;
+
+  return jsonb_build_object('ok', true, 'date', v_slot.slot_date, 'time', v_slot.slot_time);
+end;
+$$;
+
+grant execute on function public.select_trial_slot(uuid, uuid) to anon, authenticated;
 
 -- ============================================================================
 -- Storage: client photos (mood board / trial results)

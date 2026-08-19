@@ -2,6 +2,15 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (18)
+
+- **Client self-scheduling for trials** — a stylist can now offer a handful of open trial times and let the client pick one herself instead of going back and forth over text.
+  - On the trial page (`/trials/[bookingId]`), a new "Offer times to pick from" section lets you add a few candidate date/time options and copy a link to send the client.
+  - The client opens that link (no account needed) at `/trials/[bookingId]/pick`, sees the open times, and picks one — it's confirmed immediately and written straight onto the trial's date/time, same as if you'd typed it in yourself. If someone else grabs a slot first, or the studio has already confirmed a time another way, the page tells her instead of letting her double-book.
+  - Added a "Trial time options" email template with a `{{trial_pick_link}}` merge field, so sending the link takes one click from the Emails page (or you can just use "Copy link to send" and paste it anywhere — text, email, whatever your client prefers).
+  - **New table + two Postgres functions — you'll need to re-run `schema.sql` in Supabase for this one.** Followed the same pattern as the existing bride portal: the candidate times live in a new `trial_slot_offers` table that only the studio can read/write directly; the client-facing page only ever talks to two narrow functions (`get_trial_slot_offers`, `select_trial_slot`) that are scoped to exactly one booking at a time. There's no broad public access to trial data — same reasoning as the bride portal, just extended to cover a write instead of only a read.
+  - Also added a time-of-day field (`session_time`) next to the existing trial date, since trials previously only tracked a date with no time.
+
 ## 2026-08-18 (16)
 
 - **Public marketing site, separate from the app** — `vayled.com` used to load straight into the (login-gated) dashboard, which meant search engines and anyone signed out just saw a blank "Loading..." shell with nothing to index. Fixed by giving the site an actual public front door:

@@ -25,6 +25,12 @@ export const DEFAULT_TEMPLATES: Omit<EmailTemplate, "id" | "studio_id" | "create
     body: "Hi {{bride_name}},\n\nJust a reminder about your upcoming trial session — can't wait to see you!",
   },
   {
+    name: "Trial time options",
+    subject: "Pick your trial time",
+    body:
+      "Hi {{bride_name}},\n\nI have a few openings for your bridal trial — pick whichever works best for you here:\n\n{{trial_pick_link}}\n\nCan't wait to see you!",
+  },
+  {
     name: "Trial prep questionnaire",
     subject: "A few quick questions before your trial",
     body:
