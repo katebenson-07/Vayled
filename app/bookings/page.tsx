@@ -61,11 +61,12 @@ function BookingsContent() {
                 <p className="font-medium">{b.clients?.bride_name ?? "Unknown client"}</p>
                 <p className="text-sm text-charcoal/60">{b.clients?.wedding_date ?? "No date set"}</p>
               </Link>
-              <div className="flex items-center gap-3 shrink-0">
+              <div className="flex items-center gap-4 shrink-0">
                 <span className="text-sm capitalize text-charcoal/60">{b.status}</span>
+                <span className="w-px h-5 bg-charcoal/10" />
                 <button
                   onClick={() => deleteBooking(b)}
-                  className="text-red-600 text-xs uppercase tracking-wide px-2 py-1.5"
+                  className="text-red-600/70 hover:text-red-600 text-xs uppercase tracking-wide"
                 >
                   Delete
                 </button>

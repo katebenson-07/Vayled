@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (26)
+
+- **Separated Delete from the primary action on both list pages** — on Inquiries, "Delete" sat right next to "Convert to project"; on Bookings, right next to the status label. Both now have a visual divider and more spacing before Delete, and it's dimmed to a lighter red until hovered, so it reads as a secondary, easy-to-avoid action instead of sitting shoulder-to-shoulder with the main thing you'd actually click.
+
 ## 2026-08-18 (25)
 
 - **Moved booking delete to the bottom of the booking profile** — it was next to the bride's name up top; now it's its own "Danger zone" section at the very bottom of the page, below Payments, visible regardless of which tab is open. Same confirmation as before, just relocated.
