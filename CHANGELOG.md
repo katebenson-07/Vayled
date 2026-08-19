@@ -2,6 +2,11 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (25)
+
+- **Moved booking delete to the bottom of the booking profile** — it was next to the bride's name up top; now it's its own "Danger zone" section at the very bottom of the page, below Payments, visible regardless of which tab is open. Same confirmation as before, just relocated.
+- **Added client delete** — same "Danger zone" section at the bottom of a client's profile (`/clients/[id]`). Confirms first and is explicit that deleting a client takes every one of their bookings with it (contracts, invoices, payments, wedding parties, timelines, notes, vendors) — this is the biggest single delete in the app, since one client can have more than one booking. No schema changes.
+
 ## 2026-08-18 (24)
 
 - **Edit button on the booking header** — bride name, wedding date, and party size were only ever set at inquiry time with no way to fix a typo or adjust headcount later without leaving the page. Added an "Edit" link next to the bride's name that opens a small inline panel:

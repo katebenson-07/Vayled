@@ -773,12 +773,6 @@ function BookingDetail() {
           >
             Build timeline
           </button>
-          <button
-            onClick={deleteBooking}
-            className="border border-red-200 text-red-600 rounded-md px-3 py-1.5 hover:bg-red-50 uppercase text-xs tracking-wide"
-          >
-            Delete
-          </button>
         </div>
       </div>
 
@@ -1431,6 +1425,22 @@ function BookingDetail() {
           )}
         </section>
       )}
+
+      <section className="border border-red-200 rounded-xl p-5 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 className="text-xs uppercase tracking-widest-lg text-red-600 mb-1">Danger zone</h2>
+          <p className="text-sm text-charcoal/60">
+            Permanently deletes this booking, including its contract, invoice, payments, wedding party, and
+            timeline. There&apos;s no undo.
+          </p>
+        </div>
+        <button
+          onClick={deleteBooking}
+          className="border border-red-200 text-red-600 rounded-md px-4 py-2 hover:bg-red-50 uppercase text-xs tracking-wide whitespace-nowrap"
+        >
+          Delete booking
+        </button>
+      </section>
     </div>
   );
 }

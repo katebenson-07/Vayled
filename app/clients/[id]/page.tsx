@@ -42,6 +42,20 @@ function ClientDetail() {
     }
   }
 
+  async function deleteClient() {
+    if (!client) return;
+    const confirmed = window.confirm(
+      `Delete ${client.bride_name}? This permanently deletes every booking for this client — including contracts, invoices, payments, wedding party, and timelines — along with their notes and vendors. There's no undo.`
+    );
+    if (!confirmed) return;
+    const { error } = await supabase.from("clients").delete().eq("id", client.id);
+    if (error) {
+      alert("Couldn't delete this client — try again.");
+      return;
+    }
+    router.push("/clients");
+  }
+
   async function createBooking() {
     const { data: userData } = await supabase.auth.getUser();
     const stylist_id = userData.user?.id;
@@ -172,6 +186,22 @@ function ClientDetail() {
           ))}
         </div>
       )}
+
+      <div className="border border-red-200 rounded-xl p-5 flex items-center justify-between flex-wrap gap-3 mt-6">
+        <div>
+          <h2 className="text-xs uppercase tracking-widest-lg text-red-600 mb-1">Danger zone</h2>
+          <p className="text-sm text-charcoal/60">
+            Permanently deletes this client and every one of their bookings — contracts, invoices, payments,
+            wedding parties, and timelines included. There&apos;s no undo.
+          </p>
+        </div>
+        <button
+          onClick={deleteClient}
+          className="border border-red-200 text-red-600 rounded-md px-4 py-2 hover:bg-red-50 uppercase text-xs tracking-wide whitespace-nowrap"
+        >
+          Delete client
+        </button>
+      </div>
     </div>
   );
 }
