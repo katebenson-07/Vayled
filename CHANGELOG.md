@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (35)
+
+- **Refreshed payroll marketing screenshot** with real contract totals, owed amounts, and Lead/Assist role badges now that jobs have stylists and contract values assigned.
+
 ## 2026-08-19 (34)
 
 - **Refreshed calendar marketing screenshot** now that jobs have stylists assigned, and updated the Calendar feature copy on /features to call out assigning a lead and an assist stylist to each job.
