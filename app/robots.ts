@@ -8,6 +8,7 @@ const DISALLOWED = [
   "/dashboard",
   "/inbox",
   "/clients",
+  "/inquiries",
   "/bookings",
   "/calendar",
   "/stylists",

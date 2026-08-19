@@ -8,12 +8,12 @@ import { Booking, Client } from "@/lib/types";
 
 type BookingWithClient = Booking & { clients: Client | null };
 
-function BookingsContent() {
-  const [bookings, setBookings] = useState<BookingWithClient[]>([]);
+function InquiriesContent() {
+  const [inquiries, setInquiries] = useState<BookingWithClient[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    const { data } = await supabase.from("bookings").select("*, clients(*)").neq("status", "inquiry");
+    const { data } = await supabase.from("bookings").select("*, clients(*)").eq("status", "inquiry");
     const sorted = ((data as any) ?? []).sort((a: any, b: any) => {
       const dateA = a.clients?.wedding_date;
       const dateB = b.clients?.wedding_date;
@@ -22,7 +22,7 @@ function BookingsContent() {
       if (!dateB) return -1;
       return dateA < dateB ? -1 : dateA > dateB ? 1 : 0;
     });
-    setBookings(sorted);
+    setInquiries(sorted);
     setLoading(false);
   }
 
@@ -30,29 +30,40 @@ function BookingsContent() {
     load();
   }, []);
 
+  async function convertToProject(bookingId: string) {
+    setInquiries(inquiries.filter((b) => b.id !== bookingId));
+    const { error } = await supabase.from("bookings").update({ status: "booked" }).eq("id", bookingId);
+    if (error) load();
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
-        <h1 className="font-serif text-2xl">Bookings</h1>
-        <Link href="/inquiries" className="text-sm text-gold hover:underline">
-          View inquiries →
+        <h1 className="font-serif text-2xl">Inquiries</h1>
+        <Link href="/bookings" className="text-sm text-gold hover:underline">
+          View projects →
         </Link>
       </div>
 
       {loading ? (
         <p className="text-charcoal/60">Loading...</p>
-      ) : bookings.length === 0 ? (
-        <p className="text-charcoal/60">No projects yet. Convert an inquiry to get started.</p>
+      ) : inquiries.length === 0 ? (
+        <p className="text-charcoal/60">No inquiries yet.</p>
       ) : (
         <div className="bg-white border border-charcoal/10 rounded-xl divide-y divide-charcoal/10">
-          {bookings.map((b) => (
-            <Link key={b.id} href={`/bookings/${b.id}`} className="flex items-center justify-between p-4 hover:bg-ivory">
-              <div>
+          {inquiries.map((b) => (
+            <div key={b.id} className="flex items-center justify-between p-4 hover:bg-ivory">
+              <Link href={`/bookings/${b.id}`} className="flex-1">
                 <p className="font-medium">{b.clients?.bride_name ?? "Unknown client"}</p>
                 <p className="text-sm text-charcoal/60">{b.clients?.wedding_date ?? "No date set"}</p>
-              </div>
-              <span className="text-sm capitalize text-charcoal/60">{b.status}</span>
-            </Link>
+              </Link>
+              <button
+                onClick={() => convertToProject(b.id)}
+                className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs whitespace-nowrap"
+              >
+                Convert to project
+              </button>
+            </div>
           ))}
         </div>
       )}
@@ -60,10 +71,10 @@ function BookingsContent() {
   );
 }
 
-export default function BookingsPage() {
+export default function InquiriesPage() {
   return (
     <AuthGuard>
-      <BookingsContent />
+      <InquiriesContent />
     </AuthGuard>
   );
 }

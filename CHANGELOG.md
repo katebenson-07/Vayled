@@ -2,6 +2,14 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (20)
+
+- **Inquiries and Bookings are now separate sidebar tabs** — previously both lived on one `/bookings` page behind an in-page "Inquiries / Projects" toggle. Split into two real pages so it's one click instead of click-then-switch-tab:
+  - New `/inquiries` page — just the incoming leads, with "Convert to project" on each one (converting removes it from this list immediately).
+  - `/bookings` is now projects only (no more inquiries mixed in, no more in-page tabs).
+  - Sidebar has a new Inquiries item (right after Clients) with a count badge showing how many inquiries are open, same style as the Inbox unread badge.
+  - No schema changes, nothing to re-run in Supabase — this is routing/UI only.
+
 ## 2026-08-18 (19)
 
 - **Trial picker upgraded to a real calendar** — the client-facing page (`/trials/[bookingId]/pick`) no longer shows offered times as a flat list. It's now a month calendar like the one on the internal Calendar page: days with open times are highlighted with a gold dot, she taps a day to see that day's times, then taps a time to confirm. Handles multiple open days and multiple times per day cleanly, with month navigation if you've offered times further out. No schema changes — same `trial_slot_offers` data, just a different way of presenting it.

@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   { href: "/inbox", label: "Inbox", icon: "inbox" },
   { href: "/clients", label: "Clients", icon: "clients" },
+  { href: "/inquiries", label: "Inquiries", icon: "inquiries" },
   { href: "/bookings", label: "Bookings", icon: "bookings" },
   { href: "/calendar", label: "Calendar", icon: "calendar" },
   { href: "/stylists", label: "Stylists", icon: "stylists" },
@@ -35,6 +36,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const [displayName, setDisplayName] = useState("Loading...");
   const [subtitle, setSubtitle] = useState("");
   const [unreadCount, setUnreadCount] = useState(0);
+  const [inquiryCount, setInquiryCount] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -54,6 +56,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       const items = await fetchInboxItems();
       const lastSeen = getInboxLastSeen();
       setUnreadCount(items.filter((i) => i.timestamp > lastSeen).length);
+
+      const { count } = await supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "inquiry");
+      setInquiryCount(count ?? 0);
     }
     load();
   }, []);
@@ -87,6 +95,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               {item.href === "/inbox" && unreadCount > 0 && (
                 <span className="bg-ivory text-charcoal text-[11px] font-medium rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
                   {unreadCount}
+                </span>
+              )}
+              {item.href === "/inquiries" && inquiryCount > 0 && (
+                <span className="bg-ivory text-charcoal text-[11px] font-medium rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
+                  {inquiryCount}
                 </span>
               )}
             </Link>

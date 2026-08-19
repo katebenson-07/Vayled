@@ -27,6 +27,13 @@ const PATHS: Record<string, JSX.Element> = {
       <path d="M9 12l2 2 4-4" />
     </>
   ),
+  inquiries: (
+    <>
+      <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      <path d="M12 8.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.3c0 1-1.5 1.2-1.5 2.4" />
+      <circle cx="13.5" cy="14" r="0.6" fill="currentColor" stroke="none" />
+    </>
+  ),
   calendar: (
     <>
       <rect x="3" y="4" width="18" height="17" rx="2" />
