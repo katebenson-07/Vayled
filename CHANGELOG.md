@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (29)
+
+- **Refreshed marketing screenshots** — re-captured dashboard, calendar, payroll, timeline builder, invoice, contract, and bride portal screenshots on vayled.com now that test bride/stylist names are spelled correctly. Pipeline strip image left as-is (it shows milestone labels only, no client names).
+
 ## 2026-08-18 (28)
 
 - **Removed Delete from the Inquiries list too** — same reasoning as Bookings: it made deleting too easy from a list you scroll through quickly. Delete now lives in exactly one place across the whole app: the "Danger zone" at the bottom of a booking's own profile page, where you have to actually open it and confirm.
