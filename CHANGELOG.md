@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (36)
+
+- **Re-captured dashboard marketing screenshot** to remove a stray mouse cursor that was visible in the top-left corner of the previous version.
+
 ## 2026-08-19 (35)
 
 - **Refreshed payroll marketing screenshot** with real contract totals, owed amounts, and Lead/Assist role badges now that jobs have stylists and contract values assigned.
