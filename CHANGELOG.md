@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (30)
+
+- **Added trial self-scheduling as a highlighted feature** on both the homepage and the /features page, with a new screenshot of the "Offer times to pick from" picker. Copy focuses on skipping the back-and-forth texting to land on a trial date.
+
 ## 2026-08-19 (29)
 
 - **Refreshed marketing screenshots** — re-captured dashboard, calendar, payroll, timeline builder, invoice, contract, and bride portal screenshots on vayled.com now that test bride/stylist names are spelled correctly. Pipeline strip image left as-is (it shows milestone labels only, no client names).

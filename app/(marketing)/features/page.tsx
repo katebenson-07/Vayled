@@ -22,6 +22,12 @@ const SECTIONS = [
     body: "Click any day to see everything on it — brides, venues, party size, and which stylists are already assigned — before you say yes to something that conflicts.",
   },
   {
+    label: "Trial scheduling",
+    src: "/marketing/trial-scheduling.jpg",
+    title: "Offer a few times, let her pick",
+    body: "Add a handful of open trial times and send one link — your bride picks a slot on a real calendar and it's booked automatically, no more back-and-forth texts trying to land on a date that works for both of you.",
+  },
+  {
     label: "Contracts",
     src: "/marketing/contracts.jpg",
     title: "Contracts that send themselves out consistently",

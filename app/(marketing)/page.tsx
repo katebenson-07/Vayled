@@ -26,6 +26,12 @@ const FEATURES = [
     body: "Assign stylists, split the wedding party by headcount, and edit anything right up until the morning of. Your team and your bride see the same up-to-date timeline — not five different versions floating around in a text thread.",
   },
   {
+    label: "Trial scheduling",
+    src: "/marketing/trial-scheduling.jpg",
+    title: "Offer a few times, let her pick",
+    body: "Add a handful of open trial times and send one link — your bride picks a slot on a real calendar and it's booked, no more back-and-forth texts trying to land on a date that works.",
+  },
+  {
     label: "The path",
     src: "/marketing/pipeline.jpg",
     title: "A clear checklist for every single booking",
