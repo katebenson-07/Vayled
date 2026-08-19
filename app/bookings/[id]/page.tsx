@@ -80,6 +80,8 @@ function BookingDetail() {
   const [timelineMode, setTimelineMode] = useState<"view" | "edit">("view");
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
+  const [editingHeader, setEditingHeader] = useState(false);
+  const [partySizeInput, setPartySizeInput] = useState("");
 
   async function loadAll() {
     const { data: bookingData } = await supabase.from("bookings").select("*").eq("id", id).single();
@@ -182,6 +184,66 @@ function BookingDetail() {
       setSaveError(false);
     } else {
       setSaveError(true);
+    }
+  }
+
+  async function updateClient(fields: Partial<Client>) {
+    if (!client) return;
+    const { error } = await supabase.from("clients").update(fields).eq("id", client.id);
+    if (!error) {
+      setClient({ ...client, ...fields });
+      setSavedAt(new Date());
+      setSaveError(false);
+    } else {
+      setSaveError(true);
+    }
+  }
+
+  /** Grows or shrinks the wedding party from the header's quick-edit. Growing
+   *  adds unassigned placeholder rows (same "Bridesmaid N" naming as Quick
+   *  assign). Shrinking only ever removes unassigned members — if there
+   *  aren't enough of those to reach the target, it stops and says so rather
+   *  than silently deleting someone already on a stylist's timeline. */
+  async function updatePartySize(newSize: number) {
+    const current = members.length;
+    if (!Number.isFinite(newSize) || newSize < 0 || newSize === current) return;
+
+    if (newSize > current) {
+      const toAdd = newSize - current;
+      const { data: userData } = await supabase.auth.getUser();
+      const stylist_id = userData.user?.id;
+      let placeholderNum = members.filter((m) => /^Bridesmaid \d+$/.test(m.name)).length;
+      const newRows = Array.from({ length: toAdd }).map((_, i) => {
+        placeholderNum++;
+        return {
+          booking_id: id,
+          stylist_id,
+          name: `Bridesmaid ${placeholderNum}`,
+          role: "bridesmaid",
+          hair: true,
+          makeup: true,
+          prep_minutes: 45,
+          price: 0,
+          order_index: members.length + i,
+        };
+      });
+      const { data, error } = await supabase.from("party_members").insert(newRows).select();
+      if (!error && data) setMembers([...members, ...(data as PartyMember[])]);
+    } else {
+      const toRemove = current - newSize;
+      const removable = [...members]
+        .filter((m) => !m.assigned_stylist_id)
+        .sort((a, b) => b.order_index - a.order_index);
+      if (removable.length < toRemove) {
+        alert(
+          `Can only shrink the party by ${removable.length} right now — the rest are already assigned to a stylist. Unassign them first from the Wedding party or Timeline tab, then try again.`
+        );
+        setPartySizeInput(String(current));
+        return;
+      }
+      const idsToRemove = removable.slice(0, toRemove).map((m) => m.id);
+      await Promise.all(idsToRemove.map((mid) => supabase.from("party_members").delete().eq("id", mid)));
+      setMembers(members.filter((m) => !idsToRemove.includes(m.id)));
     }
   }
 
@@ -612,7 +674,18 @@ function BookingDetail() {
             {initials(client?.bride_name ?? "?")}
           </div>
           <div>
-            <h1 className="font-script text-4xl leading-tight mb-1">{client?.bride_name ?? "Booking"}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="font-script text-4xl leading-tight mb-1">{client?.bride_name ?? "Booking"}</h1>
+              <button
+                onClick={() => {
+                  setPartySizeInput(String(members.length));
+                  setEditingHeader(!editingHeader);
+                }}
+                className="text-xs text-gold hover:underline mb-1"
+              >
+                {editingHeader ? "Close" : "Edit"}
+              </button>
+            </div>
             <p className="text-charcoal/60 text-sm">
               Wedding date · <span className="text-charcoal font-medium">{client?.wedding_date ?? "No date set"}</span>
               {client?.venue ? ` · ${client.venue}` : ""} · Party of {members.length}
@@ -625,6 +698,45 @@ function BookingDetail() {
                 <span className="text-xs text-charcoal/50">Referred by {client.referral_source}</span>
               )}
             </div>
+
+            {editingHeader && (
+              <div className="flex flex-wrap items-end gap-4 bg-ivory border border-charcoal/10 rounded-lg p-4 mt-3 text-sm">
+                <div>
+                  <label className="block text-charcoal/60 mb-1 text-xs uppercase tracking-wide">Bride name</label>
+                  <input
+                    className="border border-charcoal/20 rounded-md px-3 py-2"
+                    value={client?.bride_name ?? ""}
+                    onChange={(e) => updateClient({ bride_name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-charcoal/60 mb-1 text-xs uppercase tracking-wide">Wedding date</label>
+                  <input
+                    type="date"
+                    className="border border-charcoal/20 rounded-md px-3 py-2"
+                    value={client?.wedding_date ?? ""}
+                    onChange={(e) => updateClient({ wedding_date: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-charcoal/60 mb-1 text-xs uppercase tracking-wide">Party size</label>
+                  <input
+                    type="number"
+                    min={0}
+                    className="border border-charcoal/20 rounded-md px-3 py-2 w-20"
+                    value={partySizeInput}
+                    onChange={(e) => setPartySizeInput(e.target.value)}
+                    onBlur={() => updatePartySize(parseInt(partySizeInput, 10))}
+                  />
+                </div>
+                <button
+                  onClick={() => setEditingHeader(false)}
+                  className="bg-charcoal text-ivory rounded-md px-4 py-2 text-xs uppercase tracking-wide"
+                >
+                  Done
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-wrap gap-2 text-sm">

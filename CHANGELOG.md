@@ -2,6 +2,13 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (24)
+
+- **Edit button on the booking header** — bride name, wedding date, and party size were only ever set at inquiry time with no way to fix a typo or adjust headcount later without leaving the page. Added an "Edit" link next to the bride's name that opens a small inline panel:
+  - Bride name and wedding date save immediately as you type/change them (same autosave pattern as everywhere else on this page).
+  - Party size adds or removes wedding party members to match the number you enter. Growing it adds unassigned placeholder rows (same "Bridesmaid N" naming Quick assign already uses). Shrinking it only ever removes people who aren't yet assigned to a stylist — if you ask it to shrink past that, it stops and tells you to unassign people first instead of silently deleting someone off a stylist's timeline.
+  - No schema changes.
+
 ## 2026-08-18 (23)
 
 - **Added a way to delete a booking** — there was genuinely no path to this before. Added "Delete" to:
