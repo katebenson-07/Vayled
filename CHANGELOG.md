@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (28)
+
+- **Removed Delete from the Inquiries list too** — same reasoning as Bookings: it made deleting too easy from a list you scroll through quickly. Delete now lives in exactly one place across the whole app: the "Danger zone" at the bottom of a booking's own profile page, where you have to actually open it and confirm.
+
 ## 2026-08-18 (27)
 
 - **Removed Delete from the Bookings list rows** — it now only lives in the booking's own "Danger zone" at the bottom of its profile page. The Bookings list row is back to a plain link showing just the client, date, and status. (Inquiries keeps its row-level Delete, next to "Convert to project," since discarding a bad lead without opening it is a common enough thing to do from the list.)
