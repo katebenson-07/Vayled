@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (31)
+
+- **Replaced dashboard marketing screenshot** with the current live view now that test data has real dollar figures (revenue MTD, unpaid balance, reminders), instead of the earlier $0 placeholder state.
+
 ## 2026-08-19 (30)
 
 - **Added trial self-scheduling as a highlighted feature** on both the homepage and the /features page, with a new screenshot of the "Offer times to pick from" picker. Copy focuses on skipping the back-and-forth texting to land on a trial date.
