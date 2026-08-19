@@ -5,34 +5,37 @@ import FeatureVisual from "@/components/FeatureVisual";
 export const metadata: Metadata = {
   title: "Booking software for bridal hair & makeup studios",
   description:
-    "Vayled is the CRM built specifically for bridal hair & makeup artists — wedding-day timelines, contracts, invoicing, and payroll for your whole team, in one place.",
+    "Vayled walks every wedding booking through one organized path, from first inquiry to wedding day — one timeline for your whole team and your bride, one place instead of five different apps.",
 };
 
-const PAIN_POINTS = [
-  "A double-booked trial you don't catch until the week of the wedding",
-  "A deposit that quietly never got paid because no one followed up",
-  "The wedding-morning schedule living in three different group texts",
-  "Paying your contractors off a spreadsheet you rebuild every time",
+const PATH_STEPS = [
+  "Inquiry received",
+  "Contract signed",
+  "Deposit paid",
+  "Trial done",
+  "Week of wedding",
+  "Wedding day",
+  "Balance & review",
 ];
 
 const FEATURES = [
   {
     label: "Timeline builder",
     src: "/marketing/timeline-builder.jpg",
-    title: "Build the wedding-day timeline in minutes, not a group chat",
-    body: "Assign your whole team, split the wedding party by headcount, and drag people between stylists when plans change. Every stylist sees their own schedule.",
+    title: "Build it once, send it to your whole team and your bride",
+    body: "Assign stylists, split the wedding party by headcount, and edit anything right up until the morning of. Your team and your bride see the same up-to-date timeline — not five different versions floating around in a text thread.",
   },
   {
-    label: "Invoicing & deposits",
-    src: "/marketing/invoicing.jpg",
-    title: "Deposits and balances that track themselves",
-    body: "Send a contract and invoice from one place, and know exactly who still owes what — without digging through email threads to check.",
+    label: "The path",
+    src: "/marketing/pipeline.jpg",
+    title: "A clear checklist for every single booking",
+    body: "Inquiry, contract, deposit, trial, week-of, wedding day, balance — every job moves through the same steps in order, so you always know exactly what's done and what's still open, for every client at once.",
   },
   {
-    label: "Payroll",
-    src: "/marketing/payroll.jpg",
-    title: "Pay your 1099 team without rebuilding a spreadsheet",
-    body: "Payouts are calculated straight from the percentages already set on each job, so payday is a review, not a re-calculation.",
+    label: "Reminders",
+    src: "/marketing/dashboard.jpg",
+    title: "Stay a step ahead of your clients, not behind them",
+    body: "Vayled flags balance-due dates, trials that still need to be booked, and questionnaires that should've gone out — so you're the one reaching out first, instead of scrambling to catch up.",
   },
 ];
 
@@ -42,11 +45,12 @@ export default function MarketingHome() {
       <section className="max-w-6xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28">
         <p className="text-xs uppercase tracking-widest-lg text-gold mb-4">For bridal hair &amp; makeup studios</p>
         <h1 className="font-serif text-4xl md:text-6xl leading-[1.1] text-charcoal max-w-3xl">
-          Run your bridal beauty business without the spreadsheet chaos
+          One organized path from inquiry to wedding day
         </h1>
         <p className="text-charcoal/70 text-lg mt-6 max-w-xl">
-          Vayled is the booking system built specifically for hair and makeup artists — timelines, contracts,
-          invoicing, and payroll for your whole team, all in one place.
+          Stop juggling five different apps to run a wedding. Vayled walks every booking through the same clear
+          process, builds one timeline your stylists and your bride actually use, and keeps you a step ahead of
+          your clients instead of chasing them.
         </p>
         <div className="flex flex-wrap gap-4 mt-8">
           <Link
@@ -70,14 +74,20 @@ export default function MarketingHome() {
 
       <section className="bg-white border-y border-charcoal/10">
         <div className="max-w-6xl mx-auto px-6 py-20">
-          <h2 className="font-serif text-2xl md:text-3xl text-charcoal max-w-xl">
-            If any of this sounds familiar, you&apos;re not alone
+          <h2 className="font-serif text-2xl md:text-3xl text-charcoal max-w-xl mb-3">
+            Every booking follows the same clear path
           </h2>
-          <div className="grid md:grid-cols-2 gap-4 mt-10">
-            {PAIN_POINTS.map((p) => (
-              <div key={p} className="flex gap-3 items-start bg-ivory rounded-xl p-5 border border-charcoal/10">
-                <span className="text-gold mt-0.5">—</span>
-                <p className="text-charcoal/70 text-sm">{p}</p>
+          <p className="text-charcoal/70 max-w-xl mb-10">
+            From the first inquiry to the morning of the wedding, nothing gets skipped and nothing gets forgotten —
+            for one client or fifty at once.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {PATH_STEPS.map((step, i) => (
+              <div key={step} className="flex items-center gap-2">
+                <span className="bg-ivory border border-charcoal/10 rounded-md px-3 py-2 text-xs md:text-sm text-charcoal/80 whitespace-nowrap">
+                  {step}
+                </span>
+                {i < PATH_STEPS.length - 1 && <span className="text-charcoal/20">→</span>}
               </div>
             ))}
           </div>

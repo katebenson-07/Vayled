@@ -2,6 +2,14 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (22)
+
+- **Rewrote the homepage messaging** — was leading with pain points ("sound familiar?"), now leads with the actual product: one organized path every booking follows from inquiry to wedding day, instead of juggling multiple apps.
+  - New headline/subhead around "one organized path" + not needing five different apps.
+  - Replaced the pain-point list with a section showing the real booking pipeline steps (Inquiry received → Contract signed → Deposit paid → Trial done → Week of wedding → Wedding day → Balance & review) — same wording as the actual pipeline strip in the app, so it's an accurate preview, not marketing fluff.
+  - Swapped the three feature callouts to: the timeline builder (now framed around "send it to your whole team and your bride," with easy editing), the booking checklist/pipeline (nothing forgotten), and the Dashboard's reminders panel (stay ahead of clients instead of chasing them).
+  - Added a new real screenshot, `public/marketing/pipeline.jpg` (cropped from a booking page showing the pipeline strip) for the checklist section.
+
 ## 2026-08-18 (21)
 
 - **Reordered the sidebar** to: Dashboard, Inbox, Bookings, Calendar, Clients, Inquiries, Contracts, Stylists, Payroll, Emails, Analytics, Expenses. No functional changes.
