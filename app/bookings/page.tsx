@@ -30,16 +30,6 @@ function BookingsContent() {
     load();
   }, []);
 
-  async function deleteBooking(booking: BookingWithClient) {
-    const confirmed = window.confirm(
-      `Delete ${booking.clients?.bride_name ?? "this"}'s booking? This permanently deletes the contract, invoice, payments, wedding party, and timeline for this booking — there's no undo.`
-    );
-    if (!confirmed) return;
-    setBookings(bookings.filter((b) => b.id !== booking.id));
-    const { error } = await supabase.from("bookings").delete().eq("id", booking.id);
-    if (error) load();
-  }
-
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
@@ -56,22 +46,13 @@ function BookingsContent() {
       ) : (
         <div className="bg-white border border-charcoal/10 rounded-xl divide-y divide-charcoal/10">
           {bookings.map((b) => (
-            <div key={b.id} className="flex items-center justify-between p-4 hover:bg-ivory">
-              <Link href={`/bookings/${b.id}`} className="flex-1">
+            <Link key={b.id} href={`/bookings/${b.id}`} className="flex items-center justify-between p-4 hover:bg-ivory">
+              <div>
                 <p className="font-medium">{b.clients?.bride_name ?? "Unknown client"}</p>
                 <p className="text-sm text-charcoal/60">{b.clients?.wedding_date ?? "No date set"}</p>
-              </Link>
-              <div className="flex items-center gap-4 shrink-0">
-                <span className="text-sm capitalize text-charcoal/60">{b.status}</span>
-                <span className="w-px h-5 bg-charcoal/10" />
-                <button
-                  onClick={() => deleteBooking(b)}
-                  className="text-red-600/70 hover:text-red-600 text-xs uppercase tracking-wide"
-                >
-                  Delete
-                </button>
               </div>
-            </div>
+              <span className="text-sm capitalize text-charcoal/60">{b.status}</span>
+            </Link>
           ))}
         </div>
       )}
