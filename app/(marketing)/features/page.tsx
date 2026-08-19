@@ -65,11 +65,13 @@ const SECTIONS = [
   },
   {
     label: "Inquiry form",
+    src: "/marketing/inquiry-form.jpg",
     title: "A booking inquiry form that's actually yours",
     body: "A public form your leads fill out — customize the questions, and every submission lands directly in your dashboard, ready to follow up on.",
   },
   {
     label: "Smart reminders",
+    src: "/marketing/smart-reminders.jpg",
     title: "Nudges for the things that fall through the cracks",
     body: "Vayled flags balance-due dates, unbooked trials, and pre-trial questionnaires that need to go out — you still send it, it just tells you when.",
   },

@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (33)
+
+- **Filled the last 2 placeholder screenshots on /features** — "Inquiry form" and "Smart reminders" were rendering the gradient placeholder panel since they had no image. Added a real screenshot of the public inquiry form and the dashboard's Reminders panel.
+
 ## 2026-08-19 (32)
 
 - **Populated Expenses with realistic test data** — 6 expenses across categories (products, travel, kit & tools, marketing, booth fees, education), budgets set per category, and 3 mileage trips logged, so the page isn't empty for screenshots.
