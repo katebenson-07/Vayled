@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (21)
+
+- **Reordered the sidebar** to: Dashboard, Inbox, Bookings, Calendar, Clients, Inquiries, Contracts, Stylists, Payroll, Emails, Analytics, Expenses. No functional changes.
+
 ## 2026-08-18 (20)
 
 - **Inquiries and Bookings are now separate sidebar tabs** — previously both lived on one `/bookings` page behind an in-page "Inquiries / Projects" toggle. Split into two real pages so it's one click instead of click-then-switch-tab:
