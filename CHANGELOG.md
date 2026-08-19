@@ -2,6 +2,11 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (32)
+
+- **Populated Expenses with realistic test data** — 6 expenses across categories (products, travel, kit & tools, marketing, booth fees, education), budgets set per category, and 3 mileage trips logged, so the page isn't empty for screenshots.
+- **Added Expenses & mileage and Analytics as highlighted features** on the /features page with real screenshots, since both pages now have realistic data behind them.
+
 ## 2026-08-19 (31)
 
 - **Replaced dashboard marketing screenshot** with the current live view now that test data has real dollar figures (revenue MTD, unpaid balance, reminders), instead of the earlier $0 placeholder state.

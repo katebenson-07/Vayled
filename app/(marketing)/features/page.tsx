@@ -52,6 +52,18 @@ const SECTIONS = [
     body: "Payouts for 1099 stylists are calculated from the percentages already set on the job, with lead/assist roles factored in — payday is a review, not a re-calculation.",
   },
   {
+    label: "Expenses & mileage",
+    src: "/marketing/expenses.jpg",
+    title: "Know your real profit, not just your revenue",
+    body: "Log expenses by category, track business mileage at the IRS rate, and set a budget per category — so you always know your net profit, not just what came in.",
+  },
+  {
+    label: "Analytics",
+    src: "/marketing/analytics.jpg",
+    title: "See what's actually working",
+    body: "Revenue by month, average booking value, and your inquiry-to-booked rate — the numbers that tell you whether the business is actually growing, not just busy.",
+  },
+  {
     label: "Inquiry form",
     title: "A booking inquiry form that's actually yours",
     body: "A public form your leads fill out — customize the questions, and every submission lands directly in your dashboard, ready to follow up on.",
