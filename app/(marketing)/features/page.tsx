@@ -11,37 +11,37 @@ export const metadata: Metadata = {
 const SECTIONS = [
   {
     label: "Timeline builder",
-    src: "/marketing/timeline-builder.png",
+    src: "/marketing/timeline-builder.jpg",
     title: "One timeline, your whole team",
     body: "Split the wedding party across your stylists by headcount instead of assigning people one at a time. Drag anyone to a different stylist's schedule if plans change, and every stylist sees exactly where they need to be and when.",
   },
   {
     label: "Calendar",
-    src: "/marketing/calendar.png",
+    src: "/marketing/calendar.jpg",
     title: "See every booking without guessing",
     body: "Click any day to see everything on it — brides, venues, party size, and which stylists are already assigned — before you say yes to something that conflicts.",
   },
   {
     label: "Contracts",
-    src: "/marketing/contracts.png",
+    src: "/marketing/contracts.jpg",
     title: "Contracts that send themselves out consistently",
     body: "Build a reusable contract template with your own terms, and generate a client-ready version for every booking automatically, instead of editing an old Word doc each time.",
   },
   {
     label: "Invoicing & deposits",
-    src: "/marketing/invoicing.png",
+    src: "/marketing/invoicing.jpg",
     title: "Deposits and balances that track themselves",
     body: "Every payment logs against the booking, so the balance due is always accurate — and reminders go out for deposits and final balances before they become a problem.",
   },
   {
     label: "Bride portal",
-    src: "/marketing/bride-portal.png",
+    src: "/marketing/bride-portal.jpg",
     title: "A clean, branded page for your client",
     body: "Each bride gets her own link with her wedding-day timeline and details, so she's not relying on a screenshot of a text message on the morning of.",
   },
   {
     label: "Payroll",
-    src: "/marketing/payroll.png",
+    src: "/marketing/payroll.jpg",
     title: "Payroll pulled straight from the timeline",
     body: "Payouts for 1099 stylists are calculated from the percentages already set on the job, with lead/assist roles factored in — payday is a review, not a re-calculation.",
   },

@@ -18,16 +18,19 @@ const PAIN_POINTS = [
 const FEATURES = [
   {
     label: "Timeline builder",
+    src: "/marketing/timeline-builder.jpg",
     title: "Build the wedding-day timeline in minutes, not a group chat",
     body: "Assign your whole team, split the wedding party by headcount, and drag people between stylists when plans change. Every stylist sees their own schedule.",
   },
   {
     label: "Invoicing & deposits",
+    src: "/marketing/invoicing.jpg",
     title: "Deposits and balances that track themselves",
     body: "Send a contract and invoice from one place, and know exactly who still owes what — without digging through email threads to check.",
   },
   {
     label: "Payroll",
+    src: "/marketing/payroll.jpg",
     title: "Pay your 1099 team without rebuilding a spreadsheet",
     body: "Payouts are calculated straight from the percentages already set on each job, so payday is a review, not a re-calculation.",
   },
@@ -62,7 +65,7 @@ export default function MarketingHome() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-20">
-        <FeatureVisual label="Vayled dashboard" src="/marketing/dashboard.png" />
+        <FeatureVisual label="Vayled dashboard" src="/marketing/dashboard.jpg" />
       </section>
 
       <section className="bg-white border-y border-charcoal/10">
@@ -87,7 +90,7 @@ export default function MarketingHome() {
             key={f.title}
             className={`grid md:grid-cols-2 gap-10 items-center ${i % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""}`}
           >
-            <FeatureVisual label={f.label} />
+            <FeatureVisual label={f.label} src={f.src} />
             <div>
               <p className="text-xs uppercase tracking-widest-lg text-gold mb-3">{f.label}</p>
               <h3 className="font-serif text-2xl md:text-3xl text-charcoal mb-4">{f.title}</h3>
