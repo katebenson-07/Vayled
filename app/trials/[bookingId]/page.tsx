@@ -99,8 +99,17 @@ function TrialContent() {
       })
       .select()
       .single();
-    if (data) setSlots([...slots, data as TrialSlotOffer].sort((a, b) => a.slot_date.localeCompare(b.slot_date)));
-    setNewSlotDate("");
+    if (data) {
+      setSlots(
+        [...slots, data as TrialSlotOffer].sort((a, b) =>
+          a.slot_date === b.slot_date
+            ? (a.slot_time ?? "").localeCompare(b.slot_time ?? "")
+            : a.slot_date.localeCompare(b.slot_date)
+        )
+      );
+    }
+    // Date stays put on purpose — adding several times for the same day
+    // (e.g. 10am, 1pm, 3pm) is the common case, so only the time resets.
     setNewSlotTime("");
   }
 
@@ -109,14 +118,10 @@ function TrialContent() {
     setSlots(slots.filter((s) => s.id !== id));
   }
 
-  function formatSlot(s: TrialSlotOffer) {
-    const d = format(parseISO(s.slot_date), "EEE, MMM d");
-    if (!s.slot_time) return d;
-    const [h, m] = s.slot_time.split(":");
-    const t = new Date();
-    t.setHours(parseInt(h), parseInt(m));
-    return `${d} · ${format(t, "h:mm a")}`;
-  }
+  const slotsByDate = slots.reduce<Record<string, TrialSlotOffer[]>>((groups, s) => {
+    (groups[s.slot_date] ??= []).push(s);
+    return groups;
+  }, {});
 
   const pickerUrl = typeof window !== "undefined" ? `${window.location.origin}/trials/${bookingId}/pick` : "";
 
@@ -249,28 +254,56 @@ function TrialContent() {
         {slots.length === 0 ? (
           <p className="text-sm text-charcoal/50">No times offered yet.</p>
         ) : (
-          <div className="space-y-1.5 text-sm">
-            {slots.map((s) => (
-              <div
-                key={s.id}
-                className={`flex items-center justify-between border rounded-md px-3 py-2 ${
-                  s.status === "selected"
-                    ? "border-gold bg-gold/10"
-                    : s.status === "withdrawn"
-                    ? "border-charcoal/10 text-charcoal/40"
-                    : "border-charcoal/10"
-                }`}
-              >
-                <span>
-                  {formatSlot(s)}
-                  {s.status === "selected" && <span className="ml-2 text-xs uppercase tracking-wide text-gold">Picked</span>}
-                  {s.status === "withdrawn" && <span className="ml-2 text-xs uppercase tracking-wide">Not picked</span>}
-                </span>
-                {s.status === "open" && (
-                  <button onClick={() => removeSlot(s.id)} className="text-red-600 text-xs uppercase tracking-wide">
-                    Remove
+          <div className="space-y-4">
+            {Object.entries(slotsByDate).map(([date, dateSlots]) => (
+              <div key={date}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-xs uppercase tracking-wide text-charcoal/50">
+                    {format(parseISO(date), "EEEE, MMM d")}
+                  </p>
+                  <button
+                    onClick={() => setNewSlotDate(date)}
+                    className="text-xs text-gold hover:underline"
+                  >
+                    + another time this day
                   </button>
-                )}
+                </div>
+                <div className="space-y-1.5 text-sm">
+                  {dateSlots.map((s) => (
+                    <div
+                      key={s.id}
+                      className={`flex items-center justify-between border rounded-md px-3 py-2 ${
+                        s.status === "selected"
+                          ? "border-gold bg-gold/10"
+                          : s.status === "withdrawn"
+                          ? "border-charcoal/10 text-charcoal/40"
+                          : "border-charcoal/10"
+                      }`}
+                    >
+                      <span>
+                        {s.slot_time
+                          ? (() => {
+                              const [h, m] = s.slot_time.split(":");
+                              const t = new Date();
+                              t.setHours(parseInt(h), parseInt(m));
+                              return format(t, "h:mm a");
+                            })()
+                          : "Time TBD"}
+                        {s.status === "selected" && (
+                          <span className="ml-2 text-xs uppercase tracking-wide text-gold">Picked</span>
+                        )}
+                        {s.status === "withdrawn" && (
+                          <span className="ml-2 text-xs uppercase tracking-wide">Not picked</span>
+                        )}
+                      </span>
+                      {s.status === "open" && (
+                        <button onClick={() => removeSlot(s.id)} className="text-red-600 text-xs uppercase tracking-wide">
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

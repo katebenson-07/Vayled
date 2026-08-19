@@ -2,6 +2,11 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (19)
+
+- **Trial picker upgraded to a real calendar** — the client-facing page (`/trials/[bookingId]/pick`) no longer shows offered times as a flat list. It's now a month calendar like the one on the internal Calendar page: days with open times are highlighted with a gold dot, she taps a day to see that day's times, then taps a time to confirm. Handles multiple open days and multiple times per day cleanly, with month navigation if you've offered times further out. No schema changes — same `trial_slot_offers` data, just a different way of presenting it.
+  - On the studio side, adding several times for the same day is faster now: the date field stays put after each "Add time" so you can add 10am, 1pm, 3pm back to back instead of re-picking the date each time. The list of offered times is also grouped by date instead of one long flat list, with a "+ another time this day" shortcut under each date.
+
 ## 2026-08-18 (18)
 
 - **Client self-scheduling for trials** — a stylist can now offer a handful of open trial times and let the client pick one herself instead of going back and forth over text.
