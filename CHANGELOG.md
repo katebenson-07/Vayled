@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (38)
+
+- **Re-captured "The path" pipeline marketing screenshot** — it still had the old, uncapitalized "katie Love" test name and "ocean cliff" venue from before the test data was corrected. Now shows Chloe Bertrand / Rosecliff.
+
 ## 2026-08-19 (37)
 
 - **Re-captured trial-scheduling marketing screenshot** to remove a stray mouse cursor.
