@@ -19,7 +19,7 @@ const SECTIONS = [
     label: "Calendar",
     src: "/marketing/calendar.jpg",
     title: "See every booking without guessing",
-    body: "Click any day to see everything on it — brides, venues, party size, and which stylists are already assigned — before you say yes to something that conflicts.",
+    body: "Click any day to see everything on it — brides, venues, party size, and which stylists are already assigned. Assign a lead and an assist stylist to every job right from the calendar, so everyone knows their role before you say yes to something that conflicts.",
   },
   {
     label: "Trial scheduling",

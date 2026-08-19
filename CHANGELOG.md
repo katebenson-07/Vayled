@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (34)
+
+- **Refreshed calendar marketing screenshot** now that jobs have stylists assigned, and updated the Calendar feature copy on /features to call out assigning a lead and an assist stylist to each job.
+
 ## 2026-08-19 (33)
 
 - **Filled the last 2 placeholder screenshots on /features** — "Inquiry form" and "Smart reminders" were rendering the gradient placeholder panel since they had no image. Added a real screenshot of the public inquiry form and the dashboard's Reminders panel.
