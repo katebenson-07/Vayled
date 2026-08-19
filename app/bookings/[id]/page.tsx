@@ -571,6 +571,20 @@ function BookingDetail() {
     setTimeout(() => setLinkCopied(false), 2000);
   }
 
+  async function deleteBooking() {
+    if (!booking || !client) return;
+    const confirmed = window.confirm(
+      `Delete ${client.bride_name}'s booking? This permanently deletes the contract, invoice, payments, wedding party, and timeline for this booking — there's no undo.`
+    );
+    if (!confirmed) return;
+    const { error } = await supabase.from("bookings").delete().eq("id", booking.id);
+    if (error) {
+      alert("Couldn't delete this booking — try again.");
+      return;
+    }
+    router.push(booking.status === "inquiry" ? "/inquiries" : "/bookings");
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-2 text-xs text-charcoal/50">
@@ -646,6 +660,12 @@ function BookingDetail() {
             className="bg-charcoal text-ivory rounded-md px-4 py-2 uppercase text-xs tracking-wide"
           >
             Build timeline
+          </button>
+          <button
+            onClick={deleteBooking}
+            className="border border-red-200 text-red-600 rounded-md px-3 py-1.5 hover:bg-red-50 uppercase text-xs tracking-wide"
+          >
+            Delete
           </button>
         </div>
       </div>

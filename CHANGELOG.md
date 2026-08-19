@@ -2,6 +2,14 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-18 (23)
+
+- **Added a way to delete a booking** — there was genuinely no path to this before. Added "Delete" to:
+  - The booking detail page, next to "Build timeline" (red, visually set apart from the other actions).
+  - Each row on the Bookings and Inquiries list pages, so you don't have to open a booking just to remove a bad inquiry or a test entry.
+  - Every one of these asks for a plain confirm first and names the client, since it's the only irreversible delete in the app — everything else (removing a vendor, a party member, a note) deletes immediately with no confirmation, but this one deletes the whole booking plus its contract, invoice, payments, wedding party, and timeline in one shot, so it gets a guard the others don't.
+  - One thing worth knowing: any trial photos attached to the booking (`client_photos`) are **not** deleted along with it — they're kept and just unlinked from the booking (this was already how the schema was set up, not something I changed). Everything else — payments, contract/invoice data, wedding party, timeline assignments, sent-email log, trial times — is fully deleted via cascade. No schema changes needed for this one.
+
 ## 2026-08-18 (22)
 
 - **Rewrote the homepage messaging** — was leading with pain points ("sound familiar?"), now leads with the actual product: one organized path every booking follows from inquiry to wedding day, instead of juggling multiple apps.

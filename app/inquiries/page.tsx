@@ -36,6 +36,16 @@ function InquiriesContent() {
     if (error) load();
   }
 
+  async function deleteInquiry(booking: BookingWithClient) {
+    const confirmed = window.confirm(
+      `Delete the inquiry from ${booking.clients?.bride_name ?? "this client"}? There's no undo.`
+    );
+    if (!confirmed) return;
+    setInquiries(inquiries.filter((b) => b.id !== booking.id));
+    const { error } = await supabase.from("bookings").delete().eq("id", booking.id);
+    if (error) load();
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
@@ -57,12 +67,20 @@ function InquiriesContent() {
                 <p className="font-medium">{b.clients?.bride_name ?? "Unknown client"}</p>
                 <p className="text-sm text-charcoal/60">{b.clients?.wedding_date ?? "No date set"}</p>
               </Link>
-              <button
-                onClick={() => convertToProject(b.id)}
-                className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs whitespace-nowrap"
-              >
-                Convert to project
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => convertToProject(b.id)}
+                  className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs whitespace-nowrap"
+                >
+                  Convert to project
+                </button>
+                <button
+                  onClick={() => deleteInquiry(b)}
+                  className="text-red-600 text-xs uppercase tracking-wide px-2 py-1.5"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>
