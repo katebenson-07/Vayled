@@ -571,9 +571,6 @@ function InvoiceContent() {
                         setSettings({ ...settings, trial_fee_override: Number(e.target.value) })
                       }
                     />
-                    <span className="text-charcoal/50">
-                      {trial ? "override the trial session's fee" : "no trial session on file — set manually"}
-                    </span>
                   </div>
                 )}
                 {row.key === "deposit" && (
