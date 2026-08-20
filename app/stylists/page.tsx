@@ -12,6 +12,7 @@ function StylistsContent() {
   const [members, setMembers] = useState<StudioMember[]>([]);
   const [invitingId, setInvitingId] = useState<string | null>(null);
   const [inviteError, setInviteError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [newName, setNewName] = useState("");
@@ -122,12 +123,32 @@ function StylistsContent() {
         body: JSON.stringify({ stylistId: s.id }),
       });
       const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Couldn't send invite.");
+      if (!res.ok) {
+        // Email sending isn't set up yet (no RESEND_API_KEY) — the invite
+        // itself still exists, so point her at the copy-link fallback below
+        // instead of a generic failure.
+        if (res.status === 501) {
+          setInviteError(
+            `Email sending isn't set up yet, so ${s.name}'s invite wasn't emailed — use "Copy invite link" below to send it yourself for now.`
+          );
+        } else {
+          throw new Error(body.error ?? "Couldn't send invite.");
+        }
+      }
     } catch (err: any) {
       setInviteError(err.message ?? "Something went wrong sending the invite.");
     } finally {
       setInvitingId(null);
     }
+  }
+
+  function copyInviteLink(s: Stylist) {
+    const member = members.find((m) => m.stylist_id === s.id);
+    if (!member) return;
+    const link = `${window.location.origin}/team-invite/${member.invite_token}`;
+    navigator.clipboard.writeText(link);
+    setCopiedId(s.id);
+    setTimeout(() => setCopiedId(null), 2000);
   }
 
   async function addTimeOff(e: React.FormEvent) {
@@ -268,6 +289,11 @@ function StylistsContent() {
                         className="border border-charcoal/20 rounded-md px-3 py-1 text-xs disabled:opacity-40"
                       >
                         {invitingId === s.id ? "Sending..." : loginStatus === "pending" ? "Resend invite" : "Invite to log in"}
+                      </button>
+                    )}
+                    {loginStatus === "pending" && (
+                      <button onClick={() => copyInviteLink(s)} className="text-gold text-xs hover:underline">
+                        {copiedId === s.id ? "Link copied ✓" : "Copy invite link"}
                       </button>
                     )}
                     <button onClick={() => toggleActive(s)} className="text-charcoal/60 hover:text-charcoal">
