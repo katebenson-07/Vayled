@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (47)
+
+- **Bumped Pro tier from 3 to 10 stylists** and updated its blurb to match ("growing teams building out their stylist roster").
+
 ## 2026-08-19 (46)
 
 - **Removed feature gating between pricing tiers** — every plan (Solo/Pro/Studio) now includes every feature. The only difference between tiers is team size (1 stylist / up to 3 / unlimited).

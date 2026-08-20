@@ -35,8 +35,8 @@ const PLANS = [
   {
     name: "Pro",
     price: 49,
-    blurb: "For small teams with a couple of stylists on staff.",
-    stylists: "Up to 3 stylists",
+    blurb: "For growing teams building out their stylist roster.",
+    stylists: "Up to 10 stylists",
     tag: "Most popular",
   },
   {
