@@ -21,7 +21,6 @@ const PLANS = [
     price: 39,
     blurb: "For solo stylists running their own bookings.",
     stylists: "1 stylist",
-    bookings: "Up to 5 active bookings",
     included: ["Timelines, contracts, invoicing, calendar", "Inquiry form & smart reminders"],
   },
   {
@@ -29,7 +28,6 @@ const PLANS = [
     price: 79,
     blurb: "For small teams with a couple of stylists on staff.",
     stylists: "Up to 3 stylists",
-    bookings: "Up to 15 active bookings",
     tag: "Most popular",
     included: [
       "Everything in Starter, plus:",
@@ -42,7 +40,6 @@ const PLANS = [
     price: 149,
     blurb: "For growing studios with a full stylist team.",
     stylists: "Unlimited stylists, lead & assist roles",
-    bookings: "Unlimited active bookings",
     tag: "Best for studios",
     elevated: true,
     included: [
@@ -134,10 +131,6 @@ export default function PricingPage() {
                   <li className="flex items-start gap-2">
                     <span className="text-gold mt-0.5">✓</span>
                     {plan.stylists}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-gold mt-0.5">✓</span>
-                    {plan.bookings}
                   </li>
                   {plan.included.map((item) =>
                     item.startsWith("Everything") ? (

@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (43)
+
+- **Removed the active-bookings cap from all three pricing tiers** — Starter/Pro/Studio now only differ by stylist count and feature set, not a booking limit.
+
 ## 2026-08-19 (42)
 
 - **Added a post-beta pricing preview to /pricing** — the free beta offer stays front and center, with a new section below showing three flat monthly tiers (Starter $39, Pro $79, Studio $149). Studio is visually elevated with its own set of perks not in Pro: full analytics & revenue reporting, expense & mileage tracking with budgets, vendor team management, and priority onboarding/support — marketed as "Everything in Pro, plus:" to make the upgrade path feel like real added value. Pro keeps the "Most popular" anchor tag; Studio carries "Best for studios."
