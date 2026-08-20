@@ -84,10 +84,11 @@ create table if not exists payments (
 );
 
 -- 'trial' added alongside the original deposit/balance/other so the invoice's
--- Trial/Preview "Mark Paid" button can log its own payment type.
+-- Trial/Preview "Mark Paid" button can log its own payment type. 'rehearsal'
+-- added the same way for the Rehearsal hair & makeup schedule row.
 alter table payments drop constraint if exists payments_type_check;
 alter table payments add constraint payments_type_check
-  check (type in ('deposit','balance','trial','other'));
+  check (type in ('deposit','balance','trial','rehearsal','other'));
 
 -- invoice_line_items: [{ id, description, qty, rate }]
 -- invoice_settings: { tip_type, tip_percent, tip_amount,
@@ -238,6 +239,42 @@ create table if not exists trial_slot_offers (
 alter table trial_slot_offers drop constraint if exists trial_slot_offers_status_check;
 alter table trial_slot_offers add constraint trial_slot_offers_status_check
   check (status in ('open', 'selected', 'withdrawn'));
+
+-- ============================================================================
+-- Rehearsal hair & makeup
+-- A separate scheduled add-on from the trial — it's actual paid styling for
+-- the rehearsal dinner, the evening before the wedding, not a preview
+-- appointment. Kept as its own table (rather than another jsonb blob on
+-- bookings) so it can carry its own RLS and feed its own invoice schedule
+-- row, same pattern as trial_sessions right above.
+-- ============================================================================
+
+create table if not exists rehearsal_sessions (
+  id uuid primary key default uuid_generate_v4(),
+  studio_id uuid not null references auth.users(id) on delete cascade,
+  booking_id uuid not null references bookings(id) on delete cascade,
+  session_date date,
+  session_time time,
+  duration_minutes integer not null default 60,
+  location text,
+  fee numeric not null default 0,
+  fee_paid boolean not null default false,
+  completed boolean not null default false,
+  notes text,
+  created_at timestamptz not null default now(),
+  unique (booking_id)
+);
+
+alter table rehearsal_sessions enable row level security;
+
+drop policy if exists "Studios manage their own rehearsal sessions" on rehearsal_sessions;
+create policy "Studios manage their own rehearsal sessions" on rehearsal_sessions
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+-- The matching "assigned stylists" policy lives down in the stylist-logins
+-- section below, alongside the other is_assigned_to_booking()-based policies
+-- — that function isn't defined until that section, and CREATE POLICY
+-- validates its USING/WITH CHECK expressions immediately, not lazily.
 
 -- ============================================================================
 -- Service catalog
@@ -871,6 +908,10 @@ create policy "Stylists view their own assignments" on booking_stylists
 
 drop policy if exists "Assigned stylists manage trial notes" on trial_sessions;
 create policy "Assigned stylists manage trial notes" on trial_sessions
+  for all using (is_assigned_to_booking(booking_id)) with check (is_assigned_to_booking(booking_id));
+
+drop policy if exists "Assigned stylists manage rehearsal sessions" on rehearsal_sessions;
+create policy "Assigned stylists manage rehearsal sessions" on rehearsal_sessions
   for all using (is_assigned_to_booking(booking_id)) with check (is_assigned_to_booking(booking_id));
 
 drop policy if exists "Assigned stylists view trial slot offers" on trial_slot_offers;

@@ -12,6 +12,7 @@ import {
   InvoiceLineItem,
   InvoiceSettings,
   Payment,
+  RehearsalSession,
   ServiceCatalogItem,
   TrialSession,
   defaultInvoiceSettings,
@@ -25,7 +26,7 @@ import {
 } from "@/lib/invoice";
 import { format } from "date-fns";
 
-type ScheduleKey = "deposit" | "trial" | "balance";
+type ScheduleKey = "deposit" | "trial" | "rehearsal" | "balance";
 
 function tipCardClass(active: boolean) {
   return `border rounded-lg px-4 py-3 text-left transition-colors ${
@@ -88,6 +89,7 @@ function InvoiceContent() {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [client, setClient] = useState<Client | null>(null);
   const [trial, setTrial] = useState<TrialSession | null>(null);
+  const [rehearsal, setRehearsal] = useState<RehearsalSession | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [catalog, setCatalog] = useState<ServiceCatalogItem[]>([]);
   const [items, setItems] = useState<InvoiceLineItem[]>([]);
@@ -123,6 +125,13 @@ function InvoiceContent() {
         .maybeSingle();
       const trialSession = (trialData as TrialSession) ?? null;
       setTrial(trialSession);
+
+      const { data: rehearsalData } = await supabase
+        .from("rehearsal_sessions")
+        .select("*")
+        .eq("booking_id", bookingId)
+        .maybeSingle();
+      setRehearsal((rehearsalData as RehearsalSession) ?? null);
 
       const { data: paymentData } = await supabase.from("payments").select("*").eq("booking_id", bookingId);
       setPayments((paymentData as Payment[]) ?? []);
@@ -172,11 +181,17 @@ function InvoiceContent() {
       : trial && Number(trial.fee) > 0
         ? round2(Number(trial.fee))
         : 0;
+  const rehearsalAmount =
+    settings.rehearsal_fee_override != null
+      ? round2(Number(settings.rehearsal_fee_override || 0))
+      : rehearsal && Number(rehearsal.fee) > 0
+        ? round2(Number(rehearsal.fee))
+        : 0;
   const depositAmount =
     settings.deposit_type === "percent"
       ? round2((total * Number(settings.deposit_percent || 0)) / 100)
       : round2(Number(depositFlatAmount || 0));
-  const balanceAmount = round2(Math.max(total - depositAmount - trialAmount, 0));
+  const balanceAmount = round2(Math.max(total - depositAmount - trialAmount - rehearsalAmount, 0));
 
   const collected = payments.reduce((sum, p) => sum + Number(p.amount), 0);
   const outstanding = round2(Math.max(total - collected, 0));
@@ -236,7 +251,14 @@ function InvoiceContent() {
     if (amount <= 0) return;
     const { data: userData } = await supabase.auth.getUser();
     const stylist_id = userData.user?.id;
-    const label = key === "deposit" ? "Deposit" : key === "trial" ? "Trial / preview" : "Remaining balance";
+    const label =
+      key === "deposit"
+        ? "Deposit"
+        : key === "trial"
+          ? "Trial / preview"
+          : key === "rehearsal"
+            ? "Rehearsal hair & makeup"
+            : "Remaining balance";
     const { data, error } = await supabase
       .from("payments")
       .insert({
@@ -281,6 +303,14 @@ function InvoiceContent() {
       rule: settings.trial_due_rule,
       remind: settings.trial_remind,
       paid: settings.trial_paid,
+    },
+    {
+      key: "rehearsal",
+      label: "Rehearsal Hair & Makeup",
+      amount: rehearsalAmount,
+      rule: settings.rehearsal_due_rule,
+      remind: settings.rehearsal_remind,
+      paid: settings.rehearsal_paid,
     },
     {
       key: "balance",
@@ -569,6 +599,21 @@ function InvoiceContent() {
                       value={settings.trial_fee_override ?? trial?.fee ?? 0}
                       onChange={(e) =>
                         setSettings({ ...settings, trial_fee_override: Number(e.target.value) })
+                      }
+                    />
+                  </div>
+                )}
+                {row.key === "rehearsal" && (
+                  <div className="flex items-center gap-1 text-sm mb-2 print:hidden">
+                    <span>$</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right"
+                      value={settings.rehearsal_fee_override ?? rehearsal?.fee ?? 0}
+                      onChange={(e) =>
+                        setSettings({ ...settings, rehearsal_fee_override: Number(e.target.value) })
                       }
                     />
                   </div>

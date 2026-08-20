@@ -2,6 +2,14 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (51)
+
+- **Rehearsal hair & makeup** — a new scheduled add-on, separate from the trial: actual paid styling for the rehearsal dinner, usually the evening before the wedding. Each booking gets its own rehearsal session (date, time, duration, location, fee, paid status, completed checkbox, and notes), opened from a new link on the booking page's Notes tab next to the trial link. The invoice's Payment schedule now has a Rehearsal Hair & Makeup row between Trial/Preview and Remaining Balance, with the same fee-override, due-date, auto-remind, and "Mark paid" behavior as the other rows, and the remaining balance calculation now accounts for it. **Requires re-running `supabase/schema.sql`** — adds a `rehearsal_sessions` table (with owner and assigned-stylist RLS policies) and adds `'rehearsal'` to the `payments` type check constraint.
+
+## 2026-08-20 (50)
+
+- **Copy-invite-link fallback for stylist invites** — if `RESEND_API_KEY` isn't set yet, clicking "Invite to log in" now fails with a clear explanation instead of a generic error, and a "Copy invite link" button appears next to that stylist so the invite link can be sent manually (text, email, whatever) until Resend is configured.
+
 ## 2026-08-19 (49)
 
 - **Editable trial/preview amount on invoices** — the Payment schedule's Trial/Preview line previously only ever showed the linked trial session's fee, defaulting to $0 with no way to change it from the invoice itself. Added a direct dollar-amount override right on that row (matching the existing deposit % / flat editor), plus a dedicated "Save payment schedule" button under the schedule so changes there feel like they're actually saving rather than only being covered by the top "Save invoice" button. **Requires re-running `supabase/schema.sql`?** No — this only adds a new key (`trial_fee_override`) inside the existing `bookings.invoice_settings` jsonb column, no schema change needed.

@@ -1071,6 +1071,9 @@ function BookingDetail() {
             <Link href={`/trials/${id}`} className="border border-charcoal/20 rounded-md px-3 py-2 hover:bg-white">
               Open full trial session (fee, ratings, quote) →
             </Link>
+            <Link href={`/rehearsal/${id}`} className="border border-charcoal/20 rounded-md px-3 py-2 hover:bg-white">
+              Open rehearsal hair &amp; makeup (fee, notes) →
+            </Link>
           </div>
           <section className="bg-white border border-charcoal/10 rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">

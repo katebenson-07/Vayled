@@ -70,6 +70,11 @@ export interface InvoiceSettings {
   trial_paid: boolean;
   /** Manual override for the trial/preview line — null means "use the trial session's fee". */
   trial_fee_override: number | null;
+  rehearsal_due_rule: DueRule;
+  rehearsal_remind: boolean;
+  rehearsal_paid: boolean;
+  /** Manual override for the rehearsal line — null means "use the rehearsal session's fee". */
+  rehearsal_fee_override: number | null;
   balance_due_rule: DueRule;
   balance_remind: boolean;
   balance_paid: boolean;
@@ -90,6 +95,10 @@ export function defaultInvoiceSettings(): InvoiceSettings {
     trial_remind: true,
     trial_paid: false,
     trial_fee_override: null,
+    rehearsal_due_rule: defaultDueRule(),
+    rehearsal_remind: true,
+    rehearsal_paid: false,
+    rehearsal_fee_override: null,
     balance_due_rule: { mode: "before_wedding", date: null, days_before: 7 },
     balance_remind: true,
     balance_paid: false,
@@ -126,7 +135,7 @@ export interface Payment {
   booking_id: string;
   stylist_id: string;
   amount: number;
-  type: "deposit" | "balance" | "trial" | "other";
+  type: "deposit" | "balance" | "trial" | "rehearsal" | "other";
   method: string | null;
   note: string | null;
   paid_at: string;
@@ -231,6 +240,23 @@ export interface TrialSession {
   hair_rating: number | null;
   makeup_rating: number | null;
   quote: string | null;
+  created_at: string;
+}
+
+/** A separate scheduled add-on from the trial — actual paid styling for the
+ *  rehearsal dinner (the evening before the wedding), not a preview session. */
+export interface RehearsalSession {
+  id: string;
+  studio_id: string;
+  booking_id: string;
+  session_date: string | null;
+  session_time: string | null;
+  duration_minutes: number;
+  location: string | null;
+  fee: number;
+  fee_paid: boolean;
+  completed: boolean;
+  notes: string | null;
   created_at: string;
 }
 
