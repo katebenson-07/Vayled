@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
-import { Booking, Client, Stylist, StylistTimeOff, PartyMember } from "@/lib/types";
+import { Booking, Client, Stylist, StylistTimeOff, PartyMember, TrialSession, RehearsalSession } from "@/lib/types";
 import {
   startOfMonth,
   endOfMonth,
@@ -46,6 +46,8 @@ function CalendarContent() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [timeOff, setTimeOff] = useState<StylistTimeOff[]>([]);
   const [partyMembers, setPartyMembers] = useState<PartyMember[]>([]);
+  const [trialSessions, setTrialSessions] = useState<TrialSession[]>([]);
+  const [rehearsalSessions, setRehearsalSessions] = useState<RehearsalSession[]>([]);
   const [selectedStylistId, setSelectedStylistId] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -88,6 +90,18 @@ function CalendarContent() {
 
       const { data: memberData } = await supabase.from("party_members").select("*");
       setPartyMembers((memberData as PartyMember[]) ?? []);
+
+      const { data: trialData } = await supabase
+        .from("trial_sessions")
+        .select("*")
+        .not("session_date", "is", null);
+      setTrialSessions((trialData as TrialSession[]) ?? []);
+
+      const { data: rehearsalData } = await supabase
+        .from("rehearsal_sessions")
+        .select("*")
+        .not("session_date", "is", null);
+      setRehearsalSessions((rehearsalData as RehearsalSession[]) ?? []);
 
       setLoading(false);
     }
@@ -166,6 +180,33 @@ function CalendarContent() {
     });
     if (!selectedStylistId) return dayBookings;
     return dayBookings.filter((b) => assignments.some((a) => a.booking_id === b.id && a.stylist_id === selectedStylistId));
+  }
+
+  // Trial and rehearsal appointments are separate dates from the wedding day
+  // itself, so they show up on the calendar as their own small entries on
+  // whatever day they're scheduled for, linking to their own pages instead of
+  // the booking page.
+  type PreviewEvent = { type: "trial" | "rehearsal"; bookingId: string; brideName: string };
+
+  function previewEventsForDay(day: Date): PreviewEvent[] {
+    const events: PreviewEvent[] = [];
+    for (const t of trialSessions) {
+      if (!t.session_date || !isSameDay(parseISO(t.session_date), day)) continue;
+      const booking = bookings.find((b) => b.id === t.booking_id);
+      if (!booking) continue;
+      if (selectedStylistId && !assignments.some((a) => a.booking_id === booking.id && a.stylist_id === selectedStylistId))
+        continue;
+      events.push({ type: "trial", bookingId: booking.id, brideName: booking.clients?.bride_name ?? "Client" });
+    }
+    for (const r of rehearsalSessions) {
+      if (!r.session_date || !isSameDay(parseISO(r.session_date), day)) continue;
+      const booking = bookings.find((b) => b.id === r.booking_id);
+      if (!booking) continue;
+      if (selectedStylistId && !assignments.some((a) => a.booking_id === booking.id && a.stylist_id === selectedStylistId))
+        continue;
+      events.push({ type: "rehearsal", bookingId: booking.id, brideName: booking.clients?.bride_name ?? "Client" });
+    }
+    return events;
   }
 
   if (loading) return <p className="text-charcoal/60">Loading...</p>;
@@ -265,6 +306,7 @@ function CalendarContent() {
             <div className="grid grid-cols-7">
               {days.map((day) => {
                 const dayBookings = bookingsForDay(day);
+                const dayPreviews = previewEventsForDay(day);
                 const inMonth = isSameMonth(day, currentMonth);
                 const isToday = isSameDay(day, new Date());
                 return (
@@ -298,6 +340,15 @@ function CalendarContent() {
                         </span>
                       );
                     })}
+                    {dayPreviews.map((ev) => (
+                      <span
+                        key={`${ev.type}-${ev.bookingId}`}
+                        className="block rounded px-1.5 py-0.5 mb-1 truncate border border-gold/40 text-gold"
+                        title={`${ev.type === "trial" ? "Trial" : "Rehearsal"} — ${ev.brideName}`}
+                      >
+                        {ev.type === "trial" ? "Trial" : "Rehearsal"}: {ev.brideName.split(" ")[0]}
+                      </span>
+                    ))}
                   </button>
                 );
               })}
@@ -393,10 +444,10 @@ function CalendarContent() {
                 ×
               </button>
             </div>
-            <div className="p-5">
-              {bookingsForDay(selectedDay).length === 0 ? (
+            <div className="p-5 space-y-5">
+              {bookingsForDay(selectedDay).length === 0 && previewEventsForDay(selectedDay).length === 0 ? (
                 <div className="text-sm text-charcoal/60">
-                  <p className="mb-3">No bookings on this date.</p>
+                  <p className="mb-3">Nothing on this date.</p>
                   <Link href="/clients" className="text-gold hover:underline">
                     + New job
                   </Link>
@@ -443,6 +494,20 @@ function CalendarContent() {
                       </Link>
                     );
                   })}
+                  {previewEventsForDay(selectedDay).map((ev) => (
+                    <Link
+                      key={`${ev.type}-${ev.bookingId}`}
+                      href={ev.type === "trial" ? `/trials/${ev.bookingId}` : `/rehearsal/${ev.bookingId}`}
+                      className="block border border-gold/30 rounded-lg p-3 hover:bg-ivory/50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-medium">{ev.brideName}</p>
+                        <span className="text-[10px] uppercase tracking-wide bg-gold/10 text-gold px-1.5 py-0.5 rounded">
+                          {ev.type === "trial" ? "Trial" : "Rehearsal"}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>

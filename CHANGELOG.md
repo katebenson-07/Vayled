@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (52)
+
+- **Trial and rehearsal appointments now show on the calendar** — previously the calendar only ever showed the wedding day itself. Any trial session or rehearsal session with a date set now shows up as its own small entry on that day, in the month grid and in the day-detail popup, labeled "Trial: [Bride]" or "Rehearsal: [Bride]" and linking straight to that session's page instead of the booking page. No schema changes — this only reads the existing `session_date` columns already on `trial_sessions` and `rehearsal_sessions`.
+
 ## 2026-08-20 (51)
 
 - **Rehearsal hair & makeup** — a new scheduled add-on, separate from the trial: actual paid styling for the rehearsal dinner, usually the evening before the wedding. Each booking gets its own rehearsal session (date, time, duration, location, fee, paid status, completed checkbox, and notes), opened from a new link on the booking page's Notes tab next to the trial link. The invoice's Payment schedule now has a Rehearsal Hair & Makeup row between Trial/Preview and Remaining Balance, with the same fee-override, due-date, auto-remind, and "Mark paid" behavior as the other rows, and the remaining balance calculation now accounts for it. **Requires re-running `supabase/schema.sql`** — adds a `rehearsal_sessions` table (with owner and assigned-stylist RLS policies) and adds `'rehearsal'` to the `payments` type check constraint.
