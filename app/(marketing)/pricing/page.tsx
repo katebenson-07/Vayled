@@ -25,7 +25,7 @@ const PLANS = [
   },
   {
     name: "Pro",
-    price: 79,
+    price: 69,
     blurb: "For small teams with a couple of stylists on staff.",
     stylists: "Up to 3 stylists",
     tag: "Most popular",
@@ -37,7 +37,7 @@ const PLANS = [
   },
   {
     name: "Studio",
-    price: 149,
+    price: 119,
     blurb: "For growing studios with a full stylist team.",
     stylists: "Unlimited stylists, lead & assist roles",
     tag: "Best for studios",

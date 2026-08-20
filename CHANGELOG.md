@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (44)
+
+- **Adjusted pricing tiers to $39 / $69 / $119** (was $39 / $79 / $149) after comparing to Studio Ninja ($16/$27/$40) and HoneyBook ($36/$59/$129) — Studio in particular was priced above HoneyBook's top tier, which is steep for a new, unproven product.
+
 ## 2026-08-19 (43)
 
 - **Removed the active-bookings cap from all three pricing tiers** — Starter/Pro/Studio now only differ by stylist count and feature set, not a booking limit.
