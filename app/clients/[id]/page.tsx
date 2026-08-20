@@ -16,6 +16,8 @@ function ClientDetail() {
   const [loading, setLoading] = useState(true);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
+  const [appointmentMenuOpen, setAppointmentMenuOpen] = useState(false);
+  const [appointmentBookingId, setAppointmentBookingId] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -166,9 +168,64 @@ function ClientDetail() {
 
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-serif text-lg">Bookings</h2>
-        <button onClick={createBooking} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
-          New booking
-        </button>
+        <div
+          className="flex items-center gap-2 relative"
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) setAppointmentMenuOpen(false);
+          }}
+        >
+          <button
+            onClick={() => {
+              setAppointmentBookingId(bookings[0]?.id ?? "");
+              setAppointmentMenuOpen((o) => !o);
+            }}
+            disabled={bookings.length === 0}
+            title={bookings.length === 0 ? "Create a booking first" : undefined}
+            className="border border-charcoal/20 rounded-md px-4 py-2 text-sm disabled:opacity-40"
+          >
+            Add appointment
+          </button>
+          <button onClick={createBooking} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+            New booking
+          </button>
+
+          {appointmentMenuOpen && (
+            <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-charcoal/10 rounded-lg shadow-lg p-4 z-10 text-sm">
+              {bookings.length > 1 && (
+                <div className="mb-3">
+                  <label className="block text-charcoal/60 mb-1 text-xs">Which booking?</label>
+                  <select
+                    className="w-full border border-charcoal/20 rounded-md px-2 py-1.5 text-sm"
+                    value={appointmentBookingId}
+                    onChange={(e) => setAppointmentBookingId(e.target.value)}
+                  >
+                    {bookings.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.status} · ${b.contract_total}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div className="space-y-2">
+                <Link
+                  href={`/trials/${appointmentBookingId}`}
+                  className="block border border-charcoal/20 rounded-md px-3 py-2 hover:bg-ivory"
+                  onClick={() => setAppointmentMenuOpen(false)}
+                >
+                  Trial session
+                </Link>
+                <Link
+                  href={`/rehearsal/${appointmentBookingId}`}
+                  className="block border border-charcoal/20 rounded-md px-3 py-2 hover:bg-ivory"
+                  onClick={() => setAppointmentMenuOpen(false)}
+                >
+                  Rehearsal hair &amp; makeup
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       {bookings.length === 0 ? (
         <p className="text-charcoal/60">No bookings yet.</p>

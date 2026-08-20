@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (53)
+
+- **"Add appointment" button on the client profile** — next to "New booking" in the Bookings section, opens a small menu to jump straight to that client's Trial session or Rehearsal hair & makeup page without going through the booking detail page first. If a client has more than one booking, it asks which one first.
+
 ## 2026-08-20 (52)
 
 - **Trial and rehearsal appointments now show on the calendar** — previously the calendar only ever showed the wedding day itself. Any trial session or rehearsal session with a date set now shows up as its own small entry on that day, in the month grid and in the day-detail popup, labeled "Trial: [Bride]" or "Rehearsal: [Bride]" and linking straight to that session's page instead of the booking page. No schema changes — this only reads the existing `session_date` columns already on `trial_sessions` and `rehearsal_sessions`.
