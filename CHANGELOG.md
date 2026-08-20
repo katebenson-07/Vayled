@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (46)
+
+- **Removed feature gating between pricing tiers** — every plan (Solo/Pro/Studio) now includes every feature. The only difference between tiers is team size (1 stylist / up to 3 / unlimited).
+
 ## 2026-08-19 (45)
 
 - **Lowered pricing tiers to $29 / $49 / $99** and renamed "Starter" to "Solo" — priced to win first customers against established competitors rather than maximize day-one revenue.

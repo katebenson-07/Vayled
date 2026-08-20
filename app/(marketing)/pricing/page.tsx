@@ -15,13 +15,22 @@ const INCLUDED = [
   "Unlimited bookings during the beta",
 ];
 
+const ALL_FEATURES = [
+  "Timeline builder, contracts, invoicing, calendar",
+  "Payroll for 1099 stylists",
+  "Bride portal & trial self-scheduling",
+  "Full analytics & revenue reporting",
+  "Expense & mileage tracking with budgets",
+  "Vendor team management",
+  "Inquiry form & smart reminders",
+];
+
 const PLANS = [
   {
     name: "Solo",
     price: 29,
     blurb: "For solo stylists running their own bookings.",
     stylists: "1 stylist",
-    included: ["Timelines, contracts, invoicing, calendar", "Inquiry form & smart reminders"],
   },
   {
     name: "Pro",
@@ -29,11 +38,6 @@ const PLANS = [
     blurb: "For small teams with a couple of stylists on staff.",
     stylists: "Up to 3 stylists",
     tag: "Most popular",
-    included: [
-      "Everything in Solo, plus:",
-      "Payroll for 1099 stylists",
-      "Bride portal & trial self-scheduling",
-    ],
   },
   {
     name: "Studio",
@@ -42,13 +46,6 @@ const PLANS = [
     stylists: "Unlimited stylists, lead & assist roles",
     tag: "Best for studios",
     elevated: true,
-    included: [
-      "Everything in Pro, plus:",
-      "Full analytics & revenue reporting",
-      "Expense & mileage tracking with budgets",
-      "Vendor team management",
-      "Priority onboarding & support",
-    ],
   },
 ];
 
@@ -97,8 +94,8 @@ export default function PricingPage() {
             <p className="text-xs uppercase tracking-widest-lg text-gold mb-3">After beta</p>
             <h2 className="font-serif text-2xl md:text-3xl text-charcoal mb-3">What plans will look like once beta ends</h2>
             <p className="text-charcoal/70">
-              Join now and today&apos;s founding rate is locked in for your studio — these are the plans everyone
-              else will see later.
+              Every plan includes every feature — the only thing that changes as you move up is how many stylists
+              you can have on your team. Join now and today&apos;s founding rate is locked in for your studio.
             </p>
           </div>
 
@@ -127,23 +124,23 @@ export default function PricingPage() {
                   </span>
                   <span className={`text-sm ${plan.elevated ? "text-beige/60" : "text-charcoal/50"}`}> /mo</span>
                 </p>
+                <p
+                  className={`text-sm font-medium mb-4 pb-4 border-b ${
+                    plan.elevated ? "text-ivory border-ivory/20" : "text-charcoal border-charcoal/10"
+                  }`}
+                >
+                  {plan.stylists}
+                </p>
+                <p className={`text-xs uppercase tracking-widest-lg mb-3 ${plan.elevated ? "text-beige/60" : "text-charcoal/40"}`}>
+                  Every feature included
+                </p>
                 <ul className={`text-left space-y-2.5 text-sm flex-1 ${plan.elevated ? "text-beige/80" : "text-charcoal/70"}`}>
-                  <li className="flex items-start gap-2">
-                    <span className="text-gold mt-0.5">✓</span>
-                    {plan.stylists}
-                  </li>
-                  {plan.included.map((item) =>
-                    item.startsWith("Everything") ? (
-                      <li key={item} className="italic opacity-70 pt-1">
-                        {item}
-                      </li>
-                    ) : (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="text-gold mt-0.5">✓</span>
-                        {item}
-                      </li>
-                    )
-                  )}
+                  {ALL_FEATURES.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span className="text-gold mt-0.5">✓</span>
+                      {item}
+                    </li>
+                  ))}
                 </ul>
               </div>
             ))}
