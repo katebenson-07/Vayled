@@ -17,27 +17,27 @@ const INCLUDED = [
 
 const PLANS = [
   {
-    name: "Starter",
-    price: 39,
+    name: "Solo",
+    price: 29,
     blurb: "For solo stylists running their own bookings.",
     stylists: "1 stylist",
     included: ["Timelines, contracts, invoicing, calendar", "Inquiry form & smart reminders"],
   },
   {
     name: "Pro",
-    price: 69,
+    price: 49,
     blurb: "For small teams with a couple of stylists on staff.",
     stylists: "Up to 3 stylists",
     tag: "Most popular",
     included: [
-      "Everything in Starter, plus:",
+      "Everything in Solo, plus:",
       "Payroll for 1099 stylists",
       "Bride portal & trial self-scheduling",
     ],
   },
   {
     name: "Studio",
-    price: 119,
+    price: 99,
     blurb: "For growing studios with a full stylist team.",
     stylists: "Unlimited stylists, lead & assist roles",
     tag: "Best for studios",

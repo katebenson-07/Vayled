@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (45)
+
+- **Lowered pricing tiers to $29 / $49 / $99** and renamed "Starter" to "Solo" — priced to win first customers against established competitors rather than maximize day-one revenue.
+
 ## 2026-08-19 (44)
 
 - **Adjusted pricing tiers to $39 / $69 / $119** (was $39 / $79 / $149) after comparing to Studio Ninja ($16/$27/$40) and HoneyBook ($36/$59/$129) — Studio in particular was priced above HoneyBook's top tier, which is steep for a new, unproven product.
