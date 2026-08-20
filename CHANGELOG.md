@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (54)
+
+- **"+ Appointment" button on the Clients list** — same Trial session / Rehearsal hair & makeup shortcut as the client profile, now also available right on each row of the main Clients page (`/clients`) so you don't have to open a client first to find it.
+
 ## 2026-08-20 (53)
 
 - **"Add appointment" button on the client profile** — next to "New booking" in the Bookings section, opens a small menu to jump straight to that client's Trial session or Rehearsal hair & makeup page without going through the booking detail page first. If a client has more than one booking, it asks which one first.
