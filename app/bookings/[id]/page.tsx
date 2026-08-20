@@ -18,7 +18,7 @@ import {
   TrialSession,
   ClientPhoto,
 } from "@/lib/types";
-import { computeTimeline } from "@/lib/timeline";
+import { computeTimeline, computeTimelineFromStart } from "@/lib/timeline";
 import { format, differenceInCalendarDays, parseISO, subDays } from "date-fns";
 
 function initials(name: string) {
@@ -263,6 +263,31 @@ function BookingDetail() {
         prep_minutes: 45,
         price: 0,
         order_index: members.length,
+      })
+      .select()
+      .single();
+    if (!error && data) setMembers([...members, data as PartyMember]);
+  }
+
+  /** Adds the bride herself onto the timeline — separate from "+ Add person"
+   *  (which always makes another bridesmaid) since she isn't one of the
+   *  wedding party members tracked elsewhere and needs her own slot. Ordered
+   *  first in whichever stylist's queue she's dropped into. */
+  async function addBride() {
+    const { data: userData } = await supabase.auth.getUser();
+    const stylist_id = userData.user?.id;
+    const { data, error } = await supabase
+      .from("party_members")
+      .insert({
+        booking_id: id,
+        stylist_id,
+        name: client?.bride_name || "Bride",
+        role: "bride",
+        hair: true,
+        makeup: true,
+        prep_minutes: 60,
+        price: 0,
+        order_index: -1,
       })
       .select()
       .single();
@@ -544,9 +569,16 @@ function BookingDetail() {
   };
 
   let stylistTimelines: StylistTimeline[] = [];
-  if (booking.ready_by_time && client?.wedding_date && members.length > 0) {
-    const readyBy = new Date(`${client.wedding_date}T${booking.ready_by_time}`);
-    if (!isNaN(readyBy.getTime())) {
+  const hasTimeAnchor = booking.ready_by_time || booking.start_time;
+  if (hasTimeAnchor && client?.wedding_date && members.length > 0) {
+    // A start time takes priority when set — it means every stylist should
+    // begin at the same moment, rather than each independently working
+    // backward to finish by the same ready-by time (which lines up finish
+    // times, not start times).
+    const anchor = booking.start_time
+      ? new Date(`${client.wedding_date}T${booking.start_time}`)
+      : new Date(`${client.wedding_date}T${booking.ready_by_time}`);
+    if (!isNaN(anchor.getTime())) {
       const buffer = booking.buffer_minutes ?? 10;
       const groups = new Map<string, PartyMember[]>();
       for (const m of members) {
@@ -560,7 +592,9 @@ function BookingDetail() {
           return {
             stylistId: stylist?.id ?? null,
             stylistName: stylist ? stylist.name : "Unassigned",
-            entries: computeTimeline(readyBy, groupMembers, buffer),
+            entries: booking.start_time
+              ? computeTimelineFromStart(anchor, groupMembers, buffer)
+              : computeTimeline(anchor, groupMembers, buffer),
           };
         })
         .sort((a, b) => {
@@ -1220,6 +1254,11 @@ function BookingDetail() {
                   Split across {jobStylists.length} stylists — drag anyone to move them.
                 </span>
               )}
+              {timelineMode === "edit" && !members.some((m) => m.role === "bride") && (
+                <button onClick={addBride} className="text-gold text-xs hover:underline">
+                  + Add bride
+                </button>
+              )}
               {timelineMode === "edit" && (
                 <button onClick={addMember} className="text-gold text-xs hover:underline">
                   + Add person
@@ -1240,8 +1279,8 @@ function BookingDetail() {
               </div>
             </div>
           </div>
-          {!booking.ready_by_time ? (
-            <p className="text-charcoal/60 text-sm">Set a ready-by time above to generate the timeline.</p>
+          {!booking.ready_by_time && !booking.start_time ? (
+            <p className="text-charcoal/60 text-sm">Set a ready-by or start time above to generate the timeline.</p>
           ) : stylistTimelines.length === 0 ? (
             <p className="text-charcoal/60 text-sm">
               No one added yet — use Quick assign on the Wedding party section, or switch to{" "}
@@ -1252,12 +1291,28 @@ function BookingDetail() {
             </p>
           ) : (
             <div className="space-y-6 text-sm">
-              <div className="grid grid-cols-3 gap-3 text-center mb-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center mb-2">
+                <div className="bg-ivory rounded-lg p-3">
+                  <p className="text-xs text-charcoal/60 mb-1">Start time</p>
+                  <input
+                    type="time"
+                    className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-sm w-full"
+                    value={booking.start_time ?? ""}
+                    onChange={(e) => updateBooking({ start_time: e.target.value || null })}
+                  />
+                  <p className="text-[10px] text-charcoal/40 mt-1">
+                    {booking.start_time ? "Both stylists start here" : "Optional — leave blank to work backward from ready-by"}
+                  </p>
+                </div>
                 <div className="bg-ivory rounded-lg p-3">
                   <p className="text-xs text-charcoal/60">Ready by</p>
-                  <p className="font-medium">
-                    {format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}
-                  </p>
+                  {booking.ready_by_time ? (
+                    <p className="font-medium">
+                      {format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}
+                    </p>
+                  ) : (
+                    <p className="text-charcoal/40 text-xs">Not set</p>
+                  )}
                 </div>
                 <div className="bg-ivory rounded-lg p-3">
                   <p className="text-xs text-charcoal/60 mb-1">Buffer between people</p>
@@ -1424,7 +1479,11 @@ function BookingDetail() {
               <p className="text-charcoal/50 text-xs">Total chair time: {chairMinutes} min across {members.length} people.</p>
 
               <p className="text-charcoal/60 pt-2 border-t border-charcoal/10">
-                Everyone ready by {format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}
+                {booking.start_time
+                  ? `Everyone starts at ${format(new Date(`${client?.wedding_date}T${booking.start_time}`), "h:mm a")}`
+                  : booking.ready_by_time
+                    ? `Everyone ready by ${format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}`
+                    : ""}
                 {booking.ceremony_time ? ` · Ceremony ${format(new Date(`${client?.wedding_date}T${booking.ceremony_time}`), "h:mm a")}` : ""}
               </p>
             </div>

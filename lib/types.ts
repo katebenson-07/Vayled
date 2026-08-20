@@ -25,6 +25,8 @@ export interface Booking {
   ready_by_time: string | null;
   buffer_minutes: number;
   ceremony_time: string | null;
+  /** When set, the timeline builder works forward from this shared moment so every stylist starts together, instead of backward from ready_by_time. */
+  start_time: string | null;
   location: string | null;
   travel_minutes: number;
   contract_sent: boolean;

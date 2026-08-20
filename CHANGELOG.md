@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (56)
+
+- **Timeline builder: shared start time + Add bride** — two fixes to the Wedding-day timeline tab. First, a new optional "Start time" — when set, every stylist's queue now begins at that same moment (computed forward), instead of each stylist independently working backward from the ready-by time to finish together, which could leave them starting at very different times depending on how many people they each have. Ready-by still works exactly as before if you leave start time blank. Second, added a "+ Add bride" button (next to "+ Add person") in edit mode — previously there was no way to put the bride herself on the timeline, only bridesmaids; she's now addable as her own entry (defaults to 60 min, first in whatever stylist's queue she's dropped into), and only shows up once per booking. **Requires re-running `supabase/schema.sql`** — adds a `start_time` column to `bookings`.
+
 ## 2026-08-20 (55)
 
 - **"Appointment" button on the booking page** — added right in the top action row next to Message/Contract/Invoice/Bride portal/Build timeline. Opens a small menu to jump straight to that booking's Trial session or Rehearsal hair & makeup page.

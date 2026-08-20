@@ -46,6 +46,11 @@ create table if not exists bookings (
 
 alter table bookings add column if not exists buffer_minutes integer not null default 10;
 alter table bookings add column if not exists ceremony_time time;
+-- When set, the timeline builder computes forward from this shared moment
+-- (so every stylist's queue starts at the same time) instead of backward
+-- from ready_by_time (which only guarantees everyone finishes by the same
+-- time, regardless of when each stylist actually starts).
+alter table bookings add column if not exists start_time time;
 alter table bookings add column if not exists location text;
 alter table bookings add column if not exists travel_minutes integer not null default 0;
 alter table bookings add column if not exists contract_sent boolean not null default false;
