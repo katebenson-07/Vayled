@@ -12,14 +12,34 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getSession().then(({ data }) => {
+    async function check() {
+      const { data } = await supabase.auth.getSession();
       if (!mounted) return;
       if (!data.session) {
         router.replace("/login");
-      } else {
-        setReady(true);
+        return;
       }
-    });
+
+      // Owner logins never have a studio_members row (auth.uid() = studio_id
+      // is what makes them the owner everywhere else in the schema). If this
+      // user IS in studio_members and active, they're an invited stylist —
+      // send them to their own stripped-down view instead of the owner app.
+      const { data: membership } = await supabase
+        .from("studio_members")
+        .select("status")
+        .eq("user_id", data.session.user.id)
+        .eq("status", "active")
+        .maybeSingle();
+      if (!mounted) return;
+      if (membership) {
+        router.replace("/team");
+        return;
+      }
+
+      setReady(true);
+    }
+
+    check();
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) router.replace("/login");

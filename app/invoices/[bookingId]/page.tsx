@@ -166,7 +166,12 @@ function InvoiceContent() {
   const tipAmount = computeTipAmount(settings, subtotal);
   const total = round2(subtotal + tipAmount);
 
-  const trialAmount = trial && Number(trial.fee) > 0 ? round2(Number(trial.fee)) : 0;
+  const trialAmount =
+    settings.trial_fee_override != null
+      ? round2(Number(settings.trial_fee_override || 0))
+      : trial && Number(trial.fee) > 0
+        ? round2(Number(trial.fee))
+        : 0;
   const depositAmount =
     settings.deposit_type === "percent"
       ? round2((total * Number(settings.deposit_percent || 0)) / 100)
@@ -553,6 +558,24 @@ function InvoiceContent() {
                     )}
                   </div>
                 </div>
+                {row.key === "trial" && (
+                  <div className="flex items-center gap-1 text-sm mb-2 print:hidden">
+                    <span>$</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right"
+                      value={settings.trial_fee_override ?? trial?.fee ?? 0}
+                      onChange={(e) =>
+                        setSettings({ ...settings, trial_fee_override: Number(e.target.value) })
+                      }
+                    />
+                    <span className="text-charcoal/50">
+                      {trial ? "override the trial session's fee" : "no trial session on file — set manually"}
+                    </span>
+                  </div>
+                )}
                 {row.key === "deposit" && (
                   <div className="flex flex-wrap items-center gap-2 text-sm mb-2 print:hidden">
                     <select
@@ -614,6 +637,16 @@ function InvoiceContent() {
                 </label>
               </div>
             ))}
+          </div>
+          <div className="flex items-center gap-3 mt-3 print:hidden">
+            <button
+              onClick={saveInvoice}
+              disabled={saving}
+              className="border border-charcoal/20 rounded-md px-4 py-2 text-sm disabled:opacity-50"
+            >
+              {saving ? "Saving..." : "Save payment schedule"}
+            </button>
+            {savedAt && <span className="text-xs text-charcoal/50">Saved {format(savedAt, "h:mm a")}</span>}
           </div>
         </div>
 

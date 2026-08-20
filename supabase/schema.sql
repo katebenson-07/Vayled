@@ -696,6 +696,212 @@ $$;
 grant execute on function public.select_trial_slot(uuid, uuid) to anon, authenticated;
 
 -- ============================================================================
+-- Stylist team logins
+-- Up to now every screen in the app ran as a single "owner" login per studio.
+-- studio_members lets a stylist get their own login, invited by email from
+-- the Stylists page, scoped to a stripped-down "their own work only" view —
+-- see current_stylist_id/is_assigned_to_booking/is_lead_on_booking below and
+-- the added stylist-scoped policies further down.
+--
+-- The owner never gets a row here (auth.uid() = studio_id keeps working
+-- everywhere it always has) — this table only ever holds invited stylists.
+-- user_id stays null until the invite is accepted; invite_token is the only
+-- thing the (not-yet-authenticated) invite email link carries.
+-- ============================================================================
+
+create table if not exists studio_members (
+  id uuid primary key default uuid_generate_v4(),
+  studio_id uuid not null references auth.users(id) on delete cascade,
+  stylist_id uuid not null references stylists(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete cascade,
+  role text not null default 'stylist' check (role in ('owner', 'stylist')),
+  status text not null default 'pending' check (status in ('pending', 'active', 'revoked')),
+  invite_token uuid not null default uuid_generate_v4(),
+  invited_at timestamptz not null default now(),
+  accepted_at timestamptz,
+  unique (stylist_id)
+);
+
+alter table studio_members enable row level security;
+
+drop policy if exists "Owners manage their studio members" on studio_members;
+create policy "Owners manage their studio members" on studio_members
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+drop policy if exists "Members view their own membership" on studio_members;
+create policy "Members view their own membership" on studio_members
+  for select using (user_id = auth.uid());
+
+-- ----------------------------------------------------------------------------
+-- Helper functions used inside the stylist-scoped policies below.
+-- All security invoker (not definer) on purpose: they only ever see what the
+-- calling user's own RLS already lets them see — current_stylist_id relies on
+-- the "Members view their own membership" policy above to find *their own*
+-- row and nothing else, so there's no privilege escalation risk here.
+-- ----------------------------------------------------------------------------
+
+create or replace function public.current_stylist_id(p_studio_id uuid)
+returns uuid
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+  select stylist_id from studio_members
+  where studio_id = p_studio_id and user_id = auth.uid() and status = 'active'
+  limit 1;
+$$;
+
+create or replace function public.is_assigned_to_booking(p_booking_id uuid)
+returns boolean
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+  select exists (
+    select 1 from booking_stylists bs
+    where bs.booking_id = p_booking_id
+      and bs.stylist_id = current_stylist_id(bs.studio_id)
+  );
+$$;
+
+create or replace function public.is_lead_on_booking(p_booking_id uuid)
+returns boolean
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+  select exists (
+    select 1 from booking_stylists bs
+    where bs.booking_id = p_booking_id
+      and bs.role = 'lead'
+      and bs.stylist_id = current_stylist_id(bs.studio_id)
+  );
+$$;
+
+-- ----------------------------------------------------------------------------
+-- Invite lookup + accept. Same narrow security-definer pattern as the bride
+-- portal / trial picker above: get_studio_invite is public read-only (the
+-- invite-acceptance page needs to show "join Kate Benson Beauty" before the
+-- stylist has an account at all); accept_studio_invite is the only write, and
+-- only usable by an authenticated user against their own freshly-created
+-- account, and only once per token.
+-- ----------------------------------------------------------------------------
+
+create or replace function public.get_studio_invite(p_token uuid)
+returns jsonb
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select jsonb_build_object(
+    'stylist_name', st.name,
+    'stylist_email', st.email,
+    'studio_name', coalesce(ss.studio_name, 'This studio'),
+    'status', sm.status
+  )
+  from studio_members sm
+  join stylists st on st.id = sm.stylist_id
+  left join studio_settings ss on ss.studio_id = sm.studio_id
+  where sm.invite_token = p_token;
+$$;
+
+grant execute on function public.get_studio_invite(uuid) to anon, authenticated;
+
+create or replace function public.accept_studio_invite(p_token uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_member studio_members%rowtype;
+begin
+  select * into v_member from studio_members
+  where invite_token = p_token and status = 'pending'
+  for update;
+
+  if not found then
+    return jsonb_build_object('ok', false, 'error', 'This invite link is invalid or has already been used.');
+  end if;
+
+  update studio_members
+  set user_id = auth.uid(), status = 'active', accepted_at = now()
+  where id = v_member.id;
+
+  return jsonb_build_object('ok', true, 'studio_id', v_member.studio_id, 'stylist_id', v_member.stylist_id);
+end;
+$$;
+
+grant execute on function public.accept_studio_invite(uuid) to authenticated;
+
+-- ----------------------------------------------------------------------------
+-- Stylist-scoped policies. Each is added *alongside* the existing owner-only
+-- policy on that table (Postgres OR's multiple permissive policies together),
+-- so nothing above this line changes for the owner. Tables not touched here
+-- (payments, contracts, invoicing, email templates, expenses, mileage,
+-- service catalog, studio/inquiry-form settings) stay owner-only on purpose —
+-- see the scope doc for why.
+-- ----------------------------------------------------------------------------
+
+drop policy if exists "Assigned stylists view their bookings" on bookings;
+create policy "Assigned stylists view their bookings" on bookings
+  for select using (is_assigned_to_booking(id));
+
+drop policy if exists "Assigned stylists view their clients" on clients;
+create policy "Assigned stylists view their clients" on clients
+  for select using (
+    exists (select 1 from bookings b where b.client_id = clients.id and is_assigned_to_booking(b.id))
+  );
+
+drop policy if exists "Assigned stylists view party members" on party_members;
+create policy "Assigned stylists view party members" on party_members
+  for select using (is_assigned_to_booking(booking_id));
+
+drop policy if exists "Stylists view their own roster record" on stylists;
+create policy "Stylists view their own roster record" on stylists
+  for select using (id = current_stylist_id(studio_id));
+
+drop policy if exists "Stylists view their own assignments" on booking_stylists;
+create policy "Stylists view their own assignments" on booking_stylists
+  for select using (stylist_id = current_stylist_id(studio_id));
+
+drop policy if exists "Assigned stylists manage trial notes" on trial_sessions;
+create policy "Assigned stylists manage trial notes" on trial_sessions
+  for all using (is_assigned_to_booking(booking_id)) with check (is_assigned_to_booking(booking_id));
+
+drop policy if exists "Assigned stylists view trial slot offers" on trial_slot_offers;
+create policy "Assigned stylists view trial slot offers" on trial_slot_offers
+  for select using (is_assigned_to_booking(booking_id));
+
+drop policy if exists "Lead stylists create trial slot offers" on trial_slot_offers;
+create policy "Lead stylists create trial slot offers" on trial_slot_offers
+  for insert with check (is_lead_on_booking(booking_id));
+
+drop policy if exists "Lead stylists update trial slot offers" on trial_slot_offers;
+create policy "Lead stylists update trial slot offers" on trial_slot_offers
+  for update using (is_lead_on_booking(booking_id)) with check (is_lead_on_booking(booking_id));
+
+drop policy if exists "Lead stylists delete trial slot offers" on trial_slot_offers;
+create policy "Lead stylists delete trial slot offers" on trial_slot_offers
+  for delete using (is_lead_on_booking(booking_id));
+
+drop policy if exists "Assigned stylists manage trial-result photos" on client_photos;
+create policy "Assigned stylists manage trial-result photos" on client_photos
+  for all
+  using (booking_id is not null and is_assigned_to_booking(booking_id))
+  with check (booking_id is not null and is_assigned_to_booking(booking_id));
+
+drop policy if exists "Stylists manage their own block-out dates" on stylist_time_off;
+create policy "Stylists manage their own block-out dates" on stylist_time_off
+  for all
+  using (stylist_id = current_stylist_id(studio_id))
+  with check (stylist_id = current_stylist_id(studio_id));
+
+-- ============================================================================
 -- Storage: client photos (mood board / trial results)
 -- Files are stored at {studio_id}/{client_id}/{filename} — the folder-prefix
 -- policies below only let a stylist touch objects under their own studio_id.

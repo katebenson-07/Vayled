@@ -2,6 +2,14 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-19 (49)
+
+- **Editable trial/preview amount on invoices** — the Payment schedule's Trial/Preview line previously only ever showed the linked trial session's fee, defaulting to $0 with no way to change it from the invoice itself. Added a direct dollar-amount override right on that row (matching the existing deposit % / flat editor), plus a dedicated "Save payment schedule" button under the schedule so changes there feel like they're actually saving rather than only being covered by the top "Save invoice" button. **Requires re-running `supabase/schema.sql`?** No — this only adds a new key (`trial_fee_override`) inside the existing `bookings.invoice_settings` jsonb column, no schema change needed.
+
+## 2026-08-19 (48)
+
+- **Stylist team logins** — each stylist can now get their own login, like GlossGenius. From the Stylists page, click "Invite to log in" next to anyone with an email on file to send them an invite email; they set a password and land on a new stripped-down `/team` area showing only their own schedule (assigned weddings, with a read-only per-person timeline for just their part of the day), a place to manage their own block-out dates, and — if they're the lead on a wedding — the ability to send trial-time options to that bride. They can also add/edit trial technique notes and trial-result photos for weddings they're on. Everything else (payroll, analytics, contracts, invoicing, settings, other stylists' info) stays owner-only. **Requires re-running `supabase/schema.sql`** — adds a `studio_members` table (invite/login links), three RLS helper functions, two invite RPCs, and new stylist-scoped read/write policies on `bookings`, `clients`, `party_members`, `stylists`, `booking_stylists`, `trial_sessions`, `trial_slot_offers`, `client_photos`, and `stylist_time_off`. Also requires `RESEND_API_KEY` to be set for invite emails to actually send (uses the same Resend integration as the rest of the app's emails).
+
 ## 2026-08-19 (47)
 
 - **Bumped Pro tier from 3 to 10 stylists** and updated its blurb to match ("growing teams building out their stylist roster").

@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
-import { Stylist, StylistTimeOff } from "@/lib/types";
+import { Stylist, StylistTimeOff, StudioMember } from "@/lib/types";
 import { format } from "date-fns";
 
 function StylistsContent() {
   const [stylists, setStylists] = useState<Stylist[]>([]);
   const [timeOff, setTimeOff] = useState<StylistTimeOff[]>([]);
+  const [members, setMembers] = useState<StudioMember[]>([]);
+  const [invitingId, setInvitingId] = useState<string | null>(null);
+  const [inviteError, setInviteError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [newName, setNewName] = useState("");
@@ -28,6 +31,8 @@ function StylistsContent() {
     setStylists((stylistData as Stylist[]) ?? []);
     const { data: toData } = await supabase.from("stylist_time_off").select("*").order("start_date");
     setTimeOff((toData as StylistTimeOff[]) ?? []);
+    const { data: memberData } = await supabase.from("studio_members").select("*");
+    setMembers((memberData as StudioMember[]) ?? []);
     setLoading(false);
   }
 
@@ -80,6 +85,48 @@ function StylistsContent() {
     if (!error) {
       setStylists(stylists.filter((x) => x.id !== id));
       setTimeOff(timeOff.filter((t) => t.stylist_id !== id));
+      setMembers(members.filter((m) => m.stylist_id !== id));
+    }
+  }
+
+  /** Sends (or resends) a team-login invite for this stylist: create the
+   *  pending studio_members row ourselves (our own RLS already allows it),
+   *  then have the server actually send the email via Resend. */
+  async function inviteStylist(s: Stylist) {
+    if (!s.email) {
+      setInviteError(`Add an email for ${s.name} before sending an invite.`);
+      return;
+    }
+    setInviteError(null);
+    setInvitingId(s.id);
+    try {
+      let member = members.find((m) => m.stylist_id === s.id) ?? null;
+      if (!member) {
+        const { data: userData } = await supabase.auth.getUser();
+        const studio_id = userData.user?.id;
+        const { data, error } = await supabase
+          .from("studio_members")
+          .insert({ studio_id, stylist_id: s.id })
+          .select()
+          .single();
+        if (error || !data) throw new Error(error?.message ?? "Couldn't create invite.");
+        member = data as StudioMember;
+        setMembers([...members, member]);
+      }
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      const res = await fetch("/api/invite-stylist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ stylistId: s.id }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error ?? "Couldn't send invite.");
+    } catch (err: any) {
+      setInviteError(err.message ?? "Something went wrong sending the invite.");
+    } finally {
+      setInvitingId(null);
     }
   }
 
@@ -122,6 +169,10 @@ function StylistsContent() {
         </div>
         {savedAt && <span className="text-xs text-green-700 whitespace-nowrap">Saved {format(savedAt, "h:mm a")} ✓</span>}
       </div>
+
+      {inviteError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2.5">{inviteError}</div>
+      )}
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Team</h2>
@@ -169,40 +220,66 @@ function StylistsContent() {
           <p className="text-charcoal/60 text-sm">No team members yet. Add your first stylist above.</p>
         ) : (
           <div className="space-y-2 text-sm">
-            {stylists.map((s) => (
-              <div key={s.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-charcoal/10 pb-2">
-                <div>
-                  <span className={s.active ? "text-charcoal" : "text-charcoal/40 line-through"}>{s.name}</span>
-                  {s.is_1099 && (
-                    <span className="text-[10px] uppercase tracking-wide bg-beige text-charcoal/70 px-1.5 py-0.5 rounded ml-2">
-                      1099
-                    </span>
-                  )}
-                  {(s.email || s.phone) && (
-                    <span className="text-charcoal/60 ml-2">{[s.email, s.phone].filter(Boolean).join(" · ")}</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right"
-                      value={s.pay_percentage}
-                      onChange={(e) => updateStylist(s.id, { pay_percentage: Number(e.target.value) })}
-                    />
-                    <span className="text-charcoal/60">%</span>
+            {stylists.map((s) => {
+              const member = members.find((m) => m.stylist_id === s.id) ?? null;
+              const loginStatus = member?.status ?? null;
+              return (
+                <div key={s.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-charcoal/10 pb-2">
+                  <div>
+                    <span className={s.active ? "text-charcoal" : "text-charcoal/40 line-through"}>{s.name}</span>
+                    {s.is_1099 && (
+                      <span className="text-[10px] uppercase tracking-wide bg-beige text-charcoal/70 px-1.5 py-0.5 rounded ml-2">
+                        1099
+                      </span>
+                    )}
+                    {loginStatus && (
+                      <span
+                        className={`text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded ml-2 ${
+                          loginStatus === "active"
+                            ? "bg-green-50 text-green-700"
+                            : loginStatus === "pending"
+                            ? "bg-amber-50 text-amber-700"
+                            : "bg-charcoal/5 text-charcoal/50"
+                        }`}
+                      >
+                        {loginStatus === "active" ? "Login active" : loginStatus === "pending" ? "Invite sent" : "Login revoked"}
+                      </span>
+                    )}
+                    {(s.email || s.phone) && (
+                      <span className="text-charcoal/60 ml-2">{[s.email, s.phone].filter(Boolean).join(" · ")}</span>
+                    )}
                   </div>
-                  <button onClick={() => toggleActive(s)} className="text-charcoal/60 hover:text-charcoal">
-                    {s.active ? "Mark inactive" : "Mark active"}
-                  </button>
-                  <button onClick={() => removeStylist(s.id)} className="text-red-600">
-                    Remove
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right"
+                        value={s.pay_percentage}
+                        onChange={(e) => updateStylist(s.id, { pay_percentage: Number(e.target.value) })}
+                      />
+                      <span className="text-charcoal/60">%</span>
+                    </div>
+                    {loginStatus !== "active" && (
+                      <button
+                        onClick={() => inviteStylist(s)}
+                        disabled={invitingId === s.id}
+                        className="border border-charcoal/20 rounded-md px-3 py-1 text-xs disabled:opacity-40"
+                      >
+                        {invitingId === s.id ? "Sending..." : loginStatus === "pending" ? "Resend invite" : "Invite to log in"}
+                      </button>
+                    )}
+                    <button onClick={() => toggleActive(s)} className="text-charcoal/60 hover:text-charcoal">
+                      {s.active ? "Mark inactive" : "Mark active"}
+                    </button>
+                    <button onClick={() => removeStylist(s.id)} className="text-red-600">
+                      Remove
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

@@ -68,6 +68,8 @@ export interface InvoiceSettings {
   trial_due_rule: DueRule;
   trial_remind: boolean;
   trial_paid: boolean;
+  /** Manual override for the trial/preview line — null means "use the trial session's fee". */
+  trial_fee_override: number | null;
   balance_due_rule: DueRule;
   balance_remind: boolean;
   balance_paid: boolean;
@@ -87,6 +89,7 @@ export function defaultInvoiceSettings(): InvoiceSettings {
     trial_due_rule: defaultDueRule(),
     trial_remind: true,
     trial_paid: false,
+    trial_fee_override: null,
     balance_due_rule: { mode: "before_wedding", date: null, days_before: 7 },
     balance_remind: true,
     balance_paid: false,
@@ -150,6 +153,19 @@ export interface StylistTimeOff {
   start_date: string;
   end_date: string;
   reason: string | null;
+}
+
+/** Links a real login (user_id, once accepted) to a roster stylist so they can sign in as their own team member. */
+export interface StudioMember {
+  id: string;
+  studio_id: string;
+  stylist_id: string;
+  user_id: string | null;
+  role: "owner" | "stylist";
+  status: "pending" | "active" | "revoked";
+  invite_token: string;
+  invited_at: string;
+  accepted_at: string | null;
 }
 
 export interface BookingStylist {
