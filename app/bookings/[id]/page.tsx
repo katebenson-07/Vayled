@@ -82,6 +82,7 @@ function BookingDetail() {
   const [saveError, setSaveError] = useState(false);
   const [editingHeader, setEditingHeader] = useState(false);
   const [partySizeInput, setPartySizeInput] = useState("");
+  const [appointmentMenuOpen, setAppointmentMenuOpen] = useState(false);
 
   async function loadAll() {
     const { data: bookingData } = await supabase.from("bookings").select("*").eq("id", id).single();
@@ -767,6 +768,37 @@ function BookingDetail() {
               </button>
             </>
           )}
+          <div
+            className="relative"
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) setAppointmentMenuOpen(false);
+            }}
+          >
+            <button
+              onClick={() => setAppointmentMenuOpen((o) => !o)}
+              className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide"
+            >
+              Appointment
+            </button>
+            {appointmentMenuOpen && (
+              <div className="absolute left-0 top-full mt-2 w-56 bg-white border border-charcoal/10 rounded-lg shadow-lg p-2 z-10 text-sm normal-case tracking-normal">
+                <Link
+                  href={`/trials/${id}`}
+                  className="block rounded-md px-3 py-2 hover:bg-ivory"
+                  onClick={() => setAppointmentMenuOpen(false)}
+                >
+                  Trial session
+                </Link>
+                <Link
+                  href={`/rehearsal/${id}`}
+                  className="block rounded-md px-3 py-2 hover:bg-ivory"
+                  onClick={() => setAppointmentMenuOpen(false)}
+                >
+                  Rehearsal hair &amp; makeup
+                </Link>
+              </div>
+            )}
+          </div>
           <button
             onClick={() => setActiveTab("timeline")}
             className="bg-charcoal text-ivory rounded-md px-4 py-2 uppercase text-xs tracking-wide"

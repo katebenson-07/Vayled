@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (55)
+
+- **"Appointment" button on the booking page** — added right in the top action row next to Message/Contract/Invoice/Bride portal/Build timeline. Opens a small menu to jump straight to that booking's Trial session or Rehearsal hair & makeup page.
+
 ## 2026-08-20 (54)
 
 - **"+ Appointment" button on the Clients list** — same Trial session / Rehearsal hair & makeup shortcut as the client profile, now also available right on each row of the main Clients page (`/clients`) so you don't have to open a client first to find it.
