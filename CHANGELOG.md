@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (60)
+
+- **Redesigned the Inquiries page** — each lead is now its own card instead of a bare one-line row, showing: how long ago the inquiry came in (turns amber at 3+ days, red with a "follow up" nudge at 7+ days), the wedding date with a "days away" countdown (flagged red if the wedding's under 60 days out and she's still just an inquiry — a lead worth chasing), venue and referral source, and one-tap Email/Call links pulled from the client's contact info. "Convert to project" stays as the main action. Empty state also got a real message instead of a bare line of text.
+
 ## 2026-08-20 (59)
 
 - **"New booking" now lands in Bookings, not Inquiries** — clicking "New booking" from a client's profile used to create it with `inquiry` status, which meant it landed in the Inquiries folder even though you'd already added the client yourself and were ready to book her. That status is now reserved for the public inquiry form (a lead who hasn't been booked). Bookings created this way now start as `booked` and show up directly in Bookings/Projects.
