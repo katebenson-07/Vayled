@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (59)
+
+- **"New booking" now lands in Bookings, not Inquiries** — clicking "New booking" from a client's profile used to create it with `inquiry` status, which meant it landed in the Inquiries folder even though you'd already added the client yourself and were ready to book her. That status is now reserved for the public inquiry form (a lead who hasn't been booked). Bookings created this way now start as `booked` and show up directly in Bookings/Projects.
+
 ## 2026-08-20 (58)
 
 - **Warn before creating a second booking for the same client** — "New booking" on a client's profile now checks if that client already has a booking, and if so warns you before creating another one, pointing you to "Assign" on the existing booking instead (which is how you add a second stylist to the same job). This is the guard rail for the Erin B issue above — it stops the duplicate booking row from getting created in the first place, rather than just papering over it after the fact.

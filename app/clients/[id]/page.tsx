@@ -83,7 +83,11 @@ function ClientDetail() {
       .insert({
         client_id: id,
         stylist_id,
-        status: "inquiry",
+        // "inquiry" status is reserved for the public inquiry form (a lead
+        // who hasn't been booked yet). Creating a booking here — from a
+        // client you already added yourself — means she's booked, so it
+        // should land in Bookings/Projects, not the Inquiries folder.
+        status: "booked",
         contract_total: 0,
         deposit_amount: 0,
         deposit_paid: false,
