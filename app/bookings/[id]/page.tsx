@@ -152,11 +152,18 @@ function BookingDetail() {
 
     const { data: allAssignments } = await supabase
       .from("booking_stylists")
-      .select("stylist_id, booking_id, bookings(id, clients(bride_name, wedding_date))");
+      .select("stylist_id, booking_id, bookings(id, client_id, clients(bride_name, wedding_date))");
     const assignmentRows = (allAssignments as any[]) ?? [];
     if (weddingDate) {
+      // Only flag a real conflict when the other booking belongs to a
+      // *different* bride on the same date — another booking row for this
+      // same client (e.g. a leftover inquiry/duplicate) isn't a scheduling
+      // conflict and shouldn't show "Booked" on the bride's own page.
       const conflictRows = assignmentRows.filter(
-        (r) => r.booking_id !== id && r.bookings?.clients?.wedding_date === weddingDate
+        (r) =>
+          r.booking_id !== id &&
+          r.bookings?.clients?.wedding_date === weddingDate &&
+          r.bookings?.client_id !== clientId
       );
       setConflicts(
         conflictRows.map((r) => ({

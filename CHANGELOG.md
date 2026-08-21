@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (57)
+
+- **Fixed false "Booked" conflict on a bride's own job** — the "Stylists on this job" panel flagged stylists as booked elsewhere on the same date, but only compared wedding dates, not which bride. If a client had more than one booking row on file (e.g. a leftover duplicate from an inquiry), any stylist assigned to that other row showed as "Booked — [same bride's name]" right on her own page. Now a stylist is only flagged as booked elsewhere if the conflicting booking belongs to a *different* client.
+
 ## 2026-08-20 (56)
 
 - **Timeline builder: shared start time + Add bride** — two fixes to the Wedding-day timeline tab. First, a new optional "Start time" — when set, every stylist's queue now begins at that same moment (computed forward), instead of each stylist independently working backward from the ready-by time to finish together, which could leave them starting at very different times depending on how many people they each have. Ready-by still works exactly as before if you leave start time blank. Second, added a "+ Add bride" button (next to "+ Add person") in edit mode — previously there was no way to put the bride herself on the timeline, only bridesmaids; she's now addable as her own entry (defaults to 60 min, first in whatever stylist's queue she's dropped into), and only shows up once per booking. **Requires re-running `supabase/schema.sql`** — adds a `start_time` column to `bookings`.
