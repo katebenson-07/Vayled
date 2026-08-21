@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (58)
+
+- **Warn before creating a second booking for the same client** — "New booking" on a client's profile now checks if that client already has a booking, and if so warns you before creating another one, pointing you to "Assign" on the existing booking instead (which is how you add a second stylist to the same job). This is the guard rail for the Erin B issue above — it stops the duplicate booking row from getting created in the first place, rather than just papering over it after the fact.
+
 ## 2026-08-20 (57)
 
 - **Fixed false "Booked" conflict on a bride's own job** — the "Stylists on this job" panel flagged stylists as booked elsewhere on the same date, but only compared wedding dates, not which bride. If a client had more than one booking row on file (e.g. a leftover duplicate from an inquiry), any stylist assigned to that other row showed as "Booked — [same bride's name]" right on her own page. Now a stylist is only flagged as booked elsewhere if the conflicting booking belongs to a *different* client.

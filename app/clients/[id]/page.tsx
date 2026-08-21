@@ -59,6 +59,23 @@ function ClientDetail() {
   }
 
   async function createBooking() {
+    // A client should normally have exactly one booking (the wedding job) —
+    // multiple stylists get added to that same booking via "Assign" on the
+    // Stylists tab, not by creating a second booking. Warn before creating
+    // another one, since a duplicate row here is what caused stylists to
+    // wrongly show as "Booked" on this same bride's own page.
+    if (bookings.length > 0) {
+      const existing = bookings
+        .map((b) => `${b.status}${b.contract_total ? ` · $${b.contract_total}` : ""}`)
+        .join(", ");
+      const confirmed = window.confirm(
+        `${client?.bride_name ?? "This client"} already has a booking (${existing}). ` +
+          `If you're adding another stylist to the same job, open that booking and use "Assign" instead — ` +
+          `a second booking here can cause mix-ups (like a stylist showing as booked elsewhere on her own page). ` +
+          `Create another booking anyway?`
+      );
+      if (!confirmed) return;
+    }
     const { data: userData } = await supabase.auth.getUser();
     const stylist_id = userData.user?.id;
     const { data, error } = await supabase
