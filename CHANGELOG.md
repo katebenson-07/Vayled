@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-20 (61)
+
+- **Redesigned the Bookings page to match Inquiries** — same richer card layout: bride name with a color-coded status badge (booked/completed/cancelled/ghosted), wedding-date countdown (flagged red if a booked wedding is 14 days out or less), venue, contract total, a "Deposit due" flag when a booked job's deposit hasn't been marked paid, and one-tap Email/Call links. Better empty state too.
+
 ## 2026-08-20 (60)
 
 - **Redesigned the Inquiries page** — each lead is now its own card instead of a bare one-line row, showing: how long ago the inquiry came in (turns amber at 3+ days, red with a "follow up" nudge at 7+ days), the wedding date with a "days away" countdown (flagged red if the wedding's under 60 days out and she's still just an inquiry — a lead worth chasing), venue and referral source, and one-tap Email/Call links pulled from the client's contact info. "Convert to project" stays as the main action. Empty state also got a real message instead of a bare line of text.
