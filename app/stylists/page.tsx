@@ -15,6 +15,12 @@ function StylistsContent() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editIs1099, setEditIs1099] = useState(true);
+
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
@@ -74,6 +80,25 @@ function StylistsContent() {
       setStylists(stylists.map((x) => (x.id === id ? { ...x, ...fields } : x)));
       setSavedAt(new Date());
     }
+  }
+
+  function startEditing(s: Stylist) {
+    setEditingId(s.id);
+    setEditName(s.name);
+    setEditEmail(s.email ?? "");
+    setEditPhone(s.phone ?? "");
+    setEditIs1099(s.is_1099);
+  }
+
+  async function saveEditing(id: string) {
+    if (!editName.trim()) return;
+    await updateStylist(id, {
+      name: editName.trim(),
+      email: editEmail.trim() || null,
+      phone: editPhone.trim() || null,
+      is_1099: editIs1099,
+    });
+    setEditingId(null);
   }
 
   async function toggleActive(s: Stylist) {
@@ -244,65 +269,110 @@ function StylistsContent() {
             {stylists.map((s) => {
               const member = members.find((m) => m.stylist_id === s.id) ?? null;
               const loginStatus = member?.status ?? null;
+              const isEditing = editingId === s.id;
               return (
                 <div key={s.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-charcoal/10 pb-2">
-                  <div>
-                    <span className={s.active ? "text-charcoal" : "text-charcoal/40 line-through"}>{s.name}</span>
-                    {s.is_1099 && (
-                      <span className="text-[10px] uppercase tracking-wide bg-beige text-charcoal/70 px-1.5 py-0.5 rounded ml-2">
-                        1099
-                      </span>
-                    )}
-                    {loginStatus && (
-                      <span
-                        className={`text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded ml-2 ${
-                          loginStatus === "active"
-                            ? "bg-green-50 text-green-700"
-                            : loginStatus === "pending"
-                            ? "bg-amber-50 text-amber-700"
-                            : "bg-charcoal/5 text-charcoal/50"
-                        }`}
-                      >
-                        {loginStatus === "active" ? "Login active" : loginStatus === "pending" ? "Invite sent" : "Login revoked"}
-                      </span>
-                    )}
-                    {(s.email || s.phone) && (
-                      <span className="text-charcoal/60 ml-2">{[s.email, s.phone].filter(Boolean).join(" · ")}</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1">
+                  {isEditing ? (
+                    <div className="flex flex-wrap items-center gap-2 flex-1">
                       <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right"
-                        value={s.pay_percentage}
-                        onChange={(e) => updateStylist(s.id, { pay_percentage: Number(e.target.value) })}
+                        className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[120px]"
+                        placeholder="Name"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
                       />
-                      <span className="text-charcoal/60">%</span>
-                    </div>
-                    {loginStatus !== "active" && (
+                      <input
+                        className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[140px]"
+                        placeholder="Email"
+                        value={editEmail}
+                        onChange={(e) => setEditEmail(e.target.value)}
+                      />
+                      <input
+                        className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[120px]"
+                        placeholder="Phone"
+                        value={editPhone}
+                        onChange={(e) => setEditPhone(e.target.value)}
+                      />
+                      <label className="flex items-center gap-1 text-charcoal/60 text-xs">
+                        <input type="checkbox" checked={editIs1099} onChange={(e) => setEditIs1099(e.target.checked)} />
+                        1099
+                      </label>
                       <button
-                        onClick={() => inviteStylist(s)}
-                        disabled={invitingId === s.id}
-                        className="border border-charcoal/20 rounded-md px-3 py-1 text-xs disabled:opacity-40"
+                        onClick={() => saveEditing(s.id)}
+                        className="bg-charcoal text-ivory rounded-md px-3 py-1 text-xs"
                       >
-                        {invitingId === s.id ? "Sending..." : loginStatus === "pending" ? "Resend invite" : "Invite to log in"}
+                        Save
                       </button>
-                    )}
-                    {loginStatus === "pending" && (
-                      <button onClick={() => copyInviteLink(s)} className="text-gold text-xs hover:underline">
-                        {copiedId === s.id ? "Link copied ✓" : "Copy invite link"}
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="text-charcoal/60 hover:text-charcoal text-xs"
+                      >
+                        Cancel
                       </button>
-                    )}
-                    <button onClick={() => toggleActive(s)} className="text-charcoal/60 hover:text-charcoal">
-                      {s.active ? "Mark inactive" : "Mark active"}
-                    </button>
-                    <button onClick={() => removeStylist(s.id)} className="text-red-600">
-                      Remove
-                    </button>
-                  </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <span className={s.active ? "text-charcoal" : "text-charcoal/40 line-through"}>{s.name}</span>
+                        {s.is_1099 && (
+                          <span className="text-[10px] uppercase tracking-wide bg-beige text-charcoal/70 px-1.5 py-0.5 rounded ml-2">
+                            1099
+                          </span>
+                        )}
+                        {loginStatus && (
+                          <span
+                            className={`text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded ml-2 ${
+                              loginStatus === "active"
+                                ? "bg-green-50 text-green-700"
+                                : loginStatus === "pending"
+                                ? "bg-amber-50 text-amber-700"
+                                : "bg-charcoal/5 text-charcoal/50"
+                            }`}
+                          >
+                            {loginStatus === "active" ? "Login active" : loginStatus === "pending" ? "Invite sent" : "Login revoked"}
+                          </span>
+                        )}
+                        {(s.email || s.phone) && (
+                          <span className="text-charcoal/60 ml-2">{[s.email, s.phone].filter(Boolean).join(" · ")}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right"
+                            value={s.pay_percentage}
+                            onChange={(e) => updateStylist(s.id, { pay_percentage: Number(e.target.value) })}
+                          />
+                          <span className="text-charcoal/60">%</span>
+                        </div>
+                        <button onClick={() => startEditing(s)} className="text-charcoal/60 hover:text-charcoal">
+                          Edit
+                        </button>
+                        {loginStatus !== "active" && (
+                          <button
+                            onClick={() => inviteStylist(s)}
+                            disabled={invitingId === s.id}
+                            className="border border-charcoal/20 rounded-md px-3 py-1 text-xs disabled:opacity-40"
+                          >
+                            {invitingId === s.id ? "Sending..." : loginStatus === "pending" ? "Resend invite" : "Invite to log in"}
+                          </button>
+                        )}
+                        {loginStatus === "pending" && (
+                          <button onClick={() => copyInviteLink(s)} className="text-gold text-xs hover:underline">
+                            {copiedId === s.id ? "Link copied ✓" : "Copy invite link"}
+                          </button>
+                        )}
+                        <button onClick={() => toggleActive(s)} className="text-charcoal/60 hover:text-charcoal">
+                          {s.active ? "Mark inactive" : "Mark active"}
+                        </button>
+                        <button onClick={() => removeStylist(s.id)} className="text-red-600">
+                          Remove
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               );
             })}

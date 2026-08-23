@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-23 (62)
+
+- **Stylists are now editable** — previously, once a stylist was added there was no way to change their name, email, or phone (only pay % could be edited inline). Added an "Edit" button per stylist that opens an inline form for name/email/phone/1099 status, with Save/Cancel.
+
 ## 2026-08-20 (61)
 
 - **Redesigned the Bookings page to match Inquiries** — same richer card layout: bride name with a color-coded status badge (booked/completed/cancelled/ghosted), wedding-date countdown (flagged red if a booked wedding is 14 days out or less), venue, contract total, a "Deposit due" flag when a booked job's deposit hasn't been marked paid, and one-tap Email/Call links. Better empty state too.
