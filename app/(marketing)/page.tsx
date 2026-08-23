@@ -13,9 +13,9 @@ const PATH_STEPS = [
   "Contract signed",
   "Deposit paid",
   "Trial done",
-  "Week of wedding",
+  "Balance paid (week of)",
   "Wedding day",
-  "Balance & review",
+  "Review",
 ];
 
 const FEATURES = [

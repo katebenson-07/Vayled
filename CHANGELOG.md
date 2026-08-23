@@ -2,6 +2,14 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-23 (64)
+
+- **Marketing homepage: Balance moved to "week of," not last** — the "one clear path" checklist on the homepage previously ended with "Wedding day → Balance & review," implying the balance gets paid after the wedding. Reordered to "Balance paid (week of) → Wedding day → Review," matching how the invoice's own default due date already works (balance due 7 days before the wedding).
+
+## 2026-08-23 (63)
+
+- **Simplified the stylist-facing wedding page** — a stylist opening one of their weddings under /team used to see four always-open sections (schedule, trial-time offers, five trial-note fields, photo uploads) stacked on one page — too much for what's meant to be a quick day-of reference. "Your schedule that day" now stays front and center; trial coordination, notes, and photos are tucked behind a single "Trial & prep details" toggle, closed by default.
+
 ## 2026-08-23 (62)
 
 - **Stylists are now editable** — previously, once a stylist was added there was no way to change their name, email, or phone (only pay % could be edited inline). Added an "Edit" button per stylist that opens an inline form for name/email/phone/1099 status, with Save/Cancel.

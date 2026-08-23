@@ -23,6 +23,10 @@ function WeddingDetail() {
   const [photos, setPhotos] = useState<(ClientPhoto & { url: string | null })[]>([]);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Trial coordination, notes, and photos aren't day-of information — they're
+  // tucked behind one toggle so the page opens straight to what a stylist
+  // actually needs backstage: today's schedule.
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   async function load() {
     const { data: bookingData } = await supabase.from("bookings").select("*").eq("id", id).maybeSingle();
@@ -207,6 +211,16 @@ function WeddingDetail() {
         )}
       </section>
 
+      <button
+        onClick={() => setDetailsOpen((o) => !o)}
+        className="w-full flex items-center justify-between bg-white border border-charcoal/10 rounded-xl p-5 text-left"
+      >
+        <span className="text-sm font-medium text-charcoal">Trial &amp; prep details</span>
+        <span className="text-xs text-gold">{detailsOpen ? "Hide ▲" : "Show ▾"}</span>
+      </button>
+
+      {detailsOpen && (
+        <>
       {isLead && (
         <section className="bg-white border border-charcoal/10 rounded-xl p-5">
           <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-1">Offer trial times to the bride</h2>
@@ -375,6 +389,8 @@ function WeddingDetail() {
           </div>
         )}
       </section>
+        </>
+      )}
     </div>
   );
 }
