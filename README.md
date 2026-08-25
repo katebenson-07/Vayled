@@ -20,6 +20,15 @@ NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
+Optionally, add a [Resend](https://resend.com) API key to actually send emails (invites, contracts, invoices) instead of falling back to a copy-link/mailto flow:
+
+```
+RESEND_API_KEY=your-resend-api-key
+RESEND_FROM_EMAIL=notifications@yourdomain.com
+```
+
+This is left for student contributors to wire up — see `Vayled-Site-Audit-For-Students.docx`.
+
 ## 3. Install and run
 
 ```
@@ -63,15 +72,21 @@ Open [http://localhost:3000](http://localhost:3000). Sign up with an email and p
 
 **Bride portal** — a no-login page at `/portal/[bookingId]` for a bride once her booking is confirmed. Share it from her booking's sub-nav ("Bride portal" / "Copy link"). Shows her countdown, getting-ready time/location, day-of timeline, upcoming appointments, payment tracker, booked services, trial notes, and reminders. Read-only — no payment collection.
 
+**Stylist team logins** — invite stylists by email from the Stylists page; they set their own password and land on a stripped-down `/team` area (their own schedule, block-out dates, trial-time offers if they're the lead, and a Print/Save PDF of their day-of timeline). Enforced with Postgres Row Level Security, not just hidden in the UI.
+
+**Rehearsal hair & makeup** — a separate scheduled add-on from the trial, with its own invoice line and calendar entry.
+
 ## What's not built yet
 
 These need external services this app doesn't have credentials for, so they're intentionally out of scope for now:
 
 - Paying the remaining balance from the bride portal — needs a payment processor.
 - Real payment processing — payments are currently logged manually; wiring up Stripe needs your own Stripe account and API keys.
-- Automated email/SMS sending — emails currently open in your own email client via `mailto:`; true automated sending needs an email provider (e.g. Resend, Postmark, Twilio for SMS).
+- Automated (scheduled) email/SMS sending — transactional emails (invites, contracts, invoices) send via Resend once `RESEND_API_KEY` is set (falls back to a copy-link/mailto flow otherwise); but nothing sends *automatically on a schedule* yet — the dashboard's Reminders panel only flags what's due, a human still has to click send.
 - True e-signature on contracts — contracts can be marked sent/signed manually; a real e-signature flow needs a provider like DocuSign or HelloSign.
-- Stylist logins — right now the studio owner logs in and manages the whole team; stylists don't have their own accounts yet.
+- Password reset — there's currently no "forgot password" flow for either owner or stylist logins.
+
+See `Vayled-Site-Audit-For-Students.docx` for a full, categorized list of known gaps and rough edges to work through.
 
 ## Deploying
 

@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-23 (67)
+
+- **Updated README, added a full site audit for students** — the README's "what's not built yet" section was stale (still described stylist logins and Resend integration as unbuilt, though both shipped this term); corrected it, and documented the optional `RESEND_API_KEY`/`RESEND_FROM_EMAIL` setup that was previously only in `.env.local.example`. Also produced `Vayled-Site-Audit-For-Students.docx` — a from-the-code audit across feature gaps, code quality/performance, security, accessibility, legal/compliance, and documentation, meant as a work-list menu for student contributors.
+
 ## 2026-08-23 (66)
 
 - **Stylists can save their day-of timeline as a PDF** — added a "Print / Save PDF" button on a stylist's individual wedding page (`/team/bookings/[id]`), next to the bride's name. Uses the browser's print-to-PDF, same pattern as the owner's contract page. Printing hides the sidebar, the print button itself, and the collapsed "Trial & prep details" section — only the header and "Your schedule that day" timeline show up in the saved PDF, so it's a clean one-pager they can keep on their phone or print for backstage.
