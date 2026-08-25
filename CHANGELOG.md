@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-23 (65)
+
+- **Fixed: invited stylists landing on the full owner dashboard** — `accept_studio_invite` (the call that flips a stylist's invite to "active") only ever ran if signing up returned a session immediately. Since email confirmation is on for this project, a stylist has to confirm their email and log in separately — and nothing was calling accept at that point, so their `studio_members` row stayed "pending" forever. Both AuthGuard and TeamAuthGuard then treated them as not a stylist and dropped them onto the regular owner app (full sidebar, their own name shown as "Studio owner"). Now the invite token is stashed in the browser when email confirmation is required, and both guards finish accepting it automatically on the stylist's next authenticated page load, before deciding where to route them.
+
 ## 2026-08-23 (64)
 
 - **Marketing homepage: Balance moved to "week of," not last** — the "one clear path" checklist on the homepage previously ended with "Wedding day → Balance & review," implying the balance gets paid after the wedding. Reordered to "Balance paid (week of) → Wedding day → Review," matching how the invoice's own default due date already works (balance due 7 days before the wedding).

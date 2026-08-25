@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { acceptPendingInviteIfAny } from "@/lib/pendingInvite";
 import TeamSidebar from "./TeamSidebar";
 
 type TeamMemberContext = {
@@ -34,6 +35,9 @@ export default function TeamAuthGuard({ children }: { children: React.ReactNode 
         router.replace("/login");
         return;
       }
+
+      await acceptPendingInviteIfAny();
+      if (!mounted) return;
 
       const { data: membership } = await supabase
         .from("studio_members")

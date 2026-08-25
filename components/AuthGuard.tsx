@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { acceptPendingInviteIfAny } from "@/lib/pendingInvite";
 import Sidebar from "./Sidebar";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -19,6 +20,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         router.replace("/login");
         return;
       }
+
+      // Finish accepting any invite that had to wait on email confirmation
+      // before flipping their studio_members row to active (see
+      // lib/pendingInvite.ts) — otherwise they'd be stuck looking like the
+      // owner forever, since their membership row never leaves "pending."
+      await acceptPendingInviteIfAny();
+      if (!mounted) return;
 
       // Owner logins never have a studio_members row (auth.uid() = studio_id
       // is what makes them the owner everywhere else in the schema). If this

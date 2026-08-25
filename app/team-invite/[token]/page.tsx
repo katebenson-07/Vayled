@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { stashPendingInviteToken } from "@/lib/pendingInvite";
 
 type Invite = {
   stylist_name: string;
@@ -46,11 +47,12 @@ export default function TeamInvitePage() {
       if (signUpError) throw signUpError;
 
       if (!signUpData.session) {
-        // Project has email confirmation on — they'll need to confirm, then
-        // sign in from /login, at which point AuthGuard/TeamAuthGuard will
-        // pick up their pending invite via the same accept call below isn't
-        // possible yet since there's no session. Simplest honest path: tell
-        // them to check email, then log in normally afterward.
+        // Project has email confirmation on — there's no session yet, so we
+        // can't call accept_studio_invite (it needs auth.uid()). Stash the
+        // token so that once they confirm their email and log in normally,
+        // AuthGuard/TeamAuthGuard can finish accepting the invite on their
+        // first authenticated page load, before deciding where to route them.
+        stashPendingInviteToken(String(token));
         setCheckEmail(true);
         return;
       }
