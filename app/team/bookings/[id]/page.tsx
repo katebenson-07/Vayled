@@ -174,17 +174,25 @@ function WeddingDetail() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <Link href="/team" className="text-xs text-gold hover:underline">
-          ← My schedule
-        </Link>
-        <h1 className="font-serif text-2xl mt-1 mb-1">{client.bride_name}</h1>
-        <p className="text-charcoal/60 text-sm">
-          {client.wedding_date ? format(parseISO(client.wedding_date), "EEEE, MMM d, yyyy") : "No date set"}
-          {client.venue ? ` · ${client.venue}` : ""}
-          {" · "}
-          <span className={isLead ? "text-charcoal font-medium" : ""}>{isLead ? "You're the lead" : "You're assisting"}</span>
-        </p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <Link href="/team" className="text-xs text-gold hover:underline print:hidden">
+            ← My schedule
+          </Link>
+          <h1 className="font-serif text-2xl mt-1 mb-1">{client.bride_name}</h1>
+          <p className="text-charcoal/60 text-sm">
+            {client.wedding_date ? format(parseISO(client.wedding_date), "EEEE, MMM d, yyyy") : "No date set"}
+            {client.venue ? ` · ${client.venue}` : ""}
+            {" · "}
+            <span className={isLead ? "text-charcoal font-medium" : ""}>{isLead ? "You're the lead" : "You're assisting"}</span>
+          </p>
+        </div>
+        <button
+          onClick={() => window.print()}
+          className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm shrink-0 print:hidden"
+        >
+          Print / Save PDF
+        </button>
       </div>
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-5">
@@ -213,14 +221,14 @@ function WeddingDetail() {
 
       <button
         onClick={() => setDetailsOpen((o) => !o)}
-        className="w-full flex items-center justify-between bg-white border border-charcoal/10 rounded-xl p-5 text-left"
+        className="w-full flex items-center justify-between bg-white border border-charcoal/10 rounded-xl p-5 text-left print:hidden"
       >
         <span className="text-sm font-medium text-charcoal">Trial &amp; prep details</span>
         <span className="text-xs text-gold">{detailsOpen ? "Hide ▲" : "Show ▾"}</span>
       </button>
 
       {detailsOpen && (
-        <>
+        <div className="print:hidden space-y-6">
       {isLead && (
         <section className="bg-white border border-charcoal/10 rounded-xl p-5">
           <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-1">Offer trial times to the bride</h2>
@@ -389,7 +397,7 @@ function WeddingDetail() {
           </div>
         )}
       </section>
-        </>
+        </div>
       )}
     </div>
   );

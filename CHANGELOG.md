@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-23 (66)
+
+- **Stylists can save their day-of timeline as a PDF** — added a "Print / Save PDF" button on a stylist's individual wedding page (`/team/bookings/[id]`), next to the bride's name. Uses the browser's print-to-PDF, same pattern as the owner's contract page. Printing hides the sidebar, the print button itself, and the collapsed "Trial & prep details" section — only the header and "Your schedule that day" timeline show up in the saved PDF, so it's a clean one-pager they can keep on their phone or print for backstage.
+
 ## 2026-08-23 (65)
 
 - **Fixed: invited stylists landing on the full owner dashboard** — `accept_studio_invite` (the call that flips a stylist's invite to "active") only ever ran if signing up returned a session immediately. Since email confirmation is on for this project, a stylist has to confirm their email and log in separately — and nothing was calling accept at that point, so their `studio_members` row stayed "pending" forever. Both AuthGuard and TeamAuthGuard then treated them as not a stylist and dropped them onto the regular owner app (full sidebar, their own name shown as "Studio owner"). Now the invite token is stashed in the browser when email confirmation is required, and both guards finish accepting it automatically on the stylist's next authenticated page load, before deciding where to route them.

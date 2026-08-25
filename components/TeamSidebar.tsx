@@ -79,14 +79,14 @@ export default function TeamSidebar({ stylistName }: { stylistName: string }) {
 
   return (
     <>
-      <div className="md:hidden flex items-center justify-between bg-charcoal text-ivory px-4 py-3 sticky top-0 z-30">
+      <div className="md:hidden flex items-center justify-between bg-charcoal text-ivory px-4 py-3 sticky top-0 z-30 print:hidden">
         <Logo size="sm" className="text-ivory" />
         <button onClick={() => setMobileOpen(true)} aria-label="Open menu" className="text-ivory">
           <NavIcon name="menu" className="w-6 h-6" />
         </button>
       </div>
 
-      <aside className="hidden md:flex md:flex-col w-64 shrink-0 bg-charcoal min-h-screen sticky top-0">
+      <aside className="hidden md:flex md:flex-col w-64 shrink-0 bg-charcoal min-h-screen sticky top-0 print:hidden">
         <TeamSidebarContent stylistName={stylistName} />
       </aside>
 
