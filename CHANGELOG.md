@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (97)
+
+- **Swapped Abril Fatface for Spectral as the `font-script` title font.** Kate felt Abril Fatface was too big/heavy. Built a second round of lighter alternatives (Cormorant SC, Fraunces, Crimson Pro, Cardo, Spectral) shown at the actual in-app title sizes, then a closer side-by-side of the top two (Spectral vs Cardo) with the sidebar and full page context included — Kate picked Spectral. Kept the existing page-title sizes (`text-4xl` / `text-3xl`, stepped down for Abril Fatface) rather than sizing back up, since she approved Spectral at that scale in the preview. Updated `app/layout.tsx`, `tailwind.config.ts`, and `DESIGN_SYSTEM.md`.
+
 ## 2026-09-01 (96)
 
 - **Audited and standardized every button and input across the app.** Found and fixed two systemic gaps: ~150 bordered inputs/selects/textareas had no `focus:` state at all (relying on the browser default outline) except for one search box, and ~35 primary (`bg-charcoal text-ivory`) buttons had zero `hover:` feedback — both retrofitted with the documented conventions (`focus:outline-none focus:border-charcoal/30` and `hover:bg-charcoal/90`). Also normalized 12 stray `disabled:opacity-40`/`disabled:opacity-30` instances to the standard `disabled:opacity-50`. Confirmed the app's existing red destructive-action buttons (Delete booking/client, Remove line items) were already consistent and intentional — no accidental off-brand colors found anywhere. Expanded `DESIGN_SYSTEM.md`'s Interactive States section into full Buttons and Inputs state tables (default/hover/disabled/selected for buttons; default/focus/disabled/error for inputs), documented the destructive-action pattern explicitly, and defined an error/invalid input style for future use even though no field-level validation exists yet.

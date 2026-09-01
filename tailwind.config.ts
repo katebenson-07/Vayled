@@ -18,8 +18,9 @@ const config: Config = {
         // font-script and font-logo resolves to the same --font-sans
         // variable, so serif/sans/heading/tagline are intentionally
         // identical here rather than four different fonts. font-script is
-        // Abril Fatface, chosen by Kate over Bellefair/Playfair/Marcellus/
-        // Prata/EB Garamond from a side-by-side comparison. font-logo is
+        // Spectral, chosen by Kate after Abril Fatface felt too big/heavy
+        // (earlier rounds also tried Bellefair/Playfair/Marcellus/Prata/EB
+        // Garamond/Fraunces/Crimson Pro/Cormorant SC/Cardo). font-logo is
         // Italiana (free lookalike for paid Black Gold) — see
         // app/layout.tsx.
         serif: ["var(--font-sans)", "Georgia", "serif"],
