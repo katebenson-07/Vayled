@@ -317,7 +317,7 @@ function AppointmentsContent() {
         <div className="bg-white border border-charcoal/10 rounded-xl p-8 text-center">
           <p className="font-serif text-lg mb-1">Nothing scheduled yet</p>
           <p className="text-sm text-charcoal/60">
-            Trial fittings and rehearsals will show up here automatically. Use "+ Schedule" for everything else.
+            Trial fittings and rehearsals will show up here automatically. Use the &ldquo;+ Schedule&rdquo; button for everything else.
           </p>
         </div>
       ) : grouped.length === 0 ? (
