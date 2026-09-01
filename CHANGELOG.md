@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (81)
+
+- **Updated marketing screenshots with the new UI** — re-captured `timeline-builder.jpg` and `pipeline.jpg` from the redesigned Timeline tab and booking checklist, and added three new screenshots (`bookings.jpg`, `appointments.jpg`, `stylists.jpg`). Added a new "Bookings" feature block to the homepage, and "Bookings," "Appointments," and "Your team" sections to the features page — all using real screenshots from the current build instead of the old design.
+
 ## 2026-09-01 (80)
 
 - **Redesigned the studio Timeline tab (view mode) as a table** — per stylist, each row now shows Time / Appointment & Guest / Styling Focus & Prep Notes / Duration, matching a reference layout Kate shared. Role shows as a small pill (bride's row gets a gold-tinted highlight and a "Bride highlight" pill instead of the raw role text). Added a prominent gold "Ready-by target" callout in the stats grid, a footer stats bar (start time, total chair time, appointment count, ceremony time), and Print/Share buttons in the header (Print calls the browser print dialog; Share reuses the existing "Copy portal link" action). Colors/fonts are Vayled's existing charcoal/ivory/gold/beige palette — no new fonts or colors introduced. Edit mode is unchanged except for one addition below.

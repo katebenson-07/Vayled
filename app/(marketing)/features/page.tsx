@@ -10,10 +10,22 @@ export const metadata: Metadata = {
 
 const SECTIONS = [
   {
+    label: "Bookings",
+    src: "/marketing/bookings.jpg",
+    title: "Every project, at a glance",
+    body: "Search by name or venue, filter by status, and see the date, venue, contract total, and deposit progress on every card — no more opening five different jobs to find the one bride who just texted you back.",
+  },
+  {
+    label: "Appointments",
+    src: "/marketing/appointments.jpg",
+    title: "One schedule for every meeting",
+    body: "Preview fittings, rehearsals, venue walk-throughs, and consultations all land in one date-grouped list, instead of checking three different tabs to see what's actually on the books this week.",
+  },
+  {
     label: "Timeline builder",
     src: "/marketing/timeline-builder.jpg",
     title: "One timeline, your whole team",
-    body: "Split the wedding party across your stylists by headcount instead of assigning people one at a time. Drag anyone to a different stylist's schedule if plans change, and every stylist sees exactly where they need to be and when.",
+    body: "Split the wedding party across your stylists by headcount instead of assigning people one at a time. Drag anyone to a different stylist's schedule if plans change, and every stylist sees exactly where they need to be, who they're doing, and any styling notes for that person.",
   },
   {
     label: "Calendar",
@@ -74,6 +86,12 @@ const SECTIONS = [
     src: "/marketing/smart-reminders.jpg",
     title: "Nudges for the things that fall through the cracks",
     body: "Vayled flags balance-due dates, unbooked previews, and pre-preview questionnaires that need to go out — you still send it, it just tells you when.",
+  },
+  {
+    label: "Your team",
+    src: "/marketing/stylists.jpg",
+    title: "Your roster, not a spreadsheet",
+    body: "See every stylist's pay percentage, login status, and active/inactive state on one card each. Invite someone to log in, adjust their cut, or mark them inactive without leaving the page.",
   },
 ];
 

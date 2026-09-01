@@ -44,6 +44,12 @@ const FEATURES = [
     title: "Stay a step ahead of your clients, not behind them",
     body: "Vayled flags balance-due dates, previews that still need to be booked, and questionnaires that should've gone out — so you're the one reaching out first, instead of scrambling to catch up.",
   },
+  {
+    label: "Bookings",
+    src: "/marketing/bookings.jpg",
+    title: "Every project, at a glance",
+    body: "Search by name or venue, filter by status, and see the date, venue, contract total, and deposit progress on every card — no more opening five different jobs to find the one bride who just texted you back.",
+  },
 ];
 
 export default function MarketingHome() {
