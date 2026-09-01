@@ -1,28 +1,18 @@
 import type { Metadata } from "next";
-import { Bodoni_Moda, Mrs_Saint_Delafield, DM_Sans } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 
-// Display serif (headlines, logo, page titles) is Bodoni Moda — a high-contrast
-// Didone in the same family as the boutique/editorial wordmark look Kate wanted
-// to match. Script accent (contract letterhead/footer, dashboard page titles
-// like "Analytics"/"Calendar", booking names) is a true cursive, Mrs Saint
-// Delafield, restoring a dedicated script instead of aliasing it to the serif.
-// Body/UI stays DM Sans, unchanged. Same CSS variable names as before, so none
+// Consolidated from six typefaces down to two: Cormorant Garamond for every
+// serif/display role (headlines, logo, page titles, the old script accent),
+// DM Sans for every body/UI role. Same CSS variable names as before, so none
 // of the font-serif/font-sans/font-script/font-heading/font-logo/font-tagline
 // classes used across the app needed to change — only what each variable
 // points to, here and in tailwind.config.ts.
-const bodoniModa = Bodoni_Moda({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-serif",
-  display: "swap",
-});
-
-const mrsSaintDelafield = Mrs_Saint_Delafield({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-script",
   display: "swap",
 });
 
@@ -48,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${bodoniModa.variable} ${mrsSaintDelafield.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body>{children}</body>
     </html>
   );

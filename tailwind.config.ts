@@ -14,12 +14,12 @@ const config: Config = {
         beige: "#DDD9C9",
       },
       fontFamily: {
-        // Bodoni Moda (serif/heading/logo) for display type, Mrs Saint
-        // Delafield (script) as a true cursive accent, DM Sans (sans/tagline)
-        // for everything else. See app/layout.tsx for why.
+        // Two typefaces total, reused across every role: Cormorant Garamond
+        // (serif/heading/logo/script) and DM Sans (sans/tagline). See
+        // app/layout.tsx for why.
         serif: ["var(--font-serif)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
-        script: ["var(--font-script)", "Georgia", "serif"],
+        script: ["var(--font-serif)", "Georgia", "serif"],
         heading: ["var(--font-serif)", "Georgia", "serif"],
         logo: ["var(--font-serif)", "Georgia", "serif"],
         tagline: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],

@@ -2,10 +2,6 @@
 
 Running log of changes requested while testing the app. Newest first.
 
-## 2026-08-31 (75)
-
-- **Font swap: Bodoni Moda + Mrs Saint Delafield** — replaced Cormorant Garamond with Bodoni Moda for every serif/display role (headlines, logo, page titles) to match a high-contrast, editorial-boutique look Kate was going for (inspired by a paid Etsy/Creative Market logo template — that kit turned out to only sell pre-made Illustrator/Photoshop logo art with already-free-for-commercial-use fonts, not a font license itself, so we matched the look with free Google Fonts directly instead of buying anything). Also restored `font-script` as a true cursive (Mrs Saint Delafield) instead of aliasing it to the serif — it now renders as an actual flowing script everywhere it's used: dashboard page titles (Analytics, Expenses, Calendar), the booking page's bride-name heading, and the contract letterhead/footer. DM Sans is unchanged for body/UI text. Only `app/layout.tsx` and `tailwind.config.ts` changed — same `font-serif`/`font-sans`/`font-script`/etc. classes everywhere, just pointing at new typefaces.
-
 ## 2026-08-31 (74)
 
 - **Disabled public signup, private beta only** — `/login?mode=signup` no longer creates an account. It now shows a "we're in private beta" message and the existing `WaitlistForm` component instead of the Supabase `signUp` form. Sign-in is untouched (existing owners and invited stylists can still log in). Every "Sign up" button sitewide (`MarketingNav`, homepage, `/features`, `/about`) relabeled to "Join the beta" to match `/pricing`, which already used that copy. No route or link changes — everything still points at `/login?mode=signup`, it just resolves to the waitlist now.
