@@ -34,7 +34,7 @@ function LoginForm() {
     <div className="min-h-screen bg-charcoal flex items-center justify-center p-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <p className="font-serif text-3xl tracking-widest-lg uppercase text-ivory mb-2">Vayled</p>
+          <p className="font-logo text-3xl tracking-widest-lg uppercase text-ivory mb-2">Vayled</p>
           <p className="text-xs uppercase tracking-widest-lg text-beige/70">For bridal hair &amp; makeup studios</p>
         </div>
         <div className="w-full bg-ivory rounded-xl p-8">

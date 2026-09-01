@@ -5,6 +5,7 @@
 body {
   background-color: #fdf9f2;
   color: #5d1217;
+  font-family: var(--font-serif), Georgia, serif;
 }
 
 .tracking-widest-lg {
