@@ -9,7 +9,7 @@ const config: Config = {
     extend: {
       colors: {
         ivory: "#fdf9f2",
-        charcoal: "#5d1217",
+        charcoal: "#2a1a14",
         gold: "#6F5F4D",
         beige: "#DDD9C9",
       },

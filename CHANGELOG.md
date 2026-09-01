@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (89)
+
+- **Swapped the "charcoal" brand color from deep maroon to deep espresso brown** — `#5d1217` → `#2a1a14`. Kate felt the red read as too bright/not moody enough; espresso brown keeps the same near-black weight and warmth without the red undertone. Updated everywhere the token lives: `tailwind.config.ts`, the body-text color in `globals.css`, and the first entry of the Calendar's warm stylist-color palette (`STYLIST_COLORS`). Every component using the `charcoal` Tailwind class (buttons, borders, text, sidebar) picks up the new color automatically. Updated `DESIGN_SYSTEM.md`'s color table to match.
+
 ## 2026-09-01 (88)
 
 - **Made the script font the standard for every internal page title** — Calendar, Analytics, and Expenses already used the big decorative `font-script` (Pinyon Script) title; the rest of the app (Bookings, Inquiries, Inbox, Clients, Stylists, Payroll, Contracts, Invoices, Settings, Email templates, Appointments, Team pages, Rehearsal, Preview session, and the dashboard greeting) used a smaller plain serif title instead. Converted all of them to match, so script is now the one consistent page-title treatment app-wide instead of a 3-page exception. Sized each to stay legible: `text-5xl` for most single-word titles, `text-4xl` for person-name headers (a booking's bride name) and the one notably long title ("Rehearsal hair & makeup"). Public client-facing pages (bride portal, inquiry form, trial picker) were left as-is — that's a separate, more sensitive surface. Updated `DESIGN_SYSTEM.md`'s Typography section to reflect the new universal rule.

@@ -14,7 +14,7 @@ Defined once in `tailwind.config.ts`, referenced everywhere as `ivory` / `charco
 | Token | Hex | Role |
 |---|---|---|
 | `ivory` | `#fdf9f2` | Page background, text-on-dark |
-| `charcoal` | `#5d1217` | Primary text, primary buttons, sidebar, borders (a deep maroon, not literal charcoal) |
+| `charcoal` | `#2a1a14` | Primary text, primary buttons, sidebar, borders (a deep espresso brown, not literal charcoal) |
 | `gold` | `#6F5F4D` | Accent — links, highlights, "gold" status accents |
 | `beige` | `#DDD9C9` | Secondary surface (stat cards, pills, subtle backgrounds) |
 
