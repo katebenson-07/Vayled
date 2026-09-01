@@ -217,7 +217,7 @@ function ExpensesContent() {
     <div className="space-y-8">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="font-script text-5xl leading-tight mb-1">Expenses</h1>
+          <h1 className="font-script text-4xl leading-tight mb-1">Expenses</h1>
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50">{studioName} · Expense tracker</p>
         </div>
         <div className="flex items-center gap-3 border border-charcoal/20 rounded-md px-3 py-2 text-sm">

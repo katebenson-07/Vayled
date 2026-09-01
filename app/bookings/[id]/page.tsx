@@ -717,7 +717,7 @@ function BookingDetail() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-script text-4xl leading-tight mb-1">{client?.bride_name ?? "Booking"}</h1>
+              <h1 className="font-script text-3xl leading-tight mb-1">{client?.bride_name ?? "Booking"}</h1>
               <button
                 onClick={() => {
                   setPartySizeInput(String(members.length));

@@ -138,7 +138,7 @@ function TrialContent() {
     <div className="space-y-8">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h1 className="font-script text-5xl leading-tight mb-1">Preview session</h1>
+          <h1 className="font-script text-4xl leading-tight mb-1">Preview session</h1>
           <p className="text-charcoal/60">
             {client?.bride_name ?? "Client"} ·{" "}
             <Link href={`/bookings/${bookingId}`} className="text-gold hover:underline">

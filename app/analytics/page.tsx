@@ -103,7 +103,7 @@ function AnalyticsContent() {
     <div className="space-y-8">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="font-script text-5xl leading-tight mb-1">Analytics</h1>
+          <h1 className="font-script text-4xl leading-tight mb-1">Analytics</h1>
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50">
             {studioName} · Performance overview
           </p>

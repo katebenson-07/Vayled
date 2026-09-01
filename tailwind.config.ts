@@ -18,9 +18,10 @@ const config: Config = {
         // font-script and font-logo resolves to the same --font-sans
         // variable, so serif/sans/heading/tagline are intentionally
         // identical here rather than four different fonts. font-script is
-        // Bellefair (free lookalike for the paid Sloop Script Pro font Kate
-        // wants). font-logo is Italiana (free lookalike for paid Black
-        // Gold) — see app/layout.tsx.
+        // Abril Fatface, chosen by Kate over Bellefair/Playfair/Marcellus/
+        // Prata/EB Garamond from a side-by-side comparison. font-logo is
+        // Italiana (free lookalike for paid Black Gold) — see
+        // app/layout.tsx.
         serif: ["var(--font-sans)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "Georgia", "serif"],
         script: ["var(--font-script-display)", "Georgia", "serif"],

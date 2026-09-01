@@ -104,7 +104,7 @@ function MySchedule() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-script text-5xl leading-tight mb-1">My schedule</h1>
+        <h1 className="font-script text-4xl leading-tight mb-1">My schedule</h1>
         <p className="text-charcoal/60 text-sm">Weddings you&apos;re assigned to.</p>
       </div>
 

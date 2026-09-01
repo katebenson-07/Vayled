@@ -215,7 +215,7 @@ function CalendarContent() {
     <div>
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
-          <h1 className="font-script text-5xl leading-tight mb-1">Calendar</h1>
+          <h1 className="font-script text-4xl leading-tight mb-1">Calendar</h1>
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50">{studioName} · Team schedule</p>
         </div>
         <div className="flex items-center gap-2 text-sm">

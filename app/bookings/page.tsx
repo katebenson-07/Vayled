@@ -76,7 +76,7 @@ function BookingsContent() {
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
-        <h1 className="font-script text-5xl leading-tight">Bookings</h1>
+        <h1 className="font-script text-4xl leading-tight">Bookings</h1>
         <Link href="/inquiries" className="text-sm text-gold hover:underline">
           View inquiries →
         </Link>

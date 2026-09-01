@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
-import { Lora, Bellefair, Italiana } from "next/font/google";
+import { Lora, Abril_Fatface, Italiana } from "next/font/google";
 import "./globals.css";
 
 // Lora is the one universal text font — body copy, section headers, and stat
 // numbers/tabular data all share it (font-serif, font-sans, font-heading,
 // and font-tagline all resolve to the same --font-sans variable; see
-// tailwind.config.ts). Bellefair covers font-script (big decorative page
+// tailwind.config.ts). Abril Fatface covers font-script (big decorative page
 // titles: every internal page's <h1>, a booking's bride name, contract
-// thank-you/letterhead). Italiana is a free lookalike standing in for the
+// thank-you/letterhead) — it's a heavier, bolder display face than the
+// script fonts tried before, so page-title sizes were stepped down one
+// Tailwind size (text-5xl -> text-4xl, text-4xl -> text-3xl) to keep the
+// same visual weight. Italiana is a free lookalike standing in for the
 // paid Black Gold font Kate wants, until she buys a license — used only for
 // font-logo (the "VAYLED" wordmark).
 const lora = Lora({
@@ -18,7 +21,7 @@ const lora = Lora({
   display: "swap",
 });
 
-const bellefair = Bellefair({
+const abrilFatface = Abril_Fatface({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-script-display",
@@ -47,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${lora.variable} ${bellefair.variable} ${italiana.variable}`}>
+    <html lang="en" className={`${lora.variable} ${abrilFatface.variable} ${italiana.variable}`}>
       <body>{children}</body>
     </html>
   );

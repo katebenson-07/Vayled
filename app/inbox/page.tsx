@@ -42,7 +42,7 @@ function InboxContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h1 className="font-script text-5xl leading-tight mb-1">Inbox</h1>
+          <h1 className="font-script text-4xl leading-tight mb-1">Inbox</h1>
           <p className="text-charcoal/60 text-sm">
             New inquiries, payments, preview sessions, and signed contracts, in one place.
           </p>

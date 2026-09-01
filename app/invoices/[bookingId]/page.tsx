@@ -326,7 +326,7 @@ function InvoiceContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2 print:hidden">
         <div>
-          <h1 className="font-script text-5xl leading-tight mb-1">Invoice</h1>
+          <h1 className="font-script text-4xl leading-tight mb-1">Invoice</h1>
           <p className="text-charcoal/60">
             {client?.bride_name ?? "Client"} ·{" "}
             <Link href={`/bookings/${bookingId}`} className="text-gold hover:underline">
@@ -356,7 +356,7 @@ function InvoiceContent() {
       <section className="bg-white border border-charcoal/10 rounded-xl p-8">
         <div className="flex items-start justify-between mb-8">
           <div>
-            <p className="font-script text-4xl leading-tight">Invoice</p>
+            <p className="font-script text-3xl leading-tight">Invoice</p>
             <p className="text-charcoal/60 text-sm">{format(new Date(), "MMMM d, yyyy")}</p>
           </div>
           {outstanding <= 0 && (

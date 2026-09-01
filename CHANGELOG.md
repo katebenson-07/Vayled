@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (92)
+
+- **Swapped Bellefair for Abril Fatface as the `font-script` page-title font.** Built a second side-by-side comparison (six header-font candidates, Lora body text held constant) and Kate picked Abril Fatface. It's noticeably heavier/bolder than every script font tried before, so every page-title size across the app was stepped down one Tailwind size to keep the same visual weight instead of looking oversized: `text-5xl` → `text-4xl` for standard titles, `text-4xl` → `text-3xl` for person-name headers, greetings, and the one long title ("Rehearsal hair & makeup"). Touches all 24 files with a `font-script` heading. Updated `app/layout.tsx`, `tailwind.config.ts`, and `DESIGN_SYSTEM.md` to match.
+
 ## 2026-09-01 (91)
 
 - **Swapped Jost for Lora as the universal text font.** Kate didn't like how Jost looked; rather than guess again, built a side-by-side comparison (same page title font, same colors, six body-font candidates against real Vayled UI copy) and she picked Lora. Same scope as the Jost change it replaces — `font-serif`, `font-sans`, `font-heading`, and `font-tagline` all resolve to the same font. `font-script` (Bellefair) and `font-logo` (Italiana) are untouched. Updated `app/layout.tsx`, `tailwind.config.ts` (fallback stack switched back to serif since Lora is a serif font), `app/globals.css`, and `DESIGN_SYSTEM.md`.

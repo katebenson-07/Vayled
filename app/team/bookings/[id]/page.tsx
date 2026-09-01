@@ -179,7 +179,7 @@ function WeddingDetail() {
           <Link href="/team" className="text-xs text-gold hover:underline print:hidden">
             ← My schedule
           </Link>
-          <h1 className="font-script text-4xl leading-tight mt-1 mb-1">{client.bride_name}</h1>
+          <h1 className="font-script text-3xl leading-tight mt-1 mb-1">{client.bride_name}</h1>
           <p className="text-charcoal/60 text-sm">
             {client.wedding_date ? format(parseISO(client.wedding_date), "EEEE, MMM d, yyyy") : "No date set"}
             {client.venue ? ` · ${client.venue}` : ""}
