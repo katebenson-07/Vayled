@@ -122,19 +122,19 @@ function AnalyticsContent() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">YTD revenue</p>
-          <p className="font-serif text-3xl">${ytdRevenue.toFixed(0)}</p>
+          <p className="font-sans font-semibold text-3xl tabular-nums">${ytdRevenue.toFixed(0)}</p>
         </div>
         <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Avg booking value</p>
-          <p className="font-serif text-3xl">${avgBookingValue.toFixed(0)}</p>
+          <p className="font-sans font-semibold text-3xl tabular-nums">${avgBookingValue.toFixed(0)}</p>
         </div>
         <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Total bookings</p>
-          <p className="font-serif text-3xl">{bookingsInYear.length}</p>
+          <p className="font-sans font-semibold text-3xl tabular-nums">{bookingsInYear.length}</p>
         </div>
         <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Best month</p>
-          <p className="font-serif text-3xl">{bestMonth && bestMonth.amount > 0 ? bestMonth.label : "—"}</p>
+          <p className="font-sans font-semibold text-3xl tabular-nums">{bestMonth && bestMonth.amount > 0 ? bestMonth.label : "—"}</p>
         </div>
       </div>
 
@@ -168,19 +168,19 @@ function AnalyticsContent() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
             <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Inquiries</p>
-            <p className="font-serif text-3xl">{totalInquiries}</p>
+            <p className="font-sans font-semibold text-3xl tabular-nums">{totalInquiries}</p>
           </div>
           <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
             <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Booked</p>
-            <p className="font-serif text-3xl">{totalBooked}</p>
+            <p className="font-sans font-semibold text-3xl tabular-nums">{totalBooked}</p>
           </div>
           <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
             <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Ghosted</p>
-            <p className="font-serif text-3xl">{totalGhosted}</p>
+            <p className="font-sans font-semibold text-3xl tabular-nums">{totalGhosted}</p>
           </div>
           <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
             <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Booked rate</p>
-            <p className="font-serif text-3xl">{bookedRate.toFixed(0)}%</p>
+            <p className="font-sans font-semibold text-3xl tabular-nums">{bookedRate.toFixed(0)}%</p>
           </div>
         </div>
 

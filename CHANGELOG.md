@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-31 (78)
+
+- **Fixed stat-number font on Analytics and Expenses** — the big $ figures and percentages in the stat cards were rendered in the serif display font, whose old-style numerals look uneven at that size for financial data. Switched just those numbers to the sans font with `font-semibold` and `tabular-nums` (even digit widths, so figures don't jiggle side to side); page titles, section headers, and everything else on those two pages keep the serif as before.
+
 ## 2026-08-31 (77)
 
 - **Renamed "Trial" to "Preview" everywhere it's user-visible** — page headings, buttons, tab labels, dashboard stats/reminders, invoice line items, the auto-seeded "Trial — Hair + Makeup" service catalog item, email templates (subject + body), the client portal, the stylist team view, and marketing/legal copy. Scoped to visible text only, on purpose: routes (`/trials/[bookingId]` etc.), the `trial_sessions`/`trial_slot_offers` tables, `TrialSession`/`TrialSlotOffer` types, and all internal variable/function names are unchanged, so nothing breaks for links already sent to real clients. One thing this doesn't touch: any studio (including this one) that already had its `email_templates` seeded before this change still has the old names ("Trial reminder", "Trial time options", "Trial prep questionnaire") saved in the database — new studios get the new names, existing ones would need a manual rename in the Emails page (or a one-time SQL update, happy to write one if wanted).

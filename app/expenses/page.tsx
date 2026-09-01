@@ -234,26 +234,26 @@ function ExpensesContent() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Total expenses</p>
-          <p className="font-serif text-3xl">${totalExpenses.toFixed(2)}</p>
+          <p className="font-sans font-semibold text-3xl tabular-nums">${totalExpenses.toFixed(2)}</p>
           <p className="text-xs text-charcoal/50 mt-1">
             {monthExpenses.length} item{monthExpenses.length === 1 ? "" : "s"} logged
           </p>
         </div>
         <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Revenue</p>
-          <p className="font-serif text-3xl">${revenue.toFixed(0)}</p>
+          <p className="font-sans font-semibold text-3xl tabular-nums">${revenue.toFixed(0)}</p>
           <p className="text-xs text-charcoal/50 mt-1">{format(month, "MMM yyyy")}</p>
         </div>
         <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Net profit</p>
-          <p className="font-serif text-3xl">${netProfit.toFixed(2)}</p>
+          <p className="font-sans font-semibold text-3xl tabular-nums">${netProfit.toFixed(2)}</p>
           <p className={`text-xs mt-1 ${netProfit >= 0 ? "text-green-700" : "text-red-600"}`}>
             {netProfit >= 0 ? "In the green" : "In the red"}
           </p>
         </div>
         <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Margin</p>
-          <p className="font-serif text-3xl">{margin === null ? "—" : `${margin.toFixed(0)}%`}</p>
+          <p className="font-sans font-semibold text-3xl tabular-nums">{margin === null ? "—" : `${margin.toFixed(0)}%`}</p>
           <p className="text-xs text-charcoal/50 mt-1">After all expenses</p>
         </div>
       </div>
@@ -587,7 +587,7 @@ function ExpensesContent() {
             </div>
             <div className="flex items-center justify-between pt-3 border-t border-charcoal/20">
               <span className="text-charcoal/60">Mileage deduction</span>
-              <span className="font-serif text-xl">${mileDeduction.toFixed(2)}</span>
+              <span className="font-sans font-semibold text-xl tabular-nums">${mileDeduction.toFixed(2)}</span>
             </div>
           </div>
         </section>
