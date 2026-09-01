@@ -110,7 +110,7 @@ function AppointmentsContent() {
         return {
           id: `trial-${t.id}`,
           source: "trial",
-          title: "Preview Fitting",
+          title: "Preview",
           date: t.session_date as string,
           time: t.session_time,
           clientName: booking?.clients?.bride_name ?? null,

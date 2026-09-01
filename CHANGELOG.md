@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (85)
+
+- **Appointments: "Preview Fitting" → "Preview"** — the title shown for trial-session entries in the unified Appointments list was still saying "Preview Fitting" from before the Trial→Preview rename; now just "Preview," matching the rest of the app.
+
 ## 2026-09-01 (84)
 
 - **Fixed waitlist signups actually failing** — the RLS insert policy on `waitlist_signups` only allowed the `anon` role. That's fine for a logged-out visitor, but the app's Supabase client shares one session per browser, so if you're logged into your studio account in the same browser as the marketing homepage, your requests go out as `authenticated`, not `anon` — and got rejected. Widened the policy to `for insert to anon, authenticated`, so the form works whether or not you're logged in elsewhere in that browser. Needs the updated `waitlist_signups` policy re-run in Supabase's SQL Editor (see below).
