@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (93)
+
+- **Reverted "charcoal" from deep espresso brown back to the original deep wine red** — `#2a1a14` → `#5d1217`. After seeing a "Moody" palette comparison mockup, Kate decided she liked the moody direction overall but preferred the original wine red over both the mockup's near-black wine and the espresso brown that had replaced it. Updated `tailwind.config.ts`, `app/globals.css`, the Calendar's stylist-color palette, and `DESIGN_SYSTEM.md` — the same three places touched by the espresso-brown change this undoes.
+
 ## 2026-09-01 (92)
 
 - **Swapped Bellefair for Abril Fatface as the `font-script` page-title font.** Built a second side-by-side comparison (six header-font candidates, Lora body text held constant) and Kate picked Abril Fatface. It's noticeably heavier/bolder than every script font tried before, so every page-title size across the app was stepped down one Tailwind size to keep the same visual weight instead of looking oversized: `text-5xl` → `text-4xl` for standard titles, `text-4xl` → `text-3xl` for person-name headers, greetings, and the one long title ("Rehearsal hair & makeup"). Touches all 24 files with a `font-script` heading. Updated `app/layout.tsx`, `tailwind.config.ts`, and `DESIGN_SYSTEM.md` to match.
