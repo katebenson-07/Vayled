@@ -1271,6 +1271,14 @@ function BookingDetail() {
                   + Add person
                 </button>
               )}
+              <button onClick={() => window.print()} className="text-xs text-charcoal/60 hover:underline">
+                Print
+              </button>
+              {portalAvailable && (
+                <button onClick={copyPortalLink} className="text-xs text-charcoal/60 hover:underline">
+                  {linkCopied ? "Link copied ✓" : "Share"}
+                </button>
+              )}
               <div className="flex gap-1 bg-beige/40 rounded-lg p-1">
                 {(["view", "edit"] as const).map((m) => (
                   <button
@@ -1311,10 +1319,10 @@ function BookingDetail() {
                     {booking.start_time ? "Both stylists start here" : "Optional — leave blank to work backward from ready-by"}
                   </p>
                 </div>
-                <div className="bg-ivory rounded-lg p-3">
-                  <p className="text-xs text-charcoal/60">Ready by</p>
+                <div className="bg-gold/10 border border-gold/30 rounded-lg p-3">
+                  <p className="text-xs uppercase tracking-wide text-gold">Ready-by target</p>
                   {booking.ready_by_time ? (
-                    <p className="font-medium">
+                    <p className="font-sans font-semibold text-lg tabular-nums">
                       {format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}
                     </p>
                   ) : (
@@ -1378,26 +1386,58 @@ function BookingDetail() {
                       </p>
                     )}
                     {timelineMode === "view" ? (
-                      <div className="p-4 space-y-2">
-                        {st.entries.map((entry, i) => (
-                          <div
-                            key={entry.member.id}
-                            className="flex items-center gap-3 border-b border-charcoal/10 pb-2 last:border-b-0 last:pb-0"
-                          >
-                            <span
-                              className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-                              style={{
-                                backgroundColor: ["#33181C", "#6F5F4D", "#DDD9C9", "#33181C"][i % 4],
-                              }}
-                            />
-                            <span className="flex-1 text-sm">
-                              {entry.member.name} <span className="text-charcoal/60">({entry.member.role})</span>
-                            </span>
-                            <span className="text-charcoal/60 text-sm whitespace-nowrap">
-                              {format(entry.start, "h:mm a")} – {format(entry.end, "h:mm a")}
-                            </span>
-                          </div>
-                        ))}
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="text-left text-[10px] uppercase tracking-wide text-charcoal/40 border-b border-charcoal/10">
+                              <th className="py-2 pl-4 pr-3 font-normal">Time</th>
+                              <th className="py-2 pr-3 font-normal">Appointment &amp; Guest</th>
+                              <th className="py-2 pr-3 font-normal">Styling Focus &amp; Prep Notes</th>
+                              <th className="py-2 pr-4 font-normal text-right">Duration</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {st.entries.map((entry) => {
+                              const isBride = entry.member.role === "bride";
+                              const service =
+                                entry.member.hair && entry.member.makeup
+                                  ? "Hair + Makeup"
+                                  : entry.member.hair
+                                    ? "Hair"
+                                    : entry.member.makeup
+                                      ? "Makeup"
+                                      : "—";
+                              return (
+                                <tr
+                                  key={entry.member.id}
+                                  className={`border-b border-charcoal/10 last:border-b-0 ${isBride ? "bg-gold/10" : ""}`}
+                                >
+                                  <td className="py-3 pl-4 pr-3 align-top whitespace-nowrap">
+                                    <p className="font-sans font-semibold tabular-nums">{format(entry.start, "h:mm a")}</p>
+                                    <p className="text-[10px] text-charcoal/40">{format(entry.end, "h:mm a")} done</p>
+                                  </td>
+                                  <td className="py-3 pr-3 align-top">
+                                    <span
+                                      className={`inline-block text-[10px] uppercase tracking-wide rounded px-2 py-0.5 mb-1 ${
+                                        isBride ? "bg-charcoal text-ivory" : "bg-beige text-charcoal/70"
+                                      }`}
+                                    >
+                                      {isBride ? "Bride highlight" : entry.member.role}
+                                    </span>
+                                    <p className="font-serif text-base leading-tight">{entry.member.name}</p>
+                                    <p className="text-xs text-charcoal/50">{service}</p>
+                                  </td>
+                                  <td className="py-3 pr-3 align-top text-charcoal/60 max-w-xs">
+                                    {entry.member.styling_notes || <span className="text-charcoal/30">No notes yet</span>}
+                                  </td>
+                                  <td className="py-3 pr-4 align-top text-right whitespace-nowrap text-charcoal/60">
+                                    {entry.member.prep_minutes} min
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
                       </div>
                     ) : (
                       <div
@@ -1476,6 +1516,13 @@ function BookingDetail() {
                                 <span>min</span>
                               </div>
                             </div>
+                            <input
+                              className="border border-charcoal/20 rounded-md px-2 py-1 text-xs w-full mt-1.5 ml-5"
+                              style={{ width: "calc(100% - 1.25rem)" }}
+                              placeholder="Styling focus & prep notes (e.g. classic romantic waves, hair must be dry before start)"
+                              value={entry.member.styling_notes ?? ""}
+                              onChange={(e) => updateMember(entry.member.id, { styling_notes: e.target.value || null })}
+                            />
                           </div>
                         ))}
                       </div>
@@ -1483,16 +1530,34 @@ function BookingDetail() {
                   </div>
                 ))}
               </div>
-              <p className="text-charcoal/50 text-xs">Total chair time: {chairMinutes} min across {members.length} people.</p>
-
-              <p className="text-charcoal/60 pt-2 border-t border-charcoal/10">
-                {booking.start_time
-                  ? `Everyone starts at ${format(new Date(`${client?.wedding_date}T${booking.start_time}`), "h:mm a")}`
-                  : booking.ready_by_time
-                    ? `Everyone ready by ${format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")}`
-                    : ""}
-                {booking.ceremony_time ? ` · Ceremony ${format(new Date(`${client?.wedding_date}T${booking.ceremony_time}`), "h:mm a")}` : ""}
-              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center pt-2 border-t border-charcoal/10">
+                <div>
+                  <p className="text-[10px] uppercase tracking-wide text-charcoal/40">Start</p>
+                  <p className="font-sans font-semibold text-sm tabular-nums">
+                    {booking.start_time
+                      ? format(new Date(`${client?.wedding_date}T${booking.start_time}`), "h:mm a")
+                      : booking.ready_by_time
+                        ? format(new Date(`${client?.wedding_date}T${booking.ready_by_time}`), "h:mm a")
+                        : "Not set"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wide text-charcoal/40">Total chair time</p>
+                  <p className="font-sans font-semibold text-sm tabular-nums">{chairMinutes} min</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wide text-charcoal/40">Appointments</p>
+                  <p className="font-sans font-semibold text-sm tabular-nums">{members.length}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wide text-charcoal/40">Ceremony</p>
+                  <p className="font-sans font-semibold text-sm tabular-nums">
+                    {booking.ceremony_time
+                      ? format(new Date(`${client?.wedding_date}T${booking.ceremony_time}`), "h:mm a")
+                      : "Not set"}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </section>

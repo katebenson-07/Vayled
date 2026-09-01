@@ -2,6 +2,11 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (80)
+
+- **Redesigned the studio Timeline tab (view mode) as a table** — per stylist, each row now shows Time / Appointment & Guest / Styling Focus & Prep Notes / Duration, matching a reference layout Kate shared. Role shows as a small pill (bride's row gets a gold-tinted highlight and a "Bride highlight" pill instead of the raw role text). Added a prominent gold "Ready-by target" callout in the stats grid, a footer stats bar (start time, total chair time, appointment count, ceremony time), and Print/Share buttons in the header (Print calls the browser print dialog; Share reuses the existing "Copy portal link" action). Colors/fonts are Vayled's existing charcoal/ivory/gold/beige palette — no new fonts or colors introduced. Edit mode is unchanged except for one addition below.
+- **Added a "styling notes" field per party member** — a new `styling_notes` column on `party_members` (nullable text), editable inline in Timeline edit mode right under each person's hair/makeup/prep-time row, and shown in the new view-mode table under "Styling Focus & Prep Notes" (falls back to "No notes yet" until filled in). Requires re-running `supabase/schema.sql` in the Supabase SQL Editor for the column to exist — nothing will error without it, but notes won't save until it's added.
+
 ## 2026-08-31 (79)
 
 - **Redesigned the Stylists team list as a card grid** — same treatment as the Bookings page: initials avatar, a stable-position login-status badge, a colored top accent (green if logged in, gold if active without a login yet, gray if inactive), and a labeled Contact/Pay % layout instead of one long wrapping line. Inline editing, invite/resend, copy-link, mark active/inactive, and remove all work exactly as before — only the layout changed. The separate Time off list is unchanged (a log, not a roster, so the card treatment didn't fit).

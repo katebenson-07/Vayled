@@ -75,6 +75,7 @@ export default function BridePortalPage() {
       stylist_id: "",
       price: 0,
       assigned_stylist_id: null,
+      styling_notes: null,
       ...m,
     }));
     return computeTimeline(readyBy, asPartyMembers, booking.buffer_minutes ?? 0);

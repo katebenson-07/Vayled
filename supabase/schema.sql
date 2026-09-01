@@ -77,6 +77,11 @@ create table if not exists party_members (
 
 alter table party_members add column if not exists price numeric not null default 0;
 
+-- Per-person styling notes for the studio's own timeline view (e.g. "Classic
+-- romantic wave style, needs hair completely dry prior to start") — separate
+-- from the bride-portal payload for now, studio-side only.
+alter table party_members add column if not exists styling_notes text;
+
 create table if not exists payments (
   id uuid primary key default uuid_generate_v4(),
   stylist_id uuid not null references auth.users(id) on delete cascade,

@@ -130,6 +130,8 @@ export interface PartyMember {
   order_index: number;
   /** Which team member (from `stylists`) is doing this person's hair/makeup — null until assigned. */
   assigned_stylist_id: string | null;
+  /** Studio-side styling notes shown on the Timeline tab (e.g. desired style, prep requirements). */
+  styling_notes: string | null;
 }
 
 export interface Payment {
