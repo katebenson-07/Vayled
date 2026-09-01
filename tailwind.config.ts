@@ -8,8 +8,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ivory: "#EAECE4",
-        charcoal: "#33181C",
+        ivory: "#fdf9f2",
+        charcoal: "#5d1217",
         gold: "#6F5F4D",
         beige: "#DDD9C9",
       },

@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (82)
+
+- **Updated brand colors** — ivory background is now `#fdf9f2` (was `#EAECE4`) and charcoal is now `#5d1217` (was `#33181C`), across the whole app and the marketing site. Both are defined once in `tailwind.config.ts` as the `ivory`/`charcoal` theme colors, so every `bg-ivory`, `text-charcoal`, `border-charcoal/…` etc. picked up the new values automatically. Also updated the two spots with the old hex hardcoded outside Tailwind: the `body` fallback color in `globals.css`, and the first entry in the calendar's per-stylist color list.
+
 ## 2026-09-01 (81)
 
 - **Updated marketing screenshots with the new UI** — re-captured `timeline-builder.jpg` and `pipeline.jpg` from the redesigned Timeline tab and booking checklist, and added three new screenshots (`bookings.jpg`, `appointments.jpg`, `stylists.jpg`). Added a new "Bookings" feature block to the homepage, and "Bookings," "Appointments," and "Your team" sections to the features page — all using real screenshots from the current build instead of the old design.
