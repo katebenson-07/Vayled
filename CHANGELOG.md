@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-31 (72)
+
+- **Homepage visual polish** — more breathing room in the hero (bigger top/bottom padding, a subtle warm radial gradient behind the headline instead of flat ivory), an italic accent on one headline word for a softer editorial feel, and a trust line under the CTAs ("Built by a working bridal artist — a real product, already running real weddings"). Every CTA button sitewide (home, features, pricing, about) and the waitlist form switched from rounded-rectangle to fully pill-shaped, matching the softer bridal-brand feel. Prompted by comparing the site against a competitor's newly-discovered pre-launch landing page.
+
 ## 2026-08-31 (71)
 
 - **Marketing waitlist** — added a `waitlist_signups` table (insert-only from the public site, no read access through the app by design — view signups in the Supabase table editor) and an email capture section on the homepage for visitors who find the site through marketing but aren't ready to sign up for a full account yet.

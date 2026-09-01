@@ -37,7 +37,7 @@ export default function AboutPage() {
         <div className="mt-12">
           <Link
             href="/login?mode=signup"
-            className="inline-block bg-charcoal text-ivory text-xs uppercase tracking-widest-lg rounded-md px-6 py-3.5 hover:bg-charcoal/90 transition-colors"
+            className="inline-block bg-charcoal text-ivory text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-charcoal/90 transition-colors"
           >
             Sign up
           </Link>

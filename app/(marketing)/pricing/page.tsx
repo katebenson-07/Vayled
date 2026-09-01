@@ -78,7 +78,7 @@ export default function PricingPage() {
           </ul>
           <Link
             href="/login?mode=signup"
-            className="block w-full bg-charcoal text-ivory text-xs uppercase tracking-widest-lg rounded-md px-6 py-3.5 hover:bg-charcoal/90 transition-colors"
+            className="block w-full bg-charcoal text-ivory text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-charcoal/90 transition-colors"
           >
             Join the beta
           </Link>

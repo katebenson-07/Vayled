@@ -49,29 +49,41 @@ const FEATURES = [
 export default function MarketingHome() {
   return (
     <div>
-      <section className="max-w-6xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28">
-        <p className="text-xs uppercase tracking-widest-lg text-gold mb-4">For bridal hair &amp; makeup studios</p>
-        <h1 className="font-serif text-4xl md:text-6xl leading-[1.1] text-charcoal max-w-3xl">
-          One organized path from inquiry to wedding day
-        </h1>
-        <p className="text-charcoal/70 text-lg mt-6 max-w-xl">
-          Stop juggling five different apps to run a wedding. Vayled walks every booking through the same clear
-          process, builds one timeline your stylists and your bride actually use, and keeps you a step ahead of
-          your clients instead of chasing them.
-        </p>
-        <div className="flex flex-wrap gap-4 mt-8">
-          <Link
-            href="/login?mode=signup"
-            className="bg-charcoal text-ivory text-xs uppercase tracking-widest-lg rounded-md px-6 py-3.5 hover:bg-charcoal/90 transition-colors"
-          >
-            Sign up
-          </Link>
-          <Link
-            href="/features"
-            className="border border-charcoal/20 text-charcoal text-xs uppercase tracking-widest-lg rounded-md px-6 py-3.5 hover:bg-white transition-colors"
-          >
-            See features
-          </Link>
+      <section className="relative overflow-hidden">
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(111,95,77,0.14), rgba(234,236,228,0) 60%)",
+          }}
+        />
+        <div className="relative max-w-6xl mx-auto px-6 pt-24 pb-24 md:pt-36 md:pb-36">
+          <p className="text-xs uppercase tracking-widest-lg text-gold mb-5">For bridal hair &amp; makeup studios</p>
+          <h1 className="font-serif text-4xl md:text-6xl leading-[1.12] text-charcoal max-w-3xl">
+            One <em className="italic">organized</em> path from inquiry to wedding day
+          </h1>
+          <p className="text-charcoal/70 text-lg mt-7 max-w-xl leading-relaxed">
+            Stop juggling five different apps to run a wedding. Vayled walks every booking through the same clear
+            process, builds one timeline your stylists and your bride actually use, and keeps you a step ahead of
+            your clients instead of chasing them.
+          </p>
+          <div className="flex flex-wrap gap-4 mt-10">
+            <Link
+              href="/login?mode=signup"
+              className="bg-charcoal text-ivory text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-charcoal/90 transition-colors"
+            >
+              Sign up
+            </Link>
+            <Link
+              href="/features"
+              className="border border-charcoal/20 text-charcoal text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-white transition-colors"
+            >
+              See features
+            </Link>
+          </div>
+          <p className="text-xs uppercase tracking-widest-lg text-charcoal/40 mt-10">
+            Built by a working bridal artist — a real product, already running real weddings
+          </p>
         </div>
       </section>
 
@@ -91,7 +103,7 @@ export default function MarketingHome() {
           <div className="flex flex-wrap gap-2">
             {PATH_STEPS.map((step, i) => (
               <div key={step} className="flex items-center gap-2">
-                <span className="bg-ivory border border-charcoal/10 rounded-md px-3 py-2 text-xs md:text-sm text-charcoal/80 whitespace-nowrap">
+                <span className="bg-ivory border border-charcoal/10 rounded-full px-4 py-2 text-xs md:text-sm text-charcoal/80 whitespace-nowrap">
                   {step}
                 </span>
                 {i < PATH_STEPS.length - 1 && <span className="text-charcoal/20">→</span>}
@@ -134,13 +146,13 @@ export default function MarketingHome() {
           <div className="flex flex-wrap justify-center gap-4 mt-8">
             <Link
               href="/login?mode=signup"
-              className="bg-ivory text-charcoal text-xs uppercase tracking-widest-lg rounded-md px-6 py-3.5 hover:bg-beige transition-colors"
+              className="bg-ivory text-charcoal text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-beige transition-colors"
             >
               Sign up
             </Link>
             <Link
               href="/about"
-              className="border border-ivory/30 text-ivory text-xs uppercase tracking-widest-lg rounded-md px-6 py-3.5 hover:bg-ivory/10 transition-colors"
+              className="border border-ivory/30 text-ivory text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-ivory/10 transition-colors"
             >
               Our story
             </Link>

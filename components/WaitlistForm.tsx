@@ -69,7 +69,7 @@ export default function WaitlistForm({
         placeholder="you@example.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className={`flex-1 rounded-md px-4 py-3 text-sm ${
+        className={`flex-1 rounded-full px-5 py-3 text-sm ${
           dark
             ? "bg-ivory/10 border border-ivory/20 text-ivory placeholder:text-beige/40 focus:bg-ivory/15"
             : "bg-white border border-charcoal/20 text-charcoal placeholder:text-charcoal/40"
@@ -78,7 +78,7 @@ export default function WaitlistForm({
       <button
         type="submit"
         disabled={submitting}
-        className={`text-xs uppercase tracking-widest-lg rounded-md px-6 py-3 transition-colors disabled:opacity-50 ${
+        className={`text-xs uppercase tracking-widest-lg rounded-full px-6 py-3 transition-colors disabled:opacity-50 ${
           dark ? "bg-ivory text-charcoal hover:bg-beige" : "bg-charcoal text-ivory hover:bg-charcoal/90"
         }`}
       >

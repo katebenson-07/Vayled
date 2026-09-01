@@ -112,13 +112,13 @@ export default function FeaturesPage() {
           <div className="flex flex-wrap justify-center gap-4 mt-8">
             <Link
               href="/login?mode=signup"
-              className="bg-ivory text-charcoal text-xs uppercase tracking-widest-lg rounded-md px-6 py-3.5 hover:bg-beige transition-colors"
+              className="bg-ivory text-charcoal text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-beige transition-colors"
             >
               Sign up
             </Link>
             <Link
               href="/pricing"
-              className="border border-ivory/30 text-ivory text-xs uppercase tracking-widest-lg rounded-md px-6 py-3.5 hover:bg-ivory/10 transition-colors"
+              className="border border-ivory/30 text-ivory text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-ivory/10 transition-colors"
             >
               See pricing
             </Link>
