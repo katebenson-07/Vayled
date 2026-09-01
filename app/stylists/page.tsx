@@ -6,6 +6,13 @@ import { supabase } from "@/lib/supabaseClient";
 import { Stylist, StylistTimeOff, StudioMember } from "@/lib/types";
 import { format } from "date-fns";
 
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function StylistsContent() {
   const [stylists, setStylists] = useState<Stylist[]>([]);
   const [timeOff, setTimeOff] = useState<StylistTimeOff[]>([]);
@@ -265,113 +272,152 @@ function StylistsContent() {
         {stylists.length === 0 ? (
           <p className="text-charcoal/60 text-sm">No team members yet. Add your first stylist above.</p>
         ) : (
-          <div className="space-y-2 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {stylists.map((s) => {
               const member = members.find((m) => m.stylist_id === s.id) ?? null;
               const loginStatus = member?.status ?? null;
               const isEditing = editingId === s.id;
+              const accentClass = !s.active ? "bg-charcoal/15" : loginStatus === "active" ? "bg-green-500" : "bg-gold";
+
               return (
-                <div key={s.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-charcoal/10 pb-2">
-                  {isEditing ? (
-                    <div className="flex flex-wrap items-center gap-2 flex-1">
-                      <input
-                        className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[120px]"
-                        placeholder="Name"
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                      />
-                      <input
-                        className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[140px]"
-                        placeholder="Email"
-                        value={editEmail}
-                        onChange={(e) => setEditEmail(e.target.value)}
-                      />
-                      <input
-                        className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[120px]"
-                        placeholder="Phone"
-                        value={editPhone}
-                        onChange={(e) => setEditPhone(e.target.value)}
-                      />
-                      <label className="flex items-center gap-1 text-charcoal/60 text-xs">
-                        <input type="checkbox" checked={editIs1099} onChange={(e) => setEditIs1099(e.target.checked)} />
-                        1099
-                      </label>
-                      <button
-                        onClick={() => saveEditing(s.id)}
-                        className="bg-charcoal text-ivory rounded-md px-3 py-1 text-xs"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="text-charcoal/60 hover:text-charcoal text-xs"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <div>
-                        <span className={s.active ? "text-charcoal" : "text-charcoal/40 line-through"}>{s.name}</span>
-                        {s.is_1099 && (
-                          <span className="text-[10px] uppercase tracking-wide bg-beige text-charcoal/70 px-1.5 py-0.5 rounded ml-2">
-                            1099
-                          </span>
-                        )}
-                        {loginStatus && (
-                          <span
-                            className={`text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded ml-2 ${
-                              loginStatus === "active"
-                                ? "bg-green-50 text-green-700"
-                                : loginStatus === "pending"
-                                ? "bg-amber-50 text-amber-700"
-                                : "bg-charcoal/5 text-charcoal/50"
-                            }`}
+                <div
+                  key={s.id}
+                  className="bg-white border border-charcoal/10 rounded-xl overflow-hidden hover:border-charcoal/20 transition-colors flex flex-col"
+                >
+                  <div className={`h-1.5 ${accentClass}`} />
+                  <div className="p-5 flex-1">
+                    {isEditing ? (
+                      <div className="space-y-2 text-sm">
+                        <input
+                          className="w-full border border-charcoal/20 rounded-md px-2 py-1.5"
+                          placeholder="Name"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                        />
+                        <input
+                          className="w-full border border-charcoal/20 rounded-md px-2 py-1.5"
+                          placeholder="Email"
+                          value={editEmail}
+                          onChange={(e) => setEditEmail(e.target.value)}
+                        />
+                        <input
+                          className="w-full border border-charcoal/20 rounded-md px-2 py-1.5"
+                          placeholder="Phone"
+                          value={editPhone}
+                          onChange={(e) => setEditPhone(e.target.value)}
+                        />
+                        <label className="flex items-center gap-1.5 text-charcoal/60 text-xs pt-1">
+                          <input type="checkbox" checked={editIs1099} onChange={(e) => setEditIs1099(e.target.checked)} />
+                          1099 contractor
+                        </label>
+                        <div className="flex items-center gap-3 pt-1">
+                          <button
+                            onClick={() => saveEditing(s.id)}
+                            className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs"
                           >
-                            {loginStatus === "active" ? "Login active" : loginStatus === "pending" ? "Invite sent" : "Login revoked"}
-                          </span>
-                        )}
-                        {(s.email || s.phone) && (
-                          <span className="text-charcoal/60 ml-2">{[s.email, s.phone].filter(Boolean).join(" · ")}</span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1">
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right"
-                            value={s.pay_percentage}
-                            onChange={(e) => updateStylist(s.id, { pay_percentage: Number(e.target.value) })}
-                          />
-                          <span className="text-charcoal/60">%</span>
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingId(null)}
+                            className="text-charcoal/60 hover:text-charcoal text-xs"
+                          >
+                            Cancel
+                          </button>
                         </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-start gap-3 mb-4">
+                          <div className="w-10 h-10 rounded-full bg-beige/60 text-charcoal/70 text-xs font-medium flex items-center justify-center shrink-0">
+                            {initials(s.name)}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <p
+                                className={`font-serif text-lg leading-tight truncate ${
+                                  s.active ? "text-charcoal" : "text-charcoal/40 line-through"
+                                }`}
+                              >
+                                {s.name}
+                              </p>
+                              {loginStatus && (
+                                <span
+                                  className={`text-[10px] uppercase tracking-wide rounded px-2 py-0.5 shrink-0 ${
+                                    loginStatus === "active"
+                                      ? "bg-green-50 text-green-700"
+                                      : loginStatus === "pending"
+                                      ? "bg-amber-50 text-amber-700"
+                                      : "bg-charcoal/5 text-charcoal/50"
+                                  }`}
+                                >
+                                  {loginStatus === "active" ? "Login active" : loginStatus === "pending" ? "Invite sent" : "Revoked"}
+                                </span>
+                              )}
+                            </div>
+                            {s.is_1099 && (
+                              <span className="inline-block text-[10px] uppercase tracking-wide bg-beige text-charcoal/70 px-1.5 py-0.5 rounded mt-1">
+                                1099
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="space-y-1.5 text-sm">
+                          <div className="flex items-baseline justify-between gap-2">
+                            <span className="text-[10px] uppercase tracking-wide text-charcoal/40 w-16 shrink-0">Contact</span>
+                            <span className={`text-right truncate ${s.email || s.phone ? "text-charcoal/70" : "text-charcoal/35"}`}>
+                              {[s.email, s.phone].filter(Boolean).join(" · ") || "Not set"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] uppercase tracking-wide text-charcoal/40 w-16 shrink-0">Pay %</span>
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right text-sm"
+                                value={s.pay_percentage}
+                                onChange={(e) => updateStylist(s.id, { pay_percentage: Number(e.target.value) })}
+                              />
+                              <span className="text-charcoal/60 text-sm">%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {!isEditing && (
+                    <div className="flex items-center justify-between gap-2 flex-wrap px-5 pb-4 pt-1 text-xs">
+                      <div className="flex items-center gap-3 flex-wrap">
                         <button onClick={() => startEditing(s)} className="text-charcoal/60 hover:text-charcoal">
                           Edit
                         </button>
+                        <button onClick={() => toggleActive(s)} className="text-charcoal/60 hover:text-charcoal">
+                          {s.active ? "Mark inactive" : "Mark active"}
+                        </button>
+                        <button onClick={() => removeStylist(s.id)} className="text-red-600 hover:underline">
+                          Remove
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        {loginStatus === "pending" && (
+                          <button onClick={() => copyInviteLink(s)} className="text-gold hover:underline">
+                            {copiedId === s.id ? "Link copied ✓" : "Copy invite link"}
+                          </button>
+                        )}
                         {loginStatus !== "active" && (
                           <button
                             onClick={() => inviteStylist(s)}
                             disabled={invitingId === s.id}
-                            className="border border-charcoal/20 rounded-md px-3 py-1 text-xs disabled:opacity-40"
+                            className="border border-charcoal/20 rounded-md px-3 py-1.5 disabled:opacity-40"
                           >
                             {invitingId === s.id ? "Sending..." : loginStatus === "pending" ? "Resend invite" : "Invite to log in"}
                           </button>
                         )}
-                        {loginStatus === "pending" && (
-                          <button onClick={() => copyInviteLink(s)} className="text-gold text-xs hover:underline">
-                            {copiedId === s.id ? "Link copied ✓" : "Copy invite link"}
-                          </button>
-                        )}
-                        <button onClick={() => toggleActive(s)} className="text-charcoal/60 hover:text-charcoal">
-                          {s.active ? "Mark inactive" : "Mark active"}
-                        </button>
-                        <button onClick={() => removeStylist(s.id)} className="text-red-600">
-                          Remove
-                        </button>
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               );

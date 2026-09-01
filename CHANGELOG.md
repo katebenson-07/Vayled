@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-31 (79)
+
+- **Redesigned the Stylists team list as a card grid** — same treatment as the Bookings page: initials avatar, a stable-position login-status badge, a colored top accent (green if logged in, gold if active without a login yet, gray if inactive), and a labeled Contact/Pay % layout instead of one long wrapping line. Inline editing, invite/resend, copy-link, mark active/inactive, and remove all work exactly as before — only the layout changed. The separate Time off list is unchanged (a log, not a roster, so the card treatment didn't fit).
+
 ## 2026-08-31 (78)
 
 - **Fixed stat-number font on Analytics and Expenses** — the big $ figures and percentages in the stat cards were rendered in the serif display font, whose old-style numerals look uneven at that size for financial data. Switched just those numbers to the sans font with `font-semibold` and `tabular-nums` (even digit widths, so figures don't jiggle side to side); page titles, section headers, and everything else on those two pages keep the serif as before.
