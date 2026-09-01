@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (95)
+
+- **Settled "charcoal" on a mid-depth wine red** — `#241019` → `#410D10`. The previous shade read as too purple; built a 5-step swatch strip that scaled the original `#5d1217` straight down toward black (same hue throughout, no purple drift) and Kate picked step 3. Updated `tailwind.config.ts`, `app/globals.css`, the Calendar's stylist-color palette, and `DESIGN_SYSTEM.md`.
+
 ## 2026-09-01 (94)
 
 - **Darkened "charcoal" from wine red to near-black wine red** — `#5d1217` → `#241019`. Kate felt the wine red was too bright; this is the deeper wine shade from the "Moody" comparison mockup. Updated `tailwind.config.ts`, `app/globals.css`, the Calendar's stylist-color palette, and `DESIGN_SYSTEM.md`.
