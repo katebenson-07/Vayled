@@ -2,6 +2,11 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (87)
+
+- **Added DESIGN_SYSTEM.md** — a written spec of Vayled's actual UI conventions (colors, typography, date/time formats, interactive states, border-radius-by-component-type), audited straight from the codebase rather than invented. Resolves three real inconsistencies found in the audit into single rules going forward: currency formatting (new shared `formatCurrency()` in `lib/format.ts` — see below), disabled-button opacity (standardize on 50%), and input focus states (`focus:outline-none focus:border-charcoal/30`, or a background-lighten variant for dark inputs). New UI work should reference this file; it's meant to be extended, not treated as frozen.
+- **Added `lib/format.ts` with `formatCurrency()`** — one shared currency formatter (`$1,234` for whole dollars, `$1,675.50` only when there's an actual fractional amount) to replace the three different currency-rendering patterns currently scattered across payroll, analytics, expenses, bookings, and the bride portal. Not yet wired into those existing call sites — they still work as before; this just gives new currency displays (and any future cleanup pass) one function to use instead of hand-building strings.
+
 ## 2026-09-01 (86)
 
 - **Re-captured the Appointments screenshot on the features page** — now shows "Preview" instead of the stale "Preview Fitting," and reflects the current brand colors/fonts.
