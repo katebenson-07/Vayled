@@ -72,7 +72,7 @@ export default function MarketingHome() {
               href="/login?mode=signup"
               className="bg-charcoal text-ivory text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-charcoal/90 transition-colors"
             >
-              Sign up
+              Join the beta
             </Link>
             <Link
               href="/features"
@@ -148,7 +148,7 @@ export default function MarketingHome() {
               href="/login?mode=signup"
               className="bg-ivory text-charcoal text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-beige transition-colors"
             >
-              Sign up
+              Join the beta
             </Link>
             <Link
               href="/about"

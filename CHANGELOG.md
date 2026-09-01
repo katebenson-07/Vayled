@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-31 (74)
+
+- **Disabled public signup, private beta only** — `/login?mode=signup` no longer creates an account. It now shows a "we're in private beta" message and the existing `WaitlistForm` component instead of the Supabase `signUp` form. Sign-in is untouched (existing owners and invited stylists can still log in). Every "Sign up" button sitewide (`MarketingNav`, homepage, `/features`, `/about`) relabeled to "Join the beta" to match `/pricing`, which already used that copy. No route or link changes — everything still points at `/login?mode=signup`, it just resolves to the waitlist now.
+
 ## 2026-08-31 (73)
 
 - **Font consolidation** — the app was quietly running six different typefaces (Playfair Display, Jost, Pinyon Script, Hina Mincho, Cormorant Garamond, DM Sans) across different pages. Consolidated to two: Cormorant Garamond for every serif/display role (headlines, logo, page titles, the old cursive "script" accent) and DM Sans for every body/UI role. Only `app/layout.tsx` and `tailwind.config.ts` changed — every page's `font-serif`/`font-sans`/`font-script`/`font-heading`/`font-logo`/`font-tagline` class still works, they just all resolve to one of the two fonts now, so nothing else needed touching.

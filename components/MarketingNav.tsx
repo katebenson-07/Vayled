@@ -44,7 +44,7 @@ export default function MarketingNav() {
             href="/login?mode=signup"
             className="bg-ivory text-charcoal text-xs uppercase tracking-widest-lg rounded-md px-4 py-2.5 hover:bg-beige transition-colors"
           >
-            Sign up
+            Join the beta
           </Link>
         </div>
 
@@ -80,7 +80,7 @@ export default function MarketingNav() {
               onClick={() => setOpen(false)}
               className="bg-ivory text-charcoal text-xs uppercase tracking-widest-lg rounded-md px-4 py-2.5 text-center"
             >
-              Sign up
+              Join the beta
             </Link>
           </div>
         </div>

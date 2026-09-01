@@ -114,7 +114,7 @@ export default function FeaturesPage() {
               href="/login?mode=signup"
               className="bg-ivory text-charcoal text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-beige transition-colors"
             >
-              Sign up
+              Join the beta
             </Link>
             <Link
               href="/pricing"

@@ -39,7 +39,7 @@ export default function AboutPage() {
             href="/login?mode=signup"
             className="inline-block bg-charcoal text-ivory text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-charcoal/90 transition-colors"
           >
-            Sign up
+            Join the beta
           </Link>
         </div>
       </section>
