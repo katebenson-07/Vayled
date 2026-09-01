@@ -1,33 +1,23 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans, Pinyon_Script, Italiana } from "next/font/google";
+import { Jost, Bellefair, Italiana } from "next/font/google";
 import "./globals.css";
 
-// Cormorant Garamond is now also the site-wide body-text default (see the
-// `body` font-family rule in globals.css) as well as the font-serif/font-heading
-// role. DM Sans stays the explicit font-sans role, used wherever a number or
-// dense UI figure needs even, legible digits (analytics/expenses/payroll
-// stats, timeline durations) instead of Cormorant's old-style numerals.
-// Pinyon Script and Italiana are free lookalikes standing in for the paid
-// Sloop Script Pro / Black Gold fonts Kate wants, until she buys licenses:
-// Pinyon Script → font-script (big decorative page titles: Analytics,
-// Expenses, Calendar, a booking's bride name, contract thank-you/letterhead).
-// Italiana → font-logo (the "VAYLED" wordmark only).
-const cormorant = Cormorant_Garamond({
+// Jost is the one universal text font — body copy, section headers, and stat
+// numbers/tabular data all share it (font-serif, font-sans, font-heading,
+// and font-tagline all resolve to the same --font-sans variable; see
+// tailwind.config.ts). Bellefair covers font-script (big decorative page
+// titles: every internal page's <h1>, a booking's bride name, contract
+// thank-you/letterhead). Italiana is a free lookalike standing in for the
+// paid Black Gold font Kate wants, until she buys a license — used only for
+// font-logo (the "VAYLED" wordmark).
+const jost = Jost({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-serif",
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const pinyonScript = Pinyon_Script({
+const bellefair = Bellefair({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-script-display",
@@ -56,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${dmSans.variable} ${pinyonScript.variable} ${italiana.variable}`}>
+    <html lang="en" className={`${jost.variable} ${bellefair.variable} ${italiana.variable}`}>
       <body>{children}</body>
     </html>
   );

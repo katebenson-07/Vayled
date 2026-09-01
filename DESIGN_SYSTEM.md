@@ -55,18 +55,18 @@ new colors.
 
 ## Typography
 
-Two physical fonts cover every role via CSS variables in `app/layout.tsx` /
+Three physical fonts cover every role via CSS variables in `app/layout.tsx` /
 `tailwind.config.ts` — never hardcode a font name in a component, always use the
 Tailwind key:
 
 | Tailwind key | Renders as | Use for |
 |---|---|---|
-| `font-serif` | Cormorant Garamond | Section headers, body emphasis, and most non-title headings. Also the site-wide body default (no class needed for plain text). |
-| `font-sans` | DM Sans | Explicit override wherever digits must stay legible and even-width: stat numbers, durations, tabular data. Always paired with `font-semibold tabular-nums`. |
-| `font-script` | Pinyon Script (free stand-in for Sloop Script Pro until licensed) | The standard for every internal page's main `<h1>` title (Bookings, Inquiries, Inbox, Clients, Stylists, Payroll, Contracts, Invoices, Settings, Email templates, Appointments, dashboard greeting, a booking's bride-name header, contract/invoice letterhead) — not just a few "big" pages, it's the universal page-title treatment. Not for anything below ~`text-4xl` or dense/small text — it's illegible at small sizes. Public client-facing pages (bride portal, inquiry form, trial picker) intentionally stay off script — see `font-heading` below. |
-| `font-heading` | Cormorant Garamond (same var as serif) | Contract section numbering/titles, the client-portal bride-name header and small uppercase labels. A distinct semantic role from `font-serif` even though it's the same physical font today. |
-| `font-logo` | Italiana (free stand-in for Black Gold until licensed) | The "VAYLED" wordmark only — always uppercase, wide tracking, on a dark background. |
-| `font-tagline` | DM Sans (same var as sans) | The small subtitle under the logo, and as a whole-page body-font override on the two client-facing pages (bride portal, trial picker) that intentionally read as sans throughout rather than serif. |
+| `font-serif` | Jost (same `--font-sans` variable as `font-sans`) | Section headers, body emphasis, and most non-title headings. Also the site-wide body default (no class needed for plain text). Kept as a separate Tailwind key for semantic clarity even though it's the same physical font as `font-sans` today. |
+| `font-sans` | Jost | Explicit use wherever digits should stay legible and even-width: stat numbers, durations, tabular data. Still paired with `font-semibold tabular-nums` — `tabular-nums` (fixed digit width) matters regardless of which font is active. |
+| `font-script` | Bellefair | The standard for every internal page's main `<h1>` title (Bookings, Inquiries, Inbox, Clients, Stylists, Payroll, Contracts, Invoices, Settings, Email templates, Appointments, dashboard greeting, a booking's bride-name header, contract/invoice letterhead) — not just a few "big" pages, it's the universal page-title treatment. Not for anything below ~`text-4xl` or dense/small text — it's illegible at small sizes. Public client-facing pages (bride portal, inquiry form, trial picker) intentionally stay off script — see `font-heading` below. |
+| `font-heading` | Jost (same var as serif/sans) | Contract section numbering/titles, the client-portal bride-name header and small uppercase labels. A distinct semantic role from `font-serif` even though it's the same physical font. |
+| `font-logo` | Italiana (free stand-in for Black Gold until licensed) | The "VAYLED" wordmark only — always uppercase, wide tracking, on a dark background. Deliberately kept off Jost/Bellefair as a distinct identity mark. |
+| `font-tagline` | Jost (same var as sans) | The small subtitle under the logo, and as a whole-page body-font override on the two client-facing pages (bride portal, trial picker) — now a no-op there since Jost is the site-wide default anyway, but the class stays for semantic clarity. |
 
 **Sizing/weight pairings actually in use** (match these rather than picking arbitrary sizes):
 - Page title: `font-script text-5xl leading-tight mb-1` (or `text-4xl` one size down for a person's name/greeting, or a notably long title like "Rehearsal hair & makeup")

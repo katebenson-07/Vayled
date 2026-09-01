@@ -1,9 +1,9 @@
 /**
- * Brand mark: an oversized serif "V" (Cormorant Garamond Bold) with "AYLED"
+ * Brand mark: an oversized "V" (Italiana Bold, font-logo) with "AYLED"
  * nested inside its open counter, weight 300, baseline-aligned. Optional
- * "BRIDAL HAIR & MAKEUP" tagline in ultra-spaced DM Sans Light underneath —
- * used on the Dashboard and Invoice, left off in the sidebar where space is
- * tight.
+ * "BRIDAL HAIR & MAKEUP" tagline in ultra-spaced Jost Light (font-tagline)
+ * underneath — used on the Dashboard and Invoice, left off in the sidebar
+ * where space is tight.
  */
 export default function Logo({
   size = "md",

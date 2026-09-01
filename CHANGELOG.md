@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (90)
+
+- **Swapped Cormorant Garamond + DM Sans for Jost, and Pinyon Script for Bellefair.** Jost is now the one universal text font — body copy, section headers, and stat numbers/tabular data all share it (`font-serif`, `font-sans`, `font-heading`, and `font-tagline` all resolve to the same font going forward). Bellefair covers `font-script` — every internal page title, a booking's bride name, contract/invoice letterhead — and is now the actual chosen script font rather than a placeholder for the paid Sloop Script Pro. The "VAYLED" wordmark keeps Italiana (`font-logo`), untouched, as a distinct identity mark. Updated `app/layout.tsx`, `tailwind.config.ts`, `app/globals.css`, and `DESIGN_SYSTEM.md` to match.
+
 ## 2026-09-01 (89)
 
 - **Swapped the "charcoal" brand color from deep maroon to deep espresso brown** — `#5d1217` → `#2a1a14`. Kate felt the red read as too bright/not moody enough; espresso brown keeps the same near-black weight and warmth without the red undertone. Updated everywhere the token lives: `tailwind.config.ts`, the body-text color in `globals.css`, and the first entry of the Calendar's warm stylist-color palette (`STYLIST_COLORS`). Every component using the `charcoal` Tailwind class (buttons, borders, text, sidebar) picks up the new color automatically. Updated `DESIGN_SYSTEM.md`'s color table to match.
