@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (98)
+
+- **Rebuilt the color palette from Kate's Pinterest reference board and split the sidebar color from the primary text/button color.** Kate sent a 5-swatch Pantone board (Transparent Yellow, Sceptre Red, Cerulean Blue, Potting Soil, Java Brown) and, after a few rounds of previews, landed on: off-white background, wine red sidebar, espresso brown for text/buttons/borders, and Potting Soil brown as the accent (blue was tried and rejected). This introduces a new `wine` token (`#4D0E12`) used only on dark brand surfaces — the app sidebar and the marketing site's header/footer — which is now a genuinely different color from `charcoal` (previously the same token did both jobs). Updated: `tailwind.config.ts` (`ivory` → `#FAF8F5`, `charcoal` → `#231815`, new `wine` → `#4D0E12`, `gold` → `#4A2E27`, `beige` → `#E8DFD8`), `app/globals.css`, `components/Sidebar.tsx`, `components/TeamSidebar.tsx`, `components/MarketingNav.tsx`, `components/MarketingFooter.tsx`, the Calendar's stylist color palette, and `DESIGN_SYSTEM.md` (documented the new `wine` token and noted blue/yellow were tried and rejected, so they don't get silently reintroduced later).
+
 ## 2026-09-01 (97)
 
 - **Swapped Abril Fatface for Spectral as the `font-script` title font.** Kate felt Abril Fatface was too big/heavy. Built a second round of lighter alternatives (Cormorant SC, Fraunces, Crimson Pro, Cardo, Spectral) shown at the actual in-app title sizes, then a closer side-by-side of the top two (Spectral vs Cardo) with the sidebar and full page context included — Kate picked Spectral. Kept the existing page-title sizes (`text-4xl` / `text-3xl`, stepped down for Abril Fatface) rather than sizing back up, since she approved Spectral at that scale in the preview. Updated `app/layout.tsx`, `tailwind.config.ts`, and `DESIGN_SYSTEM.md`.

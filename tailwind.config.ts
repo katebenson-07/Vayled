@@ -8,10 +8,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ivory: "#fdf9f2",
-        charcoal: "#410D10",
-        gold: "#6F5F4D",
-        beige: "#DDD9C9",
+        ivory: "#FAF8F5",
+        charcoal: "#231815",
+        wine: "#4D0E12",
+        gold: "#4A2E27",
+        beige: "#E8DFD8",
       },
       fontFamily: {
         // Lora is the one universal text font — every text role except

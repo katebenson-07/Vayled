@@ -9,14 +9,22 @@ from it silently.
 ## Colors
 
 Defined once in `tailwind.config.ts`, referenced everywhere as `ivory` / `charcoal` /
-`gold` / `beige` (never raw hex in a component):
+`wine` / `gold` / `beige` (never raw hex in a component):
 
 | Token | Hex | Role |
 |---|---|---|
-| `ivory` | `#fdf9f2` | Page background, text-on-dark |
-| `charcoal` | `#410D10` | Primary text, primary buttons, sidebar, borders (a deep, dark wine red, not literal charcoal) |
-| `gold` | `#6F5F4D` | Accent — links, highlights, "gold" status accents |
-| `beige` | `#DDD9C9` | Secondary surface (stat cards, pills, subtle backgrounds) |
+| `ivory` | `#FAF8F5` | Page background, text-on-dark (an off-white, not a cream/yellow) |
+| `charcoal` | `#231815` | Primary text, primary buttons, borders (an espresso brown, not literal charcoal) |
+| `wine` | `#4D0E12` | Dark brand surfaces only: the app sidebar and the marketing site's header/footer. Deliberately a different color from `charcoal` — the wine red lives on these dark bars, not spread across every button/border/text in the content area. |
+| `gold` | `#4A2E27` | Accent — links, highlights, "gold" status accents (a warm medium brown, not literal gold) |
+| `beige` | `#E8DFD8` | Secondary surface (stat cards, pills, subtle backgrounds) |
+
+This palette (except `wine`, which is new) was built directly from a 5-swatch Pantone
+reference Kate sent from Pinterest ("Transparent Yellow," "Sceptre Red," "Cerulean
+Blue," "Potting Soil," "Java Brown") — `charcoal` is Java Brown, `wine` is Sceptre Red,
+`gold` is Potting Soil. Cerulean Blue and Transparent Yellow were tried (blue as an
+accent, yellow as the background) and both rejected — don't reintroduce blue as an
+accent color or shift the background back toward yellow/cream without asking again.
 
 **Primary button** — `bg-charcoal text-ivory` + `hover:bg-charcoal/90` + `disabled:opacity-50`.
 Rounded shape depends on context (see Shape below).
@@ -29,6 +37,11 @@ Rounded shape depends on context (see Shape below).
 
 **Borders** — `border-charcoal/10` for card/section panels (the standard). `border-charcoal/20`
 for inputs and small outline buttons.
+
+**Sidebar / dark nav bars** — `bg-wine`, not `bg-charcoal`. Text on it still uses `ivory`/
+`beige` at the usual opacities (see `components/Sidebar.tsx`, `components/TeamSidebar.tsx`,
+`components/MarketingNav.tsx`, `components/MarketingFooter.tsx`) — only the background
+token changed, the text-color conventions on a dark surface are unchanged.
 
 **Status badges:**
 ```

@@ -25,7 +25,7 @@ type Assignment = { stylist_id: string; booking_id: string };
 
 // Warm, tonal palette (charcoal → gold → clay) instead of bright rainbow colors,
 // so assigned-stylist tags stay in the studio's own brand family.
-const STYLIST_COLORS = ["#410D10", "#6F5F4D", "#9B7B5A", "#C4A882", "#5C4A3A", "#8B6F5E", "#4A3728", "#7D6553"];
+const STYLIST_COLORS = ["#231815", "#4A2E27", "#9B7B5A", "#C4A882", "#5C4A3A", "#8B6F5E", "#4A3728", "#7D6553"];
 function colorForStylist(index: number) {
   return STYLIST_COLORS[index % STYLIST_COLORS.length];
 }

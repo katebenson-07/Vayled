@@ -16,7 +16,7 @@ export default function MarketingNav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="bg-charcoal text-ivory sticky top-0 z-40">
+    <header className="bg-wine text-ivory sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/" className="shrink-0" onClick={() => setOpen(false)}>
           <Logo size="sm" className="text-ivory" />
