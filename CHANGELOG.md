@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (94)
+
+- **Darkened "charcoal" from wine red to near-black wine red** — `#5d1217` → `#241019`. Kate felt the wine red was too bright; this is the deeper wine shade from the "Moody" comparison mockup. Updated `tailwind.config.ts`, `app/globals.css`, the Calendar's stylist-color palette, and `DESIGN_SYSTEM.md`.
+
 ## 2026-09-01 (93)
 
 - **Reverted "charcoal" from deep espresso brown back to the original deep wine red** — `#2a1a14` → `#5d1217`. After seeing a "Moody" palette comparison mockup, Kate decided she liked the moody direction overall but preferred the original wine red over both the mockup's near-black wine and the espresso brown that had replaced it. Updated `tailwind.config.ts`, `app/globals.css`, the Calendar's stylist-color palette, and `DESIGN_SYSTEM.md` — the same three places touched by the espresso-brown change this undoes.
