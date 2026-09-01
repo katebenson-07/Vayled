@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (84)
+
+- **Fixed waitlist signups actually failing** — the RLS insert policy on `waitlist_signups` only allowed the `anon` role. That's fine for a logged-out visitor, but the app's Supabase client shares one session per browser, so if you're logged into your studio account in the same browser as the marketing homepage, your requests go out as `authenticated`, not `anon` — and got rejected. Widened the policy to `for insert to anon, authenticated`, so the form works whether or not you're logged in elsewhere in that browser. Needs the updated `waitlist_signups` policy re-run in Supabase's SQL Editor (see below).
+
 ## 2026-09-01 (83)
 
 - **New font pairing: Cormorant Garamond as body text, plus free stand-ins for two paid fonts Kate wants.** Sloop Script Pro (page headings) and Black Gold (the "VAYLED" logo) are both commercial fonts with no free web-license — until she buys them, Pinyon Script and Italiana stand in as lookalikes so she can preview live. Cormorant Garamond is now the site-wide default font (was DM Sans) — it's what buttons, labels, nav, and plain text render in unless something explicitly overrides it. DM Sans still renders anywhere with an explicit `font-sans` class, which protects the analytics/expenses/payroll/timeline number displays we specifically moved to sans for legible digits — those are unaffected. Pinyon Script now powers `font-script`, the existing slot already used for the big page titles on Analytics, Expenses, Calendar, a booking's bride-name header, and the contract thank-you/letterhead — not touched: the smaller `font-serif text-2xl` page titles (Bookings, Stylists, Payroll, etc.), which stay Cormorant. Italiana now powers `font-logo`, used only for the "VAYLED" wordmark (nav, login, forgot/reset-password, team-invite pages).

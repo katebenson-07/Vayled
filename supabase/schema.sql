@@ -1008,6 +1008,12 @@ create policy "Studios manage their own photo files" on storage.objects
 -- the marketing site but aren't ready to create a full account yet. Insert
 -- only from the public site — nobody can read this back through the app, by
 -- design; view signups directly in the Supabase table editor.
+--
+-- Allows both anon and authenticated: the waitlist form lives on the public
+-- marketing homepage, but a studio owner or stylist who's already logged in
+-- (in the same browser) shares that same login session for every Supabase
+-- call the app makes — including this one. Restricting the policy to "anon"
+-- only blocks anyone testing/using the waitlist while already signed in.
 -- ============================================================================
 
 create table if not exists waitlist_signups (
@@ -1021,4 +1027,4 @@ alter table waitlist_signups enable row level security;
 
 drop policy if exists "Public can join the waitlist" on waitlist_signups;
 create policy "Public can join the waitlist" on waitlist_signups
-  for insert to anon with check (true);
+  for insert to anon, authenticated with check (true);
