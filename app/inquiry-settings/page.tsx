@@ -246,7 +246,7 @@ function InquirySettingsContent() {
             )}
           </p>
         </div>
-        <button onClick={save} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+        <button onClick={save} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm hover:bg-charcoal/90">
           Save
         </button>
       </div>
@@ -275,7 +275,7 @@ function InquirySettingsContent() {
             <div>
               <label className="block text-charcoal/60 mb-1">Studio / business name</label>
               <input
-                className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
                 value={profile.studio_name ?? ""}
                 onChange={(e) => setProfile((p) => ({ ...p, studio_name: e.target.value }))}
               />
@@ -284,7 +284,7 @@ function InquirySettingsContent() {
               <label className="block text-charcoal/60 mb-1">Contact email</label>
               <input
                 type="email"
-                className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
                 value={profile.contact_email ?? ""}
                 onChange={(e) => setProfile((p) => ({ ...p, contact_email: e.target.value }))}
               />
@@ -292,7 +292,7 @@ function InquirySettingsContent() {
             <div>
               <label className="block text-charcoal/60 mb-1">Contact phone</label>
               <input
-                className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
                 value={profile.contact_phone ?? ""}
                 onChange={(e) => setProfile((p) => ({ ...p, contact_phone: e.target.value }))}
               />
@@ -300,7 +300,7 @@ function InquirySettingsContent() {
             <div>
               <label className="block text-charcoal/60 mb-1">Business address</label>
               <input
-                className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
                 value={profile.address ?? ""}
                 onChange={(e) => setProfile((p) => ({ ...p, address: e.target.value }))}
               />
@@ -328,7 +328,7 @@ function InquirySettingsContent() {
             <label className="block text-charcoal/60 mb-1">Send notifications to</label>
             <input
               type="email"
-              className="w-full sm:w-80 border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full sm:w-80 border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={profile.notification_email ?? ""}
               onChange={(e) => setProfile((p) => ({ ...p, notification_email: e.target.value }))}
             />
@@ -348,12 +348,12 @@ function InquirySettingsContent() {
             readOnly
             value={inquiryLink ?? "Loading..."}
             onFocus={(e) => e.target.select()}
-            className="flex-1 border border-charcoal/20 rounded-md px-3 py-2 bg-ivory text-charcoal/70"
+            className="flex-1 border border-charcoal/20 rounded-md px-3 py-2 bg-ivory text-charcoal/70 focus:outline-none focus:border-charcoal/30"
           />
           <button
             onClick={copyInquiryLink}
             disabled={!inquiryLink}
-            className="bg-charcoal text-ivory rounded-md px-4 py-2 disabled:opacity-50 whitespace-nowrap"
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 disabled:opacity-50 whitespace-nowrap hover:bg-charcoal/90"
           >
             {copied ? "Copied!" : "Copy link"}
           </button>
@@ -366,7 +366,7 @@ function InquirySettingsContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Heading</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={settings.welcome_heading}
               onChange={(e) => setSettings((s) => ({ ...s, welcome_heading: e.target.value }))}
             />
@@ -374,7 +374,7 @@ function InquirySettingsContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Message</label>
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={3}
               value={settings.welcome_message}
               onChange={(e) => setSettings((s) => ({ ...s, welcome_message: e.target.value }))}
@@ -418,13 +418,13 @@ function InquirySettingsContent() {
         </p>
         <div className="flex gap-2 mb-4 text-sm">
           <input
-            className="flex-1 border border-charcoal/20 rounded-md px-3 py-2"
+            className="flex-1 border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             placeholder="e.g. What's your hair type?"
             value={newQuestion}
             onChange={(e) => setNewQuestion(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addQuestion())}
           />
-          <button onClick={addQuestion} className="bg-charcoal text-ivory rounded-md px-4 py-2">
+          <button onClick={addQuestion} className="bg-charcoal text-ivory rounded-md px-4 py-2 hover:bg-charcoal/90">
             Add
           </button>
         </div>
@@ -454,7 +454,7 @@ function InquirySettingsContent() {
           </p>
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <select
-              className="border border-charcoal/20 rounded-md px-2 py-1"
+              className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
               value={profile.default_deposit_type}
               onChange={(e) =>
                 setProfile((p) => ({ ...p, default_deposit_type: e.target.value as "percent" | "flat" }))
@@ -469,7 +469,7 @@ function InquirySettingsContent() {
                   type="number"
                   min="0"
                   max="100"
-                  className="border border-charcoal/20 rounded-md px-2 py-1 w-20 text-right"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 w-20 text-right focus:outline-none focus:border-charcoal/30"
                   value={profile.default_deposit_percent}
                   onChange={(e) => setProfile((p) => ({ ...p, default_deposit_percent: Number(e.target.value) }))}
                 />
@@ -482,7 +482,7 @@ function InquirySettingsContent() {
                   type="number"
                   min="0"
                   step="0.01"
-                  className="border border-charcoal/20 rounded-md px-2 py-1 w-28 text-right"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 w-28 text-right focus:outline-none focus:border-charcoal/30"
                   value={profile.default_deposit_flat}
                   onChange={(e) => setProfile((p) => ({ ...p, default_deposit_flat: Number(e.target.value) }))}
                 />
@@ -499,7 +499,7 @@ function InquirySettingsContent() {
           </p>
           <form onSubmit={addService} className="flex flex-wrap gap-2 mb-4 text-sm">
             <input
-              className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[200px]"
+              className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[200px] focus:outline-none focus:border-charcoal/30"
               placeholder="Service name (e.g. Bridesmaid Hair + Makeup)"
               value={newServiceName}
               onChange={(e) => setNewServiceName(e.target.value)}
@@ -508,12 +508,12 @@ function InquirySettingsContent() {
               type="number"
               min="0"
               step="0.01"
-              className="border border-charcoal/20 rounded-md px-2 py-1 w-32"
+              className="border border-charcoal/20 rounded-md px-2 py-1 w-32 focus:outline-none focus:border-charcoal/30"
               placeholder="Default rate"
               value={newServiceRate}
               onChange={(e) => setNewServiceRate(e.target.value)}
             />
-            <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1">
+            <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1 hover:bg-charcoal/90">
               Add
             </button>
           </form>
@@ -533,7 +533,7 @@ function InquirySettingsContent() {
                       <>
                         <div className="flex flex-1 gap-2">
                           <input
-                            className="border border-charcoal/20 rounded-md px-2 py-1 flex-1"
+                            className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 focus:outline-none focus:border-charcoal/30"
                             value={draft.name}
                             onChange={(e) =>
                               setEditingService({ ...editingService, [s.id]: { ...draft, name: e.target.value } })
@@ -543,7 +543,7 @@ function InquirySettingsContent() {
                             type="number"
                             min="0"
                             step="0.01"
-                            className="border border-charcoal/20 rounded-md px-2 py-1 w-28"
+                            className="border border-charcoal/20 rounded-md px-2 py-1 w-28 focus:outline-none focus:border-charcoal/30"
                             value={draft.rate}
                             onChange={(e) =>
                               setEditingService({ ...editingService, [s.id]: { ...draft, rate: e.target.value } })

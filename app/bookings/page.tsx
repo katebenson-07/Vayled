@@ -229,7 +229,7 @@ function BookingsContent() {
                   </div>
                   <Link
                     href={`/bookings/${b.id}`}
-                    className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs whitespace-nowrap shrink-0"
+                    className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs whitespace-nowrap shrink-0 hover:bg-charcoal/90"
                   >
                     Open
                   </Link>

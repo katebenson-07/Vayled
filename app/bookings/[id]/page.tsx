@@ -746,7 +746,7 @@ function BookingDetail() {
                 <div>
                   <label className="block text-charcoal/60 mb-1 text-xs uppercase tracking-wide">Bride name</label>
                   <input
-                    className="border border-charcoal/20 rounded-md px-3 py-2"
+                    className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
                     value={client?.bride_name ?? ""}
                     onChange={(e) => updateClient({ bride_name: e.target.value })}
                   />
@@ -755,7 +755,7 @@ function BookingDetail() {
                   <label className="block text-charcoal/60 mb-1 text-xs uppercase tracking-wide">Wedding date</label>
                   <input
                     type="date"
-                    className="border border-charcoal/20 rounded-md px-3 py-2"
+                    className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
                     value={client?.wedding_date ?? ""}
                     onChange={(e) => updateClient({ wedding_date: e.target.value })}
                   />
@@ -765,7 +765,7 @@ function BookingDetail() {
                   <input
                     type="number"
                     min={0}
-                    className="border border-charcoal/20 rounded-md px-3 py-2 w-20"
+                    className="border border-charcoal/20 rounded-md px-3 py-2 w-20 focus:outline-none focus:border-charcoal/30"
                     value={partySizeInput}
                     onChange={(e) => setPartySizeInput(e.target.value)}
                     onBlur={() => updatePartySize(parseInt(partySizeInput, 10))}
@@ -773,7 +773,7 @@ function BookingDetail() {
                 </div>
                 <button
                   onClick={() => setEditingHeader(false)}
-                  className="bg-charcoal text-ivory rounded-md px-4 py-2 text-xs uppercase tracking-wide"
+                  className="bg-charcoal text-ivory rounded-md px-4 py-2 text-xs uppercase tracking-wide hover:bg-charcoal/90"
                 >
                   Done
                 </button>
@@ -842,7 +842,7 @@ function BookingDetail() {
           </div>
           <button
             onClick={() => setActiveTab("timeline")}
-            className="bg-charcoal text-ivory rounded-md px-4 py-2 uppercase text-xs tracking-wide"
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 uppercase text-xs tracking-wide hover:bg-charcoal/90"
           >
             Build timeline
           </button>
@@ -883,7 +883,7 @@ function BookingDetail() {
         <div className="flex items-center gap-2">
           <label className="text-charcoal/50 text-xs uppercase tracking-wide">Status</label>
           <select
-            className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
+            className="border border-charcoal/20 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-charcoal/30"
             value={booking.status}
             onChange={(e) => updateBooking({ status: e.target.value as Booking["status"] })}
           >
@@ -898,7 +898,7 @@ function BookingDetail() {
           <label className="text-charcoal/50 text-xs uppercase tracking-wide">Ready by</label>
           <input
             type="time"
-            className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
+            className="border border-charcoal/20 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-charcoal/30"
             value={booking.ready_by_time ?? ""}
             onChange={(e) => updateBooking({ ready_by_time: e.target.value })}
           />
@@ -1009,7 +1009,7 @@ function BookingDetail() {
                         <input
                           type="number"
                           min="0"
-                          className="border border-charcoal/20 rounded-md px-1.5 py-0.5 w-12 text-xs"
+                          className="border border-charcoal/20 rounded-md px-1.5 py-0.5 w-12 text-xs focus:outline-none focus:border-charcoal/30"
                           placeholder="0"
                           value={quickAssignCounts[s.id] ?? ""}
                           onChange={(e) => setQuickAssignCounts({ ...quickAssignCounts, [s.id]: e.target.value })}
@@ -1018,7 +1018,7 @@ function BookingDetail() {
                     ))}
                     <button
                       onClick={quickAssignByCount}
-                      className="bg-charcoal text-ivory rounded-md px-3 py-1 text-xs uppercase tracking-wide ml-auto"
+                      className="bg-charcoal text-ivory rounded-md px-3 py-1 text-xs uppercase tracking-wide ml-auto hover:bg-charcoal/90"
                     >
                       Generate
                     </button>
@@ -1084,7 +1084,7 @@ function BookingDetail() {
                                   key={r}
                                   onClick={() => setStylistRole(s.id, r)}
                                   className={`px-2 py-0.5 rounded text-xs capitalize ${
-                                    role === r ? "bg-charcoal text-ivory" : "text-charcoal/60"
+                                    role === r ? "bg-charcoal text-ivory hover:bg-charcoal/90" : "text-charcoal/60 hover:text-charcoal"
                                   }`}
                                 >
                                   {r}
@@ -1097,7 +1097,7 @@ function BookingDetail() {
                           <button
                             onClick={() => (assigned ? unassignStylist(s.id) : assignStylist(s.id))}
                             disabled={!assigned && (off || !!busyWith)}
-                            className="border border-charcoal/20 rounded-md px-3 py-1 text-xs disabled:opacity-40"
+                            className="border border-charcoal/20 rounded-md px-3 py-1 text-xs disabled:opacity-50"
                           >
                             {assigned ? "Remove" : "Assign"}
                           </button>
@@ -1154,7 +1154,7 @@ function BookingDetail() {
             </div>
             <div className="flex flex-wrap gap-2 mb-5">
               <select
-                className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
+                className="border border-charcoal/20 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-charcoal/30"
                 value={newNoteTag}
                 onChange={(e) => setNewNoteTag(e.target.value)}
               >
@@ -1165,12 +1165,12 @@ function BookingDetail() {
                 ))}
               </select>
               <input
-                className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[200px]"
+                className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[200px] focus:outline-none focus:border-charcoal/30"
                 placeholder="Add a note..."
                 value={newNoteBody}
                 onChange={(e) => setNewNoteBody(e.target.value)}
               />
-              <button onClick={addNote} className="bg-charcoal text-ivory rounded-md px-4 py-1 text-sm">
+              <button onClick={addNote} className="bg-charcoal text-ivory rounded-md px-4 py-1 text-sm hover:bg-charcoal/90">
                 Add
               </button>
             </div>
@@ -1205,7 +1205,7 @@ function BookingDetail() {
           <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Vendor team</h2>
           <div className="flex flex-wrap gap-2 mb-4">
             <select
-              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm"
+              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-charcoal/30"
               value={newVendorRole}
               onChange={(e) => setNewVendorRole(e.target.value)}
             >
@@ -1216,18 +1216,18 @@ function BookingDetail() {
               ))}
             </select>
             <input
-              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[140px]"
+              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[140px] focus:outline-none focus:border-charcoal/30"
               placeholder="Name"
               value={newVendorName}
               onChange={(e) => setNewVendorName(e.target.value)}
             />
             <input
-              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[140px]"
+              className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-[140px] focus:outline-none focus:border-charcoal/30"
               placeholder="Contact info"
               value={newVendorContact}
               onChange={(e) => setNewVendorContact(e.target.value)}
             />
-            <button onClick={addVendor} className="bg-charcoal text-ivory rounded-md px-4 py-1 text-sm">
+            <button onClick={addVendor} className="bg-charcoal text-ivory rounded-md px-4 py-1 text-sm hover:bg-charcoal/90">
               Add
             </button>
           </div>
@@ -1285,7 +1285,7 @@ function BookingDetail() {
                     key={m}
                     onClick={() => setTimelineMode(m)}
                     className={`px-3 py-1 rounded-md text-xs capitalize ${
-                      timelineMode === m ? "bg-charcoal text-ivory" : "text-charcoal/60"
+                      timelineMode === m ? "bg-charcoal text-ivory hover:bg-charcoal/90" : "text-charcoal/60 hover:text-charcoal"
                     }`}
                   >
                     {m}
@@ -1311,7 +1311,7 @@ function BookingDetail() {
                   <p className="text-xs text-charcoal/60 mb-1">Start time</p>
                   <input
                     type="time"
-                    className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-sm w-full"
+                    className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-sm w-full focus:outline-none focus:border-charcoal/30"
                     value={booking.start_time ?? ""}
                     onChange={(e) => updateBooking({ start_time: e.target.value || null })}
                   />
@@ -1335,7 +1335,7 @@ function BookingDetail() {
                     <input
                       type="number"
                       min={0}
-                      className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-sm w-14 text-center"
+                      className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-sm w-14 text-center focus:outline-none focus:border-charcoal/30"
                       value={booking.buffer_minutes ?? 10}
                       onChange={(e) => updateBooking({ buffer_minutes: parseInt(e.target.value) || 0 })}
                     />
@@ -1346,7 +1346,7 @@ function BookingDetail() {
                   <p className="text-xs text-charcoal/60 mb-1">Ceremony time</p>
                   <input
                     type="time"
-                    className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-sm w-full"
+                    className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-sm w-full focus:outline-none focus:border-charcoal/30"
                     value={booking.ceremony_time ?? ""}
                     onChange={(e) => updateBooking({ ceremony_time: e.target.value })}
                   />
@@ -1473,7 +1473,7 @@ function BookingDetail() {
                                 ⠿
                               </span>
                               <input
-                                className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-0"
+                                className="border border-charcoal/20 rounded-md px-2 py-1 text-sm flex-1 min-w-0 focus:outline-none focus:border-charcoal/30"
                                 value={entry.member.name}
                                 onChange={(e) => updateMember(entry.member.id, { name: e.target.value })}
                               />
@@ -1507,7 +1507,7 @@ function BookingDetail() {
                               <div className="flex items-center gap-1">
                                 <input
                                   type="number"
-                                  className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-xs w-12"
+                                  className="border border-charcoal/20 rounded-md px-1.5 py-0.5 text-xs w-12 focus:outline-none focus:border-charcoal/30"
                                   value={entry.member.prep_minutes}
                                   onChange={(e) =>
                                     updateMember(entry.member.id, { prep_minutes: parseInt(e.target.value) || 0 })
@@ -1517,7 +1517,7 @@ function BookingDetail() {
                               </div>
                             </div>
                             <input
-                              className="border border-charcoal/20 rounded-md px-2 py-1 text-xs w-full mt-1.5 ml-5"
+                              className="border border-charcoal/20 rounded-md px-2 py-1 text-xs w-full mt-1.5 ml-5 focus:outline-none focus:border-charcoal/30"
                               style={{ width: "calc(100% - 1.25rem)" }}
                               placeholder="Styling focus & prep notes (e.g. classic romantic waves, hair must be dry before start)"
                               value={entry.member.styling_notes ?? ""}
@@ -1567,7 +1567,7 @@ function BookingDetail() {
         <section className="bg-white border border-charcoal/10 rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Payments</h2>
-            <button onClick={addPayment} className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs uppercase tracking-wide">
+            <button onClick={addPayment} className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs uppercase tracking-wide hover:bg-charcoal/90">
               Record payment
             </button>
           </div>

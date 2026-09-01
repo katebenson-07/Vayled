@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (96)
+
+- **Audited and standardized every button and input across the app.** Found and fixed two systemic gaps: ~150 bordered inputs/selects/textareas had no `focus:` state at all (relying on the browser default outline) except for one search box, and ~35 primary (`bg-charcoal text-ivory`) buttons had zero `hover:` feedback — both retrofitted with the documented conventions (`focus:outline-none focus:border-charcoal/30` and `hover:bg-charcoal/90`). Also normalized 12 stray `disabled:opacity-40`/`disabled:opacity-30` instances to the standard `disabled:opacity-50`. Confirmed the app's existing red destructive-action buttons (Delete booking/client, Remove line items) were already consistent and intentional — no accidental off-brand colors found anywhere. Expanded `DESIGN_SYSTEM.md`'s Interactive States section into full Buttons and Inputs state tables (default/hover/disabled/selected for buttons; default/focus/disabled/error for inputs), documented the destructive-action pattern explicitly, and defined an error/invalid input style for future use even though no field-level validation exists yet.
+
 ## 2026-09-01 (95)
 
 - **Settled "charcoal" on a mid-depth wine red** — `#241019` → `#410D10`. The previous shade read as too purple; built a 5-step swatch strip that scaled the original `#5d1217` straight down toward black (same hue throughout, no purple drift) and Kate picked step 3. Updated `tailwind.config.ts`, `app/globals.css`, the Calendar's stylist-color palette, and `DESIGN_SYSTEM.md`.

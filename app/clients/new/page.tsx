@@ -52,7 +52,7 @@ function NewClientForm() {
         <div>
           <label className="block text-sm mb-1">Bride&apos;s name</label>
           <input
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             required
             value={form.bride_name}
             onChange={(e) => update("bride_name", e.target.value)}
@@ -62,7 +62,7 @@ function NewClientForm() {
           <label className="block text-sm mb-1">Wedding date</label>
           <input
             type="date"
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             value={form.wedding_date}
             onChange={(e) => update("wedding_date", e.target.value)}
           />
@@ -70,7 +70,7 @@ function NewClientForm() {
         <div>
           <label className="block text-sm mb-1">Venue</label>
           <input
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             value={form.venue}
             onChange={(e) => update("venue", e.target.value)}
           />
@@ -79,7 +79,7 @@ function NewClientForm() {
           <label className="block text-sm mb-1">Email</label>
           <input
             type="email"
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             value={form.email}
             onChange={(e) => update("email", e.target.value)}
           />
@@ -87,7 +87,7 @@ function NewClientForm() {
         <div>
           <label className="block text-sm mb-1">Phone</label>
           <input
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             value={form.phone}
             onChange={(e) => update("phone", e.target.value)}
           />
@@ -95,7 +95,7 @@ function NewClientForm() {
         <div>
           <label className="block text-sm mb-1">Referred by</label>
           <input
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             placeholder="e.g. Instagram, past client, venue referral"
             value={form.referral_source}
             onChange={(e) => update("referral_source", e.target.value)}
@@ -104,7 +104,7 @@ function NewClientForm() {
         <div>
           <label className="block text-sm mb-1">Notes</label>
           <textarea
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             rows={3}
             value={form.notes}
             onChange={(e) => update("notes", e.target.value)}
@@ -114,7 +114,7 @@ function NewClientForm() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-charcoal text-ivory rounded-md px-4 py-2 disabled:opacity-50"
+          className="bg-charcoal text-ivory rounded-md px-4 py-2 disabled:opacity-50 hover:bg-charcoal/90"
         >
           {loading ? "Saving..." : "Save client"}
         </button>

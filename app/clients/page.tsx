@@ -43,7 +43,7 @@ function ClientsContent() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-script text-4xl leading-tight">Clients</h1>
-        <Link href="/clients/new" className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+        <Link href="/clients/new" className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm hover:bg-charcoal/90">
           Add client
         </Link>
       </div>
@@ -74,7 +74,7 @@ function ClientsContent() {
                     onClick={() => openAppointmentMenu(c.id)}
                     disabled={clientBookings.length === 0}
                     title={clientBookings.length === 0 ? "Create a booking first" : undefined}
-                    className="border border-charcoal/20 rounded-md px-3 py-1.5 text-xs disabled:opacity-40"
+                    className="border border-charcoal/20 rounded-md px-3 py-1.5 text-xs disabled:opacity-50"
                   >
                     + Appointment
                   </button>
@@ -84,7 +84,7 @@ function ClientsContent() {
                         <div className="mb-3">
                           <label className="block text-charcoal/60 mb-1 text-xs">Which booking?</label>
                           <select
-                            className="w-full border border-charcoal/20 rounded-md px-2 py-1.5 text-sm"
+                            className="w-full border border-charcoal/20 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:border-charcoal/30"
                             value={menuBookingId}
                             onChange={(e) => setMenuBookingId(e.target.value)}
                           >

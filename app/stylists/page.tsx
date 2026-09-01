@@ -231,19 +231,19 @@ function StylistsContent() {
         <h2 className="font-serif text-lg mb-4">Team</h2>
         <form onSubmit={addStylist} className="flex flex-wrap items-center gap-2 mb-4 text-sm">
           <input
-            className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[140px]"
+            className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[140px] focus:outline-none focus:border-charcoal/30"
             placeholder="Name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
           <input
-            className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[140px]"
+            className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[140px] focus:outline-none focus:border-charcoal/30"
             placeholder="Email"
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
           />
           <input
-            className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[120px]"
+            className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[120px] focus:outline-none focus:border-charcoal/30"
             placeholder="Phone"
             value={newPhone}
             onChange={(e) => setNewPhone(e.target.value)}
@@ -253,7 +253,7 @@ function StylistsContent() {
               type="number"
               min="0"
               max="100"
-              className="border border-charcoal/20 rounded-md px-2 py-1 w-16"
+              className="border border-charcoal/20 rounded-md px-2 py-1 w-16 focus:outline-none focus:border-charcoal/30"
               placeholder="Pay %"
               value={newPayPercentage}
               onChange={(e) => setNewPayPercentage(e.target.value)}
@@ -264,7 +264,7 @@ function StylistsContent() {
             <input type="checkbox" checked={newIs1099} onChange={(e) => setNewIs1099(e.target.checked)} />
             1099
           </label>
-          <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1">
+          <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1 hover:bg-charcoal/90">
             Add
           </button>
         </form>
@@ -289,19 +289,19 @@ function StylistsContent() {
                     {isEditing ? (
                       <div className="space-y-2 text-sm">
                         <input
-                          className="w-full border border-charcoal/20 rounded-md px-2 py-1.5"
+                          className="w-full border border-charcoal/20 rounded-md px-2 py-1.5 focus:outline-none focus:border-charcoal/30"
                           placeholder="Name"
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
                         />
                         <input
-                          className="w-full border border-charcoal/20 rounded-md px-2 py-1.5"
+                          className="w-full border border-charcoal/20 rounded-md px-2 py-1.5 focus:outline-none focus:border-charcoal/30"
                           placeholder="Email"
                           value={editEmail}
                           onChange={(e) => setEditEmail(e.target.value)}
                         />
                         <input
-                          className="w-full border border-charcoal/20 rounded-md px-2 py-1.5"
+                          className="w-full border border-charcoal/20 rounded-md px-2 py-1.5 focus:outline-none focus:border-charcoal/30"
                           placeholder="Phone"
                           value={editPhone}
                           onChange={(e) => setEditPhone(e.target.value)}
@@ -313,7 +313,7 @@ function StylistsContent() {
                         <div className="flex items-center gap-3 pt-1">
                           <button
                             onClick={() => saveEditing(s.id)}
-                            className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs"
+                            className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs hover:bg-charcoal/90"
                           >
                             Save
                           </button>
@@ -376,7 +376,7 @@ function StylistsContent() {
                                 type="number"
                                 min="0"
                                 max="100"
-                                className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right text-sm"
+                                className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right text-sm focus:outline-none focus:border-charcoal/30"
                                 value={s.pay_percentage}
                                 onChange={(e) => updateStylist(s.id, { pay_percentage: Number(e.target.value) })}
                               />
@@ -411,7 +411,7 @@ function StylistsContent() {
                           <button
                             onClick={() => inviteStylist(s)}
                             disabled={invitingId === s.id}
-                            className="border border-charcoal/20 rounded-md px-3 py-1.5 disabled:opacity-40"
+                            className="border border-charcoal/20 rounded-md px-3 py-1.5 disabled:opacity-50"
                           >
                             {invitingId === s.id ? "Sending..." : loginStatus === "pending" ? "Resend invite" : "Invite to log in"}
                           </button>
@@ -432,7 +432,7 @@ function StylistsContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Stylist</label>
             <select
-              className="border border-charcoal/20 rounded-md px-2 py-1"
+              className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
               value={toStylistId}
               onChange={(e) => setToStylistId(e.target.value)}
             >
@@ -448,7 +448,7 @@ function StylistsContent() {
             <label className="block text-charcoal/60 mb-1">Start date</label>
             <input
               type="date"
-              className="border border-charcoal/20 rounded-md px-2 py-1"
+              className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
               value={toStart}
               onChange={(e) => setToStart(e.target.value)}
             />
@@ -457,7 +457,7 @@ function StylistsContent() {
             <label className="block text-charcoal/60 mb-1">End date</label>
             <input
               type="date"
-              className="border border-charcoal/20 rounded-md px-2 py-1"
+              className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
               value={toEnd}
               onChange={(e) => setToEnd(e.target.value)}
             />
@@ -465,12 +465,12 @@ function StylistsContent() {
           <div className="flex-1 min-w-[140px]">
             <label className="block text-charcoal/60 mb-1">Reason (optional)</label>
             <input
-              className="border border-charcoal/20 rounded-md px-2 py-1 w-full"
+              className="border border-charcoal/20 rounded-md px-2 py-1 w-full focus:outline-none focus:border-charcoal/30"
               value={toReason}
               onChange={(e) => setToReason(e.target.value)}
             />
           </div>
-          <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1">
+          <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1 hover:bg-charcoal/90">
             Add
           </button>
         </form>

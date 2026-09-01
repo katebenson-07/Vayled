@@ -185,7 +185,7 @@ export default function PublicInquiryPage() {
             <div>
               <label className="block text-sm mb-1">Your name</label>
               <input
-                className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                 required
                 value={form.bride_name}
                 onChange={(e) => update("bride_name", e.target.value)}
@@ -199,7 +199,7 @@ export default function PublicInquiryPage() {
                     <label className="block text-sm mb-1">Wedding date</label>
                     <input
                       type="date"
-                      className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                      className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                       value={form.wedding_date}
                       onChange={(e) => update("wedding_date", e.target.value)}
                     />
@@ -211,7 +211,7 @@ export default function PublicInquiryPage() {
                     <input
                       type="number"
                       min={0}
-                      className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                      className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                       placeholder="e.g. 6"
                       value={form.party_size}
                       onChange={(e) => update("party_size", e.target.value)}
@@ -225,7 +225,7 @@ export default function PublicInquiryPage() {
               <div>
                 <label className="block text-sm mb-1">Venue</label>
                 <input
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   value={form.venue}
                   onChange={(e) => update("venue", e.target.value)}
                 />
@@ -236,7 +236,7 @@ export default function PublicInquiryPage() {
               <div>
                 <label className="block text-sm mb-1">Getting ready location</label>
                 <input
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   placeholder="Where will hair & makeup happen?"
                   value={form.getting_ready_location}
                   onChange={(e) => update("getting_ready_location", e.target.value)}
@@ -249,7 +249,7 @@ export default function PublicInquiryPage() {
                 <label className="block text-sm mb-1">Email</label>
                 <input
                   type="email"
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   required
                   value={form.email}
                   onChange={(e) => update("email", e.target.value)}
@@ -258,7 +258,7 @@ export default function PublicInquiryPage() {
               <div>
                 <label className="block text-sm mb-1">Phone</label>
                 <input
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   required={settings.require_phone}
                   value={form.phone}
                   onChange={(e) => update("phone", e.target.value)}
@@ -270,7 +270,7 @@ export default function PublicInquiryPage() {
               <div>
                 <label className="block text-sm mb-1">Budget range</label>
                 <input
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   placeholder="e.g. $500-$800"
                   value={form.budget}
                   onChange={(e) => update("budget", e.target.value)}
@@ -282,7 +282,7 @@ export default function PublicInquiryPage() {
               <div>
                 <label className="block text-sm mb-1">Preferred contact method</label>
                 <select
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   value={form.preferred_contact_method}
                   onChange={(e) => update("preferred_contact_method", e.target.value)}
                 >
@@ -298,7 +298,7 @@ export default function PublicInquiryPage() {
               <div>
                 <label className="block text-sm mb-1">How did you hear about us?</label>
                 <input
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   placeholder="e.g. Instagram, a friend, your venue"
                   value={form.referral_source}
                   onChange={(e) => update("referral_source", e.target.value)}
@@ -310,7 +310,7 @@ export default function PublicInquiryPage() {
               <div key={q.id}>
                 <label className="block text-sm mb-1">{q.label}</label>
                 <input
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   value={customAnswers[q.id] ?? ""}
                   onChange={(e) => setCustomAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
                 />
@@ -321,7 +321,7 @@ export default function PublicInquiryPage() {
               <div>
                 <label className="block text-sm mb-1">Tell us about your vision</label>
                 <textarea
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   rows={4}
                   value={form.message}
                   onChange={(e) => update("message", e.target.value)}

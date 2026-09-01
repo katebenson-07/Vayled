@@ -46,7 +46,7 @@ function DueRuleEditor({
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm print:hidden">
       <select
-        className="border border-charcoal/20 rounded-md px-2 py-1"
+        className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
         value={rule.mode}
         onChange={(e) => {
           const mode = e.target.value as DueRule["mode"];
@@ -63,7 +63,7 @@ function DueRuleEditor({
       {rule.mode === "date" ? (
         <input
           type="date"
-          className="border border-charcoal/20 rounded-md px-2 py-1"
+          className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
           value={rule.date ?? ""}
           onChange={(e) => onChange({ ...rule, date: e.target.value || null })}
         />
@@ -72,7 +72,7 @@ function DueRuleEditor({
           <input
             type="number"
             min="0"
-            className="border border-charcoal/20 rounded-md px-2 py-1 w-16"
+            className="border border-charcoal/20 rounded-md px-2 py-1 w-16 focus:outline-none focus:border-charcoal/30"
             value={rule.days_before ?? 0}
             onChange={(e) => onChange({ ...rule, days_before: Number(e.target.value) })}
           />
@@ -343,7 +343,7 @@ function InvoiceContent() {
           <button
             onClick={saveInvoice}
             disabled={saving}
-            className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-50"
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-50 hover:bg-charcoal/90"
           >
             {saving ? "Saving..." : "Save invoice"}
           </button>
@@ -398,7 +398,7 @@ function InvoiceContent() {
               <tr key={item.id} className="border-b border-charcoal/10">
                 <td className="py-2 pr-2">
                   <input
-                    className="border border-charcoal/20 rounded-md px-2 py-1 w-full print:border-none"
+                    className="border border-charcoal/20 rounded-md px-2 py-1 w-full print:border-none focus:outline-none focus:border-charcoal/30"
                     value={item.description}
                     onChange={(e) => updateItem(item.id, { description: e.target.value })}
                     placeholder="Description"
@@ -408,7 +408,7 @@ function InvoiceContent() {
                   <input
                     type="number"
                     min="0"
-                    className="border border-charcoal/20 rounded-md px-2 py-1 w-20 text-right"
+                    className="border border-charcoal/20 rounded-md px-2 py-1 w-20 text-right focus:outline-none focus:border-charcoal/30"
                     value={item.qty}
                     onChange={(e) => updateItem(item.id, { qty: Number(e.target.value) })}
                   />
@@ -418,7 +418,7 @@ function InvoiceContent() {
                     type="number"
                     min="0"
                     step="0.01"
-                    className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right"
+                    className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right focus:outline-none focus:border-charcoal/30"
                     value={item.rate}
                     onChange={(e) => updateItem(item.id, { rate: Number(e.target.value) })}
                   />
@@ -445,7 +445,7 @@ function InvoiceContent() {
           }}
         >
           <input
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
             placeholder="Search or add a new item"
             value={itemQuery}
             onFocus={() => setItemPickerOpen(true)}
@@ -532,7 +532,7 @@ function InvoiceContent() {
                 min="0"
                 step="0.01"
                 autoFocus
-                className="border border-charcoal/20 rounded-md px-2 py-1 w-28 text-right"
+                className="border border-charcoal/20 rounded-md px-2 py-1 w-28 text-right focus:outline-none focus:border-charcoal/30"
                 value={settings.tip_amount}
                 onClick={(e) => e.stopPropagation()}
                 onChange={(e) => setSettings({ ...settings, tip_amount: Number(e.target.value) })}
@@ -581,7 +581,7 @@ function InvoiceContent() {
                       <button
                         onClick={() => markPaid(row.key, row.amount)}
                         disabled={row.amount <= 0}
-                        className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs disabled:opacity-40 print:hidden"
+                        className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs disabled:opacity-50 print:hidden hover:bg-charcoal/90"
                       >
                         Mark paid
                       </button>
@@ -595,7 +595,7 @@ function InvoiceContent() {
                       type="number"
                       min="0"
                       step="0.01"
-                      className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right"
+                      className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right focus:outline-none focus:border-charcoal/30"
                       value={settings.trial_fee_override ?? trial?.fee ?? 0}
                       onChange={(e) =>
                         setSettings({ ...settings, trial_fee_override: Number(e.target.value) })
@@ -610,7 +610,7 @@ function InvoiceContent() {
                       type="number"
                       min="0"
                       step="0.01"
-                      className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right"
+                      className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right focus:outline-none focus:border-charcoal/30"
                       value={settings.rehearsal_fee_override ?? rehearsal?.fee ?? 0}
                       onChange={(e) =>
                         setSettings({ ...settings, rehearsal_fee_override: Number(e.target.value) })
@@ -621,7 +621,7 @@ function InvoiceContent() {
                 {row.key === "deposit" && (
                   <div className="flex flex-wrap items-center gap-2 text-sm mb-2 print:hidden">
                     <select
-                      className="border border-charcoal/20 rounded-md px-2 py-1"
+                      className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
                       value={settings.deposit_type}
                       onChange={(e) =>
                         setSettings({ ...settings, deposit_type: e.target.value as InvoiceSettings["deposit_type"] })
@@ -636,7 +636,7 @@ function InvoiceContent() {
                           type="number"
                           min="0"
                           max="100"
-                          className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right"
+                          className="border border-charcoal/20 rounded-md px-2 py-1 w-16 text-right focus:outline-none focus:border-charcoal/30"
                           value={settings.deposit_percent}
                           onChange={(e) => setSettings({ ...settings, deposit_percent: Number(e.target.value) })}
                         />
@@ -649,7 +649,7 @@ function InvoiceContent() {
                           type="number"
                           min="0"
                           step="0.01"
-                          className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right"
+                          className="border border-charcoal/20 rounded-md px-2 py-1 w-24 text-right focus:outline-none focus:border-charcoal/30"
                           value={depositFlatAmount}
                           onChange={(e) => setDepositFlatAmount(Number(e.target.value))}
                         />
@@ -714,7 +714,7 @@ function InvoiceContent() {
         <div>
           <p className="font-serif text-lg mb-2">Notes &amp; terms</p>
           <textarea
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm min-h-[100px] print:border-none"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm min-h-[100px] print:border-none focus:outline-none focus:border-charcoal/30"
             placeholder="Payment terms, cancellation policy, or any notes for the client..."
             value={settings.notes}
             onChange={(e) => setSettings({ ...settings, notes: e.target.value })}

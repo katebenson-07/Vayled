@@ -76,7 +76,7 @@ function ResetPasswordForm() {
                 <label className="block text-sm mb-1">New password</label>
                 <input
                   type="password"
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -87,7 +87,7 @@ function ResetPasswordForm() {
                 <label className="block text-sm mb-1">Confirm new password</label>
                 <input
                   type="password"
-                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                  className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   required

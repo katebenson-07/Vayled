@@ -150,13 +150,13 @@ function ContractContent() {
           </p>
         </div>
         <div className="flex gap-2 text-sm">
-          <button onClick={markSent} disabled={booking.contract_sent} className="border border-charcoal/20 rounded-md px-3 py-2 disabled:opacity-40">
+          <button onClick={markSent} disabled={booking.contract_sent} className="border border-charcoal/20 rounded-md px-3 py-2 disabled:opacity-50">
             {booking.contract_sent ? "Marked sent" : "Mark sent"}
           </button>
-          <button onClick={markSigned} disabled={booking.contract_signed} className="border border-charcoal/20 rounded-md px-3 py-2 disabled:opacity-40">
+          <button onClick={markSigned} disabled={booking.contract_signed} className="border border-charcoal/20 rounded-md px-3 py-2 disabled:opacity-50">
             {booking.contract_signed ? "Marked signed" : "Mark signed"}
           </button>
-          <button onClick={() => window.print()} className="bg-charcoal text-ivory rounded-md px-3 py-2">
+          <button onClick={() => window.print()} className="bg-charcoal text-ivory rounded-md px-3 py-2 hover:bg-charcoal/90">
             Print / save PDF
           </button>
         </div>
@@ -175,7 +175,7 @@ function ContractContent() {
             <span className="block text-charcoal/60 mb-1">Bride&apos;s name</span>
             <input
               type="text"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={brideNameInput}
               onChange={(e) => setBrideNameInput(e.target.value)}
               placeholder="Bride's full name"
@@ -185,7 +185,7 @@ function ContractContent() {
             <span className="block text-charcoal/60 mb-1">Wedding date</span>
             <input
               type="date"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={weddingDateInput}
               onChange={(e) => setWeddingDateInput(e.target.value)}
             />
@@ -194,7 +194,7 @@ function ContractContent() {
             <span className="block text-charcoal/60 mb-1">Wedding location</span>
             <input
               type="text"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={venueInput}
               onChange={(e) => setVenueInput(e.target.value)}
               placeholder="Venue name, city"
@@ -206,7 +206,7 @@ function ContractContent() {
               type="number"
               min="0"
               step="0.01"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={contractTotalInput}
               onChange={(e) => setContractTotalInput(e.target.value)}
               placeholder="0.00"
@@ -218,7 +218,7 @@ function ContractContent() {
               type="number"
               min="0"
               step="0.01"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={depositInput}
               onChange={(e) => setDepositInput(e.target.value)}
               placeholder="0.00"
@@ -229,7 +229,7 @@ function ContractContent() {
           <button
             onClick={saveContractDetails}
             disabled={savingDetails}
-            className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-50"
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-50 hover:bg-charcoal/90"
           >
             {savingDetails ? "Saving..." : "Save details"}
           </button>

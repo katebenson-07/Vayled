@@ -228,7 +228,7 @@ function CalendarContent() {
           <Link href="/stylists" className="border border-charcoal/20 rounded-md px-4 py-2 hover:bg-beige">
             Add stylist
           </Link>
-          <Link href="/clients" className="bg-charcoal text-ivory rounded-md px-4 py-2 font-medium">
+          <Link href="/clients" className="bg-charcoal text-ivory rounded-md px-4 py-2 font-medium hover:bg-charcoal/90">
             New job
           </Link>
         </div>
@@ -237,7 +237,7 @@ function CalendarContent() {
       {showFilter && (
         <div className="mb-4 text-sm">
           <select
-            className="border border-charcoal/20 rounded-md px-3 py-2"
+            className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             value={selectedStylistId}
             onChange={(e) => setSelectedStylistId(e.target.value)}
           >

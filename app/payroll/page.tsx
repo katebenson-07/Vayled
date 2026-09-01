@@ -159,7 +159,7 @@ function PayrollContent() {
               key={f}
               onClick={() => setFilter(f)}
               className={`px-3 py-1.5 rounded-md text-sm capitalize ${
-                filter === f ? "bg-charcoal text-ivory" : "text-charcoal/60"
+                filter === f ? "bg-charcoal text-ivory hover:bg-charcoal/90" : "text-charcoal/60 hover:text-charcoal"
               }`}
             >
               {f}
@@ -167,7 +167,7 @@ function PayrollContent() {
           ))}
         </div>
         <select
-          className="border border-charcoal/20 rounded-md px-2 py-1.5 text-sm"
+          className="border border-charcoal/20 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:border-charcoal/30"
           value={stylistFilter}
           onChange={(e) => setStylistFilter(e.target.value)}
         >

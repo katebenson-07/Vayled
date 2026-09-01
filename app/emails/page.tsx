@@ -200,7 +200,7 @@ function EmailsContent() {
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-serif text-lg">Library</h2>
-          <button onClick={() => startEdit(null)} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+          <button onClick={() => startEdit(null)} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm hover:bg-charcoal/90">
             New template
           </button>
         </div>
@@ -208,26 +208,26 @@ function EmailsContent() {
         {editing !== null || form.name ? (
           <div className="border border-charcoal/10 rounded-md p-4 mb-4 space-y-3 text-sm">
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               placeholder="Template name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               placeholder="Subject"
               value={form.subject}
               onChange={(e) => setForm({ ...form, subject: e.target.value })}
             />
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={6}
               placeholder="Body"
               value={form.body}
               onChange={(e) => setForm({ ...form, body: e.target.value })}
             />
             <div className="flex gap-2">
-              <button onClick={saveTemplate} className="bg-charcoal text-ivory rounded-md px-4 py-2">
+              <button onClick={saveTemplate} className="bg-charcoal text-ivory rounded-md px-4 py-2 hover:bg-charcoal/90">
                 Save
               </button>
               <button

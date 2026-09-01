@@ -159,7 +159,7 @@ function TrialContent() {
             <label className="block text-charcoal/60 mb-1">Date</label>
             <input
               type="date"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={trial.session_date ?? ""}
               onChange={(e) => update({ session_date: e.target.value })}
             />
@@ -168,7 +168,7 @@ function TrialContent() {
             <label className="block text-charcoal/60 mb-1">Time</label>
             <input
               type="time"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={trial.session_time ?? ""}
               onChange={(e) => update({ session_time: e.target.value })}
             />
@@ -177,7 +177,7 @@ function TrialContent() {
             <label className="block text-charcoal/60 mb-1">Duration (min)</label>
             <input
               type="number"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={trial.duration_minutes}
               onChange={(e) => update({ duration_minutes: parseInt(e.target.value) || 0 })}
             />
@@ -185,7 +185,7 @@ function TrialContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Location</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               defaultValue={trial.location ?? ""}
               onBlur={(e) => update({ location: e.target.value })}
             />
@@ -194,7 +194,7 @@ function TrialContent() {
             <label className="block text-charcoal/60 mb-1">Preview fee ($)</label>
             <input
               type="number"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={trial.fee}
               onChange={(e) => update({ fee: parseFloat(e.target.value) || 0 })}
             />
@@ -228,7 +228,7 @@ function TrialContent() {
             <label className="block text-charcoal/60 mb-1 text-sm">Date</label>
             <input
               type="date"
-              className="border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+              className="border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
               value={newSlotDate}
               onChange={(e) => setNewSlotDate(e.target.value)}
             />
@@ -237,7 +237,7 @@ function TrialContent() {
             <label className="block text-charcoal/60 mb-1 text-sm">Time (optional)</label>
             <input
               type="time"
-              className="border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+              className="border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
               value={newSlotTime}
               onChange={(e) => setNewSlotTime(e.target.value)}
             />
@@ -245,7 +245,7 @@ function TrialContent() {
           <button
             onClick={addSlot}
             disabled={!newSlotDate}
-            className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-40"
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-50 hover:bg-charcoal/90"
           >
             Add time
           </button>
@@ -316,7 +316,7 @@ function TrialContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Hair</label>
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={3}
               defaultValue={trial.hair_notes ?? ""}
               onBlur={(e) => update({ hair_notes: e.target.value })}
@@ -325,7 +325,7 @@ function TrialContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Makeup</label>
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={3}
               defaultValue={trial.makeup_notes ?? ""}
               onBlur={(e) => update({ makeup_notes: e.target.value })}
@@ -334,7 +334,7 @@ function TrialContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Day-of reminders</label>
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={3}
               defaultValue={trial.day_of_notes ?? ""}
               onBlur={(e) => update({ day_of_notes: e.target.value })}
@@ -347,7 +347,7 @@ function TrialContent() {
         <h2 className="font-serif text-lg mb-4">Products used</h2>
         <p className="text-xs text-charcoal/50 mb-2">One product per line — brand, shade, category.</p>
         <textarea
-          className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+          className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
           rows={4}
           defaultValue={trial.products_text ?? ""}
           onBlur={(e) => update({ products_text: e.target.value })}
@@ -358,7 +358,7 @@ function TrialContent() {
         <h2 className="font-serif text-lg mb-4">Changes for wedding day</h2>
         <p className="text-xs text-charcoal/50 mb-2">List tweaks the bride requested vs. what to repeat exactly.</p>
         <textarea
-          className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+          className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
           rows={4}
           defaultValue={trial.changes_text ?? ""}
           onBlur={(e) => update({ changes_text: e.target.value })}
@@ -383,7 +383,7 @@ function TrialContent() {
         </div>
         <label className="block text-charcoal/60 mb-1 text-sm">Her words</label>
         <textarea
-          className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+          className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
           rows={2}
           placeholder="A short quote from the bride..."
           defaultValue={trial.quote ?? ""}

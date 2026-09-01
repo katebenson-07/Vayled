@@ -46,7 +46,7 @@ function LoginForm() {
                   <label className="block text-sm mb-1">Email</label>
                   <input
                     type="email"
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                    className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -56,7 +56,7 @@ function LoginForm() {
                   <label className="block text-sm mb-1">Password</label>
                   <input
                     type="password"
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                    className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required

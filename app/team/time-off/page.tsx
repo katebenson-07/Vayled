@@ -76,7 +76,7 @@ function TimeOff() {
             <label className="block text-charcoal/60 mb-1">Start date</label>
             <input
               type="date"
-              className="border border-charcoal/20 rounded-md px-3 py-2"
+              className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
@@ -85,7 +85,7 @@ function TimeOff() {
             <label className="block text-charcoal/60 mb-1">End date</label>
             <input
               type="date"
-              className="border border-charcoal/20 rounded-md px-3 py-2"
+              className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               placeholder="Same as start"
@@ -94,7 +94,7 @@ function TimeOff() {
           <div className="flex-1 min-w-[160px]">
             <label className="block text-charcoal/60 mb-1">Reason (optional)</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Vacation, another job, etc."
@@ -103,7 +103,7 @@ function TimeOff() {
           <button
             onClick={addBlock}
             disabled={!startDate || saving}
-            className="bg-charcoal text-ivory rounded-md px-4 py-2 disabled:opacity-40"
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 disabled:opacity-50 hover:bg-charcoal/90"
           >
             {saving ? "Adding..." : "Add"}
           </button>

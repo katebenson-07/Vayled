@@ -87,7 +87,7 @@ function RehearsalContent() {
             <label className="block text-charcoal/60 mb-1">Date</label>
             <input
               type="date"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={rehearsal.session_date ?? ""}
               onChange={(e) => update({ session_date: e.target.value })}
             />
@@ -96,7 +96,7 @@ function RehearsalContent() {
             <label className="block text-charcoal/60 mb-1">Time</label>
             <input
               type="time"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={rehearsal.session_time ?? ""}
               onChange={(e) => update({ session_time: e.target.value })}
             />
@@ -105,7 +105,7 @@ function RehearsalContent() {
             <label className="block text-charcoal/60 mb-1">Duration (min)</label>
             <input
               type="number"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={rehearsal.duration_minutes}
               onChange={(e) => update({ duration_minutes: parseInt(e.target.value) || 0 })}
             />
@@ -113,7 +113,7 @@ function RehearsalContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Location</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               defaultValue={rehearsal.location ?? ""}
               onBlur={(e) => update({ location: e.target.value })}
             />
@@ -122,7 +122,7 @@ function RehearsalContent() {
             <label className="block text-charcoal/60 mb-1">Fee ($)</label>
             <input
               type="number"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={rehearsal.fee}
               onChange={(e) => update({ fee: parseFloat(e.target.value) || 0 })}
             />
@@ -144,7 +144,7 @@ function RehearsalContent() {
         <h2 className="font-serif text-lg mb-4">Notes</h2>
         <p className="text-xs text-charcoal/50 mb-2">Who&apos;s included, the look, timing — anything worth remembering.</p>
         <textarea
-          className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+          className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
           rows={5}
           defaultValue={rehearsal.notes ?? ""}
           onBlur={(e) => update({ notes: e.target.value })}

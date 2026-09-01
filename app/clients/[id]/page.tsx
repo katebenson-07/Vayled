@@ -120,7 +120,7 @@ function ClientDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Bride&apos;s name</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={client.bride_name}
               onChange={(e) => updateClient({ bride_name: e.target.value })}
             />
@@ -128,7 +128,7 @@ function ClientDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Partner&apos;s name</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={client.partner_name ?? ""}
               onChange={(e) => updateClient({ partner_name: e.target.value })}
             />
@@ -137,7 +137,7 @@ function ClientDetail() {
             <label className="block text-charcoal/60 mb-1">Wedding date</label>
             <input
               type="date"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={client.wedding_date ?? ""}
               onChange={(e) => updateClient({ wedding_date: e.target.value })}
             />
@@ -145,7 +145,7 @@ function ClientDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Venue</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={client.venue ?? ""}
               onChange={(e) => updateClient({ venue: e.target.value })}
             />
@@ -154,7 +154,7 @@ function ClientDetail() {
             <label className="block text-charcoal/60 mb-1">Email</label>
             <input
               type="email"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={client.email ?? ""}
               onChange={(e) => updateClient({ email: e.target.value })}
             />
@@ -162,7 +162,7 @@ function ClientDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Phone</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={client.phone ?? ""}
               onChange={(e) => updateClient({ phone: e.target.value })}
             />
@@ -170,7 +170,7 @@ function ClientDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Referred by</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={client.referral_source ?? ""}
               onChange={(e) => updateClient({ referral_source: e.target.value })}
             />
@@ -179,7 +179,7 @@ function ClientDetail() {
         <div className="mt-4">
           <label className="block text-charcoal/60 mb-1">Notes</label>
           <textarea
-            className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+            className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
             rows={3}
             defaultValue={client.notes ?? ""}
             onBlur={(e) => updateClient({ notes: e.target.value })}
@@ -202,11 +202,11 @@ function ClientDetail() {
             }}
             disabled={bookings.length === 0}
             title={bookings.length === 0 ? "Create a booking first" : undefined}
-            className="border border-charcoal/20 rounded-md px-4 py-2 text-sm disabled:opacity-40"
+            className="border border-charcoal/20 rounded-md px-4 py-2 text-sm disabled:opacity-50"
           >
             Add appointment
           </button>
-          <button onClick={createBooking} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+          <button onClick={createBooking} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm hover:bg-charcoal/90">
             New booking
           </button>
 
@@ -216,7 +216,7 @@ function ClientDetail() {
                 <div className="mb-3">
                   <label className="block text-charcoal/60 mb-1 text-xs">Which booking?</label>
                   <select
-                    className="w-full border border-charcoal/20 rounded-md px-2 py-1.5 text-sm"
+                    className="w-full border border-charcoal/20 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:border-charcoal/30"
                     value={appointmentBookingId}
                     onChange={(e) => setAppointmentBookingId(e.target.value)}
                   >

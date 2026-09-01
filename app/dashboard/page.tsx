@@ -407,7 +407,7 @@ function DashboardContent() {
                 {r.kind === "send" ? (
                   <button
                     onClick={r.onSend}
-                    className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs uppercase tracking-wide shrink-0"
+                    className="bg-charcoal text-ivory rounded-md px-3 py-1.5 text-xs uppercase tracking-wide shrink-0 hover:bg-charcoal/90"
                   >
                     Send
                   </button>

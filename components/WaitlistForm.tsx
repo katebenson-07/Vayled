@@ -72,7 +72,7 @@ export default function WaitlistForm({
         className={`flex-1 rounded-full px-5 py-3 text-sm ${
           dark
             ? "bg-ivory/10 border border-ivory/20 text-ivory placeholder:text-beige/40 focus:bg-ivory/15"
-            : "bg-white border border-charcoal/20 text-charcoal placeholder:text-charcoal/40"
+            : "bg-white border border-charcoal/20 text-charcoal placeholder:text-charcoal/40 focus:border-charcoal/30"
         } outline-none`}
       />
       <button

@@ -218,7 +218,7 @@ function AppointmentsContent() {
           <div className="flex-1 min-w-[180px]">
             <label className="block text-charcoal/60 mb-1">Title</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               placeholder="e.g. Venue Walk-Through"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
@@ -229,7 +229,7 @@ function AppointmentsContent() {
             <label className="block text-charcoal/60 mb-1">Date</label>
             <input
               type="date"
-              className="border border-charcoal/20 rounded-md px-3 py-2"
+              className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={form.appointment_date}
               onChange={(e) => setForm({ ...form, appointment_date: e.target.value })}
               required
@@ -239,7 +239,7 @@ function AppointmentsContent() {
             <label className="block text-charcoal/60 mb-1">Time</label>
             <input
               type="time"
-              className="border border-charcoal/20 rounded-md px-3 py-2"
+              className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={form.appointment_time}
               onChange={(e) => setForm({ ...form, appointment_time: e.target.value })}
             />
@@ -247,7 +247,7 @@ function AppointmentsContent() {
           <div className="flex-1 min-w-[160px]">
             <label className="block text-charcoal/60 mb-1">Location</label>
             <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               placeholder="Studio, venue, phone..."
               value={form.location}
               onChange={(e) => setForm({ ...form, location: e.target.value })}
@@ -256,7 +256,7 @@ function AppointmentsContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Client</label>
             <select
-              className="border border-charcoal/20 rounded-md px-3 py-2"
+              className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={form.client_id}
               onChange={(e) => setForm({ ...form, client_id: e.target.value })}
             >
@@ -271,7 +271,7 @@ function AppointmentsContent() {
           <div>
             <label className="block text-charcoal/60 mb-1">Status</label>
             <select
-              className="border border-charcoal/20 rounded-md px-3 py-2"
+              className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               value={form.status}
               onChange={(e) => setForm({ ...form, status: e.target.value as AppointmentStatus })}
             >
@@ -282,7 +282,7 @@ function AppointmentsContent() {
           <button
             type="submit"
             disabled={saving}
-            className="bg-charcoal text-ivory rounded-md px-4 py-2 disabled:opacity-50"
+            className="bg-charcoal text-ivory rounded-md px-4 py-2 disabled:opacity-50 hover:bg-charcoal/90"
           >
             {saving ? "Saving..." : "Save"}
           </button>

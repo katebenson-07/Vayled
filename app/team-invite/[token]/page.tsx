@@ -97,7 +97,7 @@ export default function TeamInvitePage() {
           </p>
           <a
             href="/login"
-            className="inline-block bg-charcoal text-ivory rounded-md px-6 py-2.5 uppercase text-xs tracking-widest-lg"
+            className="inline-block bg-charcoal text-ivory rounded-md px-6 py-2.5 uppercase text-xs tracking-widest-lg hover:bg-charcoal/90"
           >
             Go to sign in
           </a>
@@ -142,7 +142,7 @@ export default function TeamInvitePage() {
                 <div>
                   <label className="block text-sm mb-1">Email</label>
                   <input
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white/50 text-charcoal/60"
+                    className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white/50 text-charcoal/60 focus:outline-none focus:border-charcoal/30"
                     value={invite.stylist_email}
                     disabled
                   />
@@ -151,7 +151,7 @@ export default function TeamInvitePage() {
                   <label className="block text-sm mb-1">Password</label>
                   <input
                     type="password"
-                    className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white"
+                    className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required

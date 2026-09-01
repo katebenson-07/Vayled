@@ -189,7 +189,7 @@ function WeddingDetail() {
         </div>
         <button
           onClick={() => window.print()}
-          className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm shrink-0 print:hidden"
+          className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm shrink-0 print:hidden hover:bg-charcoal/90"
         >
           Print / Save PDF
         </button>
@@ -240,7 +240,7 @@ function WeddingDetail() {
               <label className="block text-charcoal/60 mb-1 text-sm">Date</label>
               <input
                 type="date"
-                className="border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+                className="border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
                 value={newSlotDate}
                 onChange={(e) => setNewSlotDate(e.target.value)}
               />
@@ -249,7 +249,7 @@ function WeddingDetail() {
               <label className="block text-charcoal/60 mb-1 text-sm">Time (optional)</label>
               <input
                 type="time"
-                className="border border-charcoal/20 rounded-md px-3 py-2 text-sm"
+                className="border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
                 value={newSlotTime}
                 onChange={(e) => setNewSlotTime(e.target.value)}
               />
@@ -257,7 +257,7 @@ function WeddingDetail() {
             <button
               onClick={addSlot}
               disabled={!newSlotDate}
-              className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-40"
+              className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm disabled:opacity-50 hover:bg-charcoal/90"
             >
               Add time
             </button>
@@ -311,7 +311,7 @@ function WeddingDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Hair</label>
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={3}
               defaultValue={trial?.hair_notes ?? ""}
               onBlur={(e) => updateTrial({ hair_notes: e.target.value })}
@@ -320,7 +320,7 @@ function WeddingDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Makeup</label>
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={3}
               defaultValue={trial?.makeup_notes ?? ""}
               onBlur={(e) => updateTrial({ makeup_notes: e.target.value })}
@@ -329,7 +329,7 @@ function WeddingDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Day-of reminders</label>
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={3}
               defaultValue={trial?.day_of_notes ?? ""}
               onBlur={(e) => updateTrial({ day_of_notes: e.target.value })}
@@ -338,7 +338,7 @@ function WeddingDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Products used</label>
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={3}
               defaultValue={trial?.products_text ?? ""}
               onBlur={(e) => updateTrial({ products_text: e.target.value })}
@@ -347,7 +347,7 @@ function WeddingDetail() {
           <div>
             <label className="block text-charcoal/60 mb-1">Changes for wedding day</label>
             <textarea
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
               rows={3}
               defaultValue={trial?.changes_text ?? ""}
               onBlur={(e) => updateTrial({ changes_text: e.target.value })}

@@ -128,7 +128,7 @@ function ContractsContent() {
           <button onClick={() => setShowPreview((v) => !v)} className="border border-charcoal/20 rounded-md px-4 py-2 text-sm">
             {showPreview ? "Hide preview" : "Show preview"}
           </button>
-          <button onClick={save} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
+          <button onClick={save} className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm hover:bg-charcoal/90">
             Save
           </button>
         </div>
@@ -145,7 +145,7 @@ function ContractsContent() {
           Studio name (shown as the contract letterhead)
         </label>
         <input
-          className="w-full sm:w-80 border border-charcoal/20 rounded-md px-3 py-2 text-sm mb-4"
+          className="w-full sm:w-80 border border-charcoal/20 rounded-md px-3 py-2 text-sm mb-4 focus:outline-none focus:border-charcoal/30"
           placeholder="e.g. Kate Benson Beauty"
           value={studioName}
           onChange={(e) => setStudioName(e.target.value)}
@@ -167,7 +167,7 @@ function ContractsContent() {
                   <button
                     onClick={() => moveSection(section.id, -1)}
                     disabled={i === 0}
-                    className="px-2 py-1 border border-charcoal/20 rounded disabled:opacity-30"
+                    className="px-2 py-1 border border-charcoal/20 rounded disabled:opacity-50"
                     title="Move up"
                   >
                     ↑
@@ -175,7 +175,7 @@ function ContractsContent() {
                   <button
                     onClick={() => moveSection(section.id, 1)}
                     disabled={i === sections.length - 1}
-                    className="px-2 py-1 border border-charcoal/20 rounded disabled:opacity-30"
+                    className="px-2 py-1 border border-charcoal/20 rounded disabled:opacity-50"
                     title="Move down"
                   >
                     ↓
@@ -189,13 +189,13 @@ function ContractsContent() {
                 </div>
               </div>
               <input
-                className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm font-medium mb-2"
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm font-medium mb-2 focus:outline-none focus:border-charcoal/30"
                 value={section.heading}
                 onChange={(e) => updateSection(section.id, { heading: e.target.value })}
                 placeholder="Section heading"
               />
               <textarea
-                className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm font-mono"
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:border-charcoal/30"
                 rows={6}
                 value={section.body}
                 onChange={(e) => updateSection(section.id, { body: e.target.value })}

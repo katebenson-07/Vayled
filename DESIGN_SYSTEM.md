@@ -116,16 +116,43 @@ any stat/number display, not just Analytics/Expenses where it started.
 
 ## Interactive states
 
-- **Disabled**: `disabled:opacity-50` uniformly, on any interactive element (button,
-  input, or link acting as a button). No color change — opacity is the only signal.
-  (Existing `/40` and `/30` variants are legacy inconsistency, not a second rule.)
-- **Input focus**: `focus:outline-none focus:border-charcoal/30` for bordered inputs.
-  For a dark-background input (e.g. on the marketing site), lighten the background
-  instead: `focus:bg-ivory/15`. Every new input should have an explicit focus state —
-  don't rely on the browser default.
-- **Hover**: filled buttons darken (`hover:bg-charcoal/90`), outline buttons fill
-  (`hover:bg-white` / `hover:bg-ivory`), text links underline (`hover:underline`) or
-  darken (`hover:text-charcoal` for nav-style links).
+Every interactive element — button, input, select, textarea, or link acting as a
+button — should carry an explicit state for each of these; never rely on the browser
+default. This was audited and retrofitted across every page in the app (roughly 190
+elements: ~150 inputs, ~35 buttons, plus opacity cleanup), so treat it as the floor for
+anything new, not an aspiration.
+
+### Buttons
+
+| State | Primary (filled) | Secondary (outline) | Text link | Nav-style link |
+|---|---|---|---|---|
+| Default | `bg-charcoal text-ivory` | `border border-charcoal/20` | `text-gold` | `text-charcoal/60` |
+| Hover | `hover:bg-charcoal/90` | `hover:bg-white` (on ivory/beige bg) or `hover:bg-ivory` | `hover:underline` | `hover:text-charcoal` |
+| Active/pressed | No separate active state today — hover color is the only feedback; don't invent a third shade unless a real need comes up. |
+| Disabled | `disabled:opacity-50` — opacity only, no color change, on any button that can receive a `disabled` prop |
+| Toggle/pill selected state (e.g. filter tabs, view/edit switches) | Selected = primary treatment above; unselected = nav-style link treatment above. Both branches need their own hover — a selected pill should still darken on hover, not just the unselected one. |
+
+**Destructive actions** (delete/remove — irreversible or data-losing): red instead of
+charcoal, in one of two forms depending on prominence:
+- Standalone/irreversible (e.g. "Delete booking", "Delete client"): `border border-red-200 text-red-600 rounded-md px-4 py-2 hover:bg-red-50`
+- Inline/lightweight (e.g. "Remove" on a line item): `text-red-600 text-xs`, or if it
+  needs to stay quiet until intent is clear, `text-charcoal/40 hover:text-red-600`
+
+### Inputs, selects, textareas
+
+| State | Style |
+|---|---|
+| Default | `border border-charcoal/20 rounded-md px-3 py-2` |
+| Focus | `focus:outline-none focus:border-charcoal/30`. Dark-background variant (marketing site): `focus:bg-ivory/15` instead of a border change. |
+| Disabled | `disabled:opacity-50`, same rule as buttons |
+| Error/invalid | Not used anywhere yet — no field-level validation exists in the app today. If/when it's added, the rule is: `border-red-300 focus:border-red-400` on the field, plus `text-red-600 text-xs mt-1` helper text below it. Don't invent a different pattern per page when this need shows up. |
+
+### Cleanup notes
+
+`disabled:opacity-40` and `disabled:opacity-30` were legacy leftovers from before this
+rule existed — normalized to `disabled:opacity-50` everywhere. There is no longer a
+second disabled-opacity value anywhere in the app; if you see one, it's a bug, not an
+intentional variant.
 
 ## Shape & spacing
 

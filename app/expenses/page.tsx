@@ -278,7 +278,7 @@ function ExpensesContent() {
                 <label className="block text-charcoal/60 mb-1">Date</label>
                 <input
                   type="date"
-                  className="border border-charcoal/20 rounded-md px-2 py-1"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
                   value={form.expense_date}
                   onChange={(e) => setForm({ ...form, expense_date: e.target.value })}
                 />
@@ -286,7 +286,7 @@ function ExpensesContent() {
               <div>
                 <label className="block text-charcoal/60 mb-1">Category</label>
                 <select
-                  className="border border-charcoal/20 rounded-md px-2 py-1"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
                 >
@@ -301,7 +301,7 @@ function ExpensesContent() {
                 <label className="block text-charcoal/60 mb-1">Amount ($)</label>
                 <input
                   type="number"
-                  className="border border-charcoal/20 rounded-md px-2 py-1 w-28"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 w-28 focus:outline-none focus:border-charcoal/30"
                   value={form.amount}
                   onChange={(e) => setForm({ ...form, amount: e.target.value })}
                 />
@@ -309,7 +309,7 @@ function ExpensesContent() {
               <div className="flex-1 min-w-[140px]">
                 <label className="block text-charcoal/60 mb-1">Description</label>
                 <input
-                  className="border border-charcoal/20 rounded-md px-2 py-1 w-full"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 w-full focus:outline-none focus:border-charcoal/30"
                   placeholder="e.g. MAC cosmetics restock"
                   value={form.note}
                   onChange={(e) => setForm({ ...form, note: e.target.value })}
@@ -318,12 +318,12 @@ function ExpensesContent() {
               <div>
                 <label className="block text-charcoal/60 mb-1">Vendor</label>
                 <input
-                  className="border border-charcoal/20 rounded-md px-2 py-1"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
                   value={form.vendor}
                   onChange={(e) => setForm({ ...form, vendor: e.target.value })}
                 />
               </div>
-              <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1.5">
+              <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1.5 hover:bg-charcoal/90">
                 Add
               </button>
             </form>
@@ -457,7 +457,7 @@ function ExpensesContent() {
                 <label className="block text-charcoal/60 mb-1">Date</label>
                 <input
                   type="date"
-                  className="border border-charcoal/20 rounded-md px-2 py-1"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
                   value={tripForm.trip_date}
                   onChange={(e) => setTripForm({ ...tripForm, trip_date: e.target.value })}
                 />
@@ -465,7 +465,7 @@ function ExpensesContent() {
               <div className="flex-1 min-w-[120px]">
                 <label className="block text-charcoal/60 mb-1">Client</label>
                 <input
-                  className="border border-charcoal/20 rounded-md px-2 py-1 w-full"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 w-full focus:outline-none focus:border-charcoal/30"
                   placeholder="e.g. Sarah M."
                   value={tripForm.client_name}
                   onChange={(e) => setTripForm({ ...tripForm, client_name: e.target.value })}
@@ -475,7 +475,7 @@ function ExpensesContent() {
                 <div>
                   <label className="block text-charcoal/60 mb-1">From</label>
                   <input
-                    className="border border-charcoal/20 rounded-md px-2 py-1 w-24"
+                    className="border border-charcoal/20 rounded-md px-2 py-1 w-24 focus:outline-none focus:border-charcoal/30"
                     value={tripForm.from_location}
                     onChange={(e) => setTripForm({ ...tripForm, from_location: e.target.value })}
                   />
@@ -484,7 +484,7 @@ function ExpensesContent() {
                 <div>
                   <label className="block text-charcoal/60 mb-1">To</label>
                   <input
-                    className="border border-charcoal/20 rounded-md px-2 py-1 w-24"
+                    className="border border-charcoal/20 rounded-md px-2 py-1 w-24 focus:outline-none focus:border-charcoal/30"
                     value={tripForm.to_location}
                     onChange={(e) => setTripForm({ ...tripForm, to_location: e.target.value })}
                   />
@@ -495,7 +495,7 @@ function ExpensesContent() {
                 <input
                   type="number"
                   step="0.1"
-                  className="border border-charcoal/20 rounded-md px-2 py-1 w-20"
+                  className="border border-charcoal/20 rounded-md px-2 py-1 w-20 focus:outline-none focus:border-charcoal/30"
                   value={tripForm.miles}
                   onChange={(e) => setTripForm({ ...tripForm, miles: e.target.value })}
                 />
@@ -503,7 +503,7 @@ function ExpensesContent() {
               <span className="text-xs text-charcoal/50 tabular-nums pb-2">
                 {tripForm.miles ? `$${(Number(tripForm.miles) * mileRate).toFixed(2)}` : "—"}
               </span>
-              <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1.5">
+              <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1.5 hover:bg-charcoal/90">
                 Add
               </button>
             </form>
