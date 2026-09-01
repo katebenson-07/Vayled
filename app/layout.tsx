@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Jost, Pinyon_Script, Hina_Mincho, Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 
-const playfair = Playfair_Display({
+// Consolidated from six typefaces down to two: Cormorant Garamond for every
+// serif/display role (headlines, logo, page titles, the old script accent),
+// DM Sans for every body/UI role. Same CSS variable names as before, so none
+// of the font-serif/font-sans/font-script/font-heading/font-logo/font-tagline
+// classes used across the app needed to change — only what each variable
+// points to, here and in tailwind.config.ts.
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
@@ -10,38 +16,10 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const jost = Jost({
+const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   variable: "--font-sans",
-  display: "swap",
-});
-
-const pinyon = Pinyon_Script({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-script",
-  display: "swap",
-});
-
-const hinaMincho = Hina_Mincho({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-heading",
-  display: "swap",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-logo",
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  variable: "--font-tagline",
   display: "swap",
 });
 
@@ -60,10 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${playfair.variable} ${jost.variable} ${pinyon.variable} ${hinaMincho.variable} ${cormorant.variable} ${dmSans.variable}`}
-    >
+    <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body>{children}</body>
     </html>
   );

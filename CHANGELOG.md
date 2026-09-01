@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-31 (73)
+
+- **Font consolidation** — the app was quietly running six different typefaces (Playfair Display, Jost, Pinyon Script, Hina Mincho, Cormorant Garamond, DM Sans) across different pages. Consolidated to two: Cormorant Garamond for every serif/display role (headlines, logo, page titles, the old cursive "script" accent) and DM Sans for every body/UI role. Only `app/layout.tsx` and `tailwind.config.ts` changed — every page's `font-serif`/`font-sans`/`font-script`/`font-heading`/`font-logo`/`font-tagline` class still works, they just all resolve to one of the two fonts now, so nothing else needed touching.
+
 ## 2026-08-31 (72)
 
 - **Homepage visual polish** — more breathing room in the hero (bigger top/bottom padding, a subtle warm radial gradient behind the headline instead of flat ivory), an italic accent on one headline word for a softer editorial feel, and a trust line under the CTAs ("Built by a working bridal artist — a real product, already running real weddings"). Every CTA button sitewide (home, features, pricing, about) and the waitlist form switched from rounded-rectangle to fully pill-shaped, matching the softer bridal-brand feel. Prompted by comparing the site against a competitor's newly-discovered pre-launch landing page.
