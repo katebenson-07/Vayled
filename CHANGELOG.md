@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (91)
+
+- **Swapped Jost for Lora as the universal text font.** Kate didn't like how Jost looked; rather than guess again, built a side-by-side comparison (same page title font, same colors, six body-font candidates against real Vayled UI copy) and she picked Lora. Same scope as the Jost change it replaces — `font-serif`, `font-sans`, `font-heading`, and `font-tagline` all resolve to the same font. `font-script` (Bellefair) and `font-logo` (Italiana) are untouched. Updated `app/layout.tsx`, `tailwind.config.ts` (fallback stack switched back to serif since Lora is a serif font), `app/globals.css`, and `DESIGN_SYSTEM.md`.
+
 ## 2026-09-01 (90)
 
 - **Swapped Cormorant Garamond + DM Sans for Jost, and Pinyon Script for Bellefair.** Jost is now the one universal text font — body copy, section headers, and stat numbers/tabular data all share it (`font-serif`, `font-sans`, `font-heading`, and `font-tagline` all resolve to the same font going forward). Bellefair covers `font-script` — every internal page title, a booking's bride name, contract/invoice letterhead — and is now the actual chosen script font rather than a placeholder for the paid Sloop Script Pro. The "VAYLED" wordmark keeps Italiana (`font-logo`), untouched, as a distinct identity mark. Updated `app/layout.tsx`, `tailwind.config.ts`, `app/globals.css`, and `DESIGN_SYSTEM.md` to match.

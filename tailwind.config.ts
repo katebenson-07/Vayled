@@ -14,19 +14,19 @@ const config: Config = {
         beige: "#DDD9C9",
       },
       fontFamily: {
-        // Jost is the one universal text font — every text role except
+        // Lora is the one universal text font — every text role except
         // font-script and font-logo resolves to the same --font-sans
         // variable, so serif/sans/heading/tagline are intentionally
         // identical here rather than four different fonts. font-script is
         // Bellefair (free lookalike for the paid Sloop Script Pro font Kate
         // wants). font-logo is Italiana (free lookalike for paid Black
         // Gold) — see app/layout.tsx.
-        serif: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
-        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ["var(--font-sans)", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "Georgia", "serif"],
         script: ["var(--font-script-display)", "Georgia", "serif"],
-        heading: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        heading: ["var(--font-sans)", "Georgia", "serif"],
         logo: ["var(--font-logo-display)", "Georgia", "serif"],
-        tagline: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        tagline: ["var(--font-sans)", "Georgia", "serif"],
       },
     },
   },

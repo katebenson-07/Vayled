@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Jost, Bellefair, Italiana } from "next/font/google";
+import { Lora, Bellefair, Italiana } from "next/font/google";
 import "./globals.css";
 
-// Jost is the one universal text font — body copy, section headers, and stat
+// Lora is the one universal text font — body copy, section headers, and stat
 // numbers/tabular data all share it (font-serif, font-sans, font-heading,
 // and font-tagline all resolve to the same --font-sans variable; see
 // tailwind.config.ts). Bellefair covers font-script (big decorative page
@@ -10,9 +10,10 @@ import "./globals.css";
 // thank-you/letterhead). Italiana is a free lookalike standing in for the
 // paid Black Gold font Kate wants, until she buys a license — used only for
 // font-logo (the "VAYLED" wordmark).
-const jost = Jost({
+const lora = Lora({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   variable: "--font-sans",
   display: "swap",
 });
@@ -46,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${jost.variable} ${bellefair.variable} ${italiana.variable}`}>
+    <html lang="en" className={`${lora.variable} ${bellefair.variable} ${italiana.variable}`}>
       <body>{children}</body>
     </html>
   );
