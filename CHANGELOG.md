@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (86)
+
+- **Re-captured the Appointments screenshot on the features page** — now shows "Preview" instead of the stale "Preview Fitting," and reflects the current brand colors/fonts.
+
 ## 2026-09-01 (85)
 
 - **Appointments: "Preview Fitting" → "Preview"** — the title shown for trial-session entries in the unified Appointments list was still saying "Preview Fitting" from before the Trial→Preview rename; now just "Preview," matching the rest of the app.
