@@ -348,7 +348,7 @@ function DashboardContent() {
 
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="font-script text-3xl md:text-4xl leading-tight mb-1">
+          <h1 className="font-serif text-2xl mb-1">
             {greeting}, {greetingName}
           </h1>
           <p className="text-xs uppercase tracking-widest-lg text-charcoal/50">{format(now, "EEEE, MMMM d, yyyy")}</p>

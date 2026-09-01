@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (100)
+
+- **Made the dashboard greeting smaller and plainer.** "Good evening, Kate" was using the same big `font-script` (Spectral) treatment as every page title; Kate wanted to keep the personalized greeting but drop the bold decorative styling. Changed it to `font-serif text-2xl mb-1` in `app/dashboard/page.tsx` — a deliberate, documented exception to the universal page-title rule (noted in `DESIGN_SYSTEM.md` so it doesn't get "corrected" back to script later).
+
 ## 2026-09-01 (99)
 
 - **Simplified the VAYLED logo to a plain wordmark.** The old treatment was an oversized "V" with "AYLED" nested inside its counter — Kate said the logo "looks so bad," then confirmed she preferred the plain single-size uppercase wordmark used in the mockup previews all along. `components/Logo.tsx` now renders "VAYLED" as one uppercase, wide-tracked line (still Italiana/`font-logo`) at a size per the existing `size` prop (`sm`/`md`/`lg`), instead of two differently-sized nested spans. No usage sites needed changes — same `<Logo size=... tagline=... className=... />` API, so this took effect everywhere it's used (Sidebar, TeamSidebar, MarketingNav, MarketingFooter, Dashboard, the bride portal, the public inquiry form, the trial picker).

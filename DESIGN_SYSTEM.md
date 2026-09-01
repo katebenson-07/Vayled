@@ -76,7 +76,7 @@ Tailwind key:
 |---|---|---|
 | `font-serif` | Lora (same `--font-sans` variable as `font-sans`) | Section headers, body emphasis, and most non-title headings. Also the site-wide body default (no class needed for plain text). Kept as a separate Tailwind key for semantic clarity even though it's the same physical font as `font-sans` today. |
 | `font-sans` | Lora | Explicit use wherever digits should stay legible and even-width: stat numbers, durations, tabular data. Still paired with `font-semibold tabular-nums` — `tabular-nums` (fixed digit width) matters regardless of which font is active. |
-| `font-script` | Spectral (weight 600) | The standard for every internal page's main `<h1>` title (Bookings, Inquiries, Inbox, Clients, Stylists, Payroll, Contracts, Invoices, Settings, Email templates, Appointments, dashboard greeting, a booking's bride-name header, contract/invoice letterhead) — not just a few "big" pages, it's the universal page-title treatment. Replaced Abril Fatface, which Kate felt was too big/heavy at these sizes; Spectral is a lighter, more restrained serif chosen from a second round of options (Cormorant SC, Fraunces, Crimson Pro, Cardo). Kept the same sizes that had been stepped down for Abril Fatface (`text-4xl` / `text-3xl`) rather than sizing back up — approved at that scale in the comparison preview. Not for anything below ~`text-3xl` or dense/small text — it's illegible at small sizes. Public client-facing pages (bride portal, inquiry form, trial picker) intentionally stay off script — see `font-heading` below. |
+| `font-script` | Spectral (weight 600) | The standard for every internal page's main `<h1>` title (Bookings, Inquiries, Inbox, Clients, Stylists, Payroll, Contracts, Invoices, Settings, Email templates, Appointments, a booking's bride-name header, contract/invoice letterhead) — not just a few "big" pages, it's the universal page-title treatment, with one deliberate exception: the **dashboard greeting** ("Good evening, Kate") — see below. Replaced Abril Fatface, which Kate felt was too big/heavy at these sizes; Spectral is a lighter, more restrained serif chosen from a second round of options (Cormorant SC, Fraunces, Crimson Pro, Cardo). Kept the same sizes that had been stepped down for Abril Fatface (`text-4xl` / `text-3xl`) rather than sizing back up — approved at that scale in the comparison preview. Not for anything below ~`text-3xl` or dense/small text — it's illegible at small sizes. Public client-facing pages (bride portal, inquiry form, trial picker) intentionally stay off script — see `font-heading` below. |
 | `font-heading` | Lora (same var as serif/sans) | Contract section numbering/titles, the client-portal bride-name header and small uppercase labels. A distinct semantic role from `font-serif` even though it's the same physical font. |
 | `font-logo` | Italiana (free stand-in for Black Gold until licensed) | The "VAYLED" wordmark only — always uppercase, wide tracking, on a dark background. Deliberately kept off Lora/Spectral as a distinct identity mark. |
 | `font-tagline` | Lora (same var as sans) | The small subtitle under the logo, and as a whole-page body-font override on the two client-facing pages (bride portal, trial picker) — now a no-op there since Lora is the site-wide default anyway, but the class stays for semantic clarity. |
@@ -86,6 +86,12 @@ Tailwind key:
 - Section header inside a panel: `font-serif text-lg mb-4`
 - Stat number: `font-sans font-semibold text-3xl tabular-nums` (or `text-xl` for a smaller card)
 - Small uppercase label/eyebrow: `text-xs uppercase tracking-widest-lg` (or `tracking-[0.22em]` on `font-heading` labels)
+
+**Dashboard greeting exception** — `app/dashboard/page.tsx`'s "Good evening, Kate" is
+`font-serif text-2xl mb-1`, not `font-script`. Kate wanted to keep the personalized
+greeting but asked for it smaller/plainer than the big script treatment every other
+page title uses — a deliberate one-off, not an oversight. Don't "fix" it to match the
+universal page-title rule without asking first.
 
 ## Data formatting
 
