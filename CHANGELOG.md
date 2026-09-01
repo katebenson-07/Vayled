@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-31 (75)
+
+- **Redesigned Bookings page as a card grid** — replaced the stacked full-width rows with a responsive card grid (1/2/3 columns), inspired by a cleaner reference layout Kate liked. Each card now has an initials avatar, a stable-position status badge (fixed the old `items-baseline` bug that made the badge visibly shift on cards with Email/Call links), a colored top accent bar by status, and consistent labeled Date/Venue/Contract rows that show "Not set" instead of just disappearing when data is missing — the two cards for weddings 4 and 10 days out no longer look broken/empty. Added a deposit progress bar (uses real `deposit_amount`/`contract_total`/`deposit_paid` — no new financial logic invented) and a search bar + status filter pills (All/Booked/Completed/Cancelled/Ghosted) above the grid.
+
 ## 2026-08-31 (74)
 
 - **Disabled public signup, private beta only** — `/login?mode=signup` no longer creates an account. It now shows a "we're in private beta" message and the existing `WaitlistForm` component instead of the Supabase `signUp` form. Sign-in is untouched (existing owners and invited stylists can still log in). Every "Sign up" button sitewide (`MarketingNav`, homepage, `/features`, `/about`) relabeled to "Join the beta" to match `/pricing`, which already used that copy. No route or link changes — everything still points at `/login?mode=signup`, it just resolves to the waitlist now.
