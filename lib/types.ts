@@ -272,6 +272,25 @@ export interface TrialSlotOffer {
   created_at: string;
 }
 
+export type AppointmentStatus = "confirmed" | "pending" | "completed" | "cancelled";
+
+/** A general scheduled meeting that isn't a trial fitting or rehearsal
+ *  session — venue walk-throughs, consultations, calls, etc. Optionally
+ *  tied to a client. The Appointments page shows these alongside trial
+ *  and rehearsal sessions in one unified, date-grouped list. */
+export interface Appointment {
+  id: string;
+  studio_id: string;
+  client_id: string | null;
+  title: string;
+  appointment_date: string;
+  appointment_time: string | null;
+  location: string | null;
+  status: AppointmentStatus;
+  notes: string | null;
+  created_at: string;
+}
+
 export interface ContractClause {
   id: string;
   heading: string;

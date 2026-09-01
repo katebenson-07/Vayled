@@ -282,6 +282,40 @@ create policy "Studios manage their own rehearsal sessions" on rehearsal_session
 -- validates its USING/WITH CHECK expressions immediately, not lazily.
 
 -- ============================================================================
+-- Appointments
+-- General scheduled meetings that aren't a trial fitting or rehearsal
+-- session — venue walk-throughs, consultations, calls, etc. Optionally tied
+-- to a client, but doesn't require one (a studio might schedule a call with
+-- a prospective vendor, for instance). The Appointments page unions this
+-- table with trial_sessions and rehearsal_sessions into one list; those two
+-- keep their own tables/pages since they carry a lot of domain-specific
+-- fields (fees, notes, ratings) that a generic appointment doesn't need.
+-- ============================================================================
+
+create table if not exists appointments (
+  id uuid primary key default uuid_generate_v4(),
+  studio_id uuid not null references auth.users(id) on delete cascade,
+  client_id uuid references clients(id) on delete set null,
+  title text not null,
+  appointment_date date not null,
+  appointment_time time,
+  location text,
+  status text not null default 'confirmed',
+  notes text,
+  created_at timestamptz not null default now()
+);
+
+alter table appointments drop constraint if exists appointments_status_check;
+alter table appointments add constraint appointments_status_check
+  check (status in ('confirmed', 'pending', 'completed', 'cancelled'));
+
+alter table appointments enable row level security;
+
+drop policy if exists "Studios manage their own appointments" on appointments;
+create policy "Studios manage their own appointments" on appointments
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+-- ============================================================================
 -- Service catalog
 -- The dropdown of services (and their default rates) each studio maintains
 -- for itself, so invoice line items don't have to be typed freehand every

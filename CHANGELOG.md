@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-31 (76)
+
+- **New Appointments page** — a date-grouped schedule list (new `/appointments`, added to the sidebar right after Calendar) showing every trial fitting, rehearsal, and general meeting in one place, inspired by a reference layout Kate liked. Trial/rehearsal cards pull from the existing `trial_sessions`/`rehearsal_sessions` tables (unchanged, still editable from their own pages) and link back out to them; a brand-new `appointments` table (see `supabase/schema.sql` — **needs the schema re-run in the Supabase SQL editor before this page will work**) holds general meetings — venue walk-throughs, consultations, calls — created with the new "+ Schedule" inline form (title, date, time, location, optional client, status). Status pills (All/Confirmed/Pending/Completed/Cancelled) filter across both sources; trial/rehearsal map their `completed` boolean to Confirmed/Completed since they don't have a native 4-state status. Generic appointments can be cancelled (soft — sets status, doesn't delete) from the card.
+
 ## 2026-08-31 (75)
 
 - **Redesigned Bookings page as a card grid** — replaced the stacked full-width rows with a responsive card grid (1/2/3 columns), inspired by a cleaner reference layout Kate liked. Each card now has an initials avatar, a stable-position status badge (fixed the old `items-baseline` bug that made the badge visibly shift on cards with Email/Call links), a colored top accent bar by status, and consistent labeled Date/Venue/Contract rows that show "Not set" instead of just disappearing when data is missing — the two cards for weddings 4 and 10 days out no longer look broken/empty. Added a deposit progress bar (uses real `deposit_amount`/`contract_total`/`deposit_paid` — no new financial logic invented) and a search bar + status filter pills (All/Booked/Completed/Cancelled/Ghosted) above the grid.

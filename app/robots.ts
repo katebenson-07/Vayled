@@ -11,6 +11,7 @@ const DISALLOWED = [
   "/inquiries",
   "/bookings",
   "/calendar",
+  "/appointments",
   "/stylists",
   "/payroll",
   "/contracts",
