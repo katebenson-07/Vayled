@@ -43,6 +43,8 @@ export default function PublicInquiryPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [company, setCompany] = useState(""); // honeypot — real visitors never see or fill this
+  const [loadedAt] = useState(() => Date.now());
 
   useEffect(() => {
     async function loadSettings() {
@@ -78,8 +80,17 @@ export default function PublicInquiryPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
+
+    // Basic bot filters: a filled honeypot field, or a submit faster than any
+    // real bride can fill this form out, both "succeed" without writing
+    // anything to the database.
+    if (company.trim() !== "" || Date.now() - loadedAt < 2000) {
+      setDone(true);
+      return;
+    }
+
+    setSubmitting(true);
 
     const notesParts: string[] = [];
     if (form.party_size) notesParts.push(`Estimated wedding party size: ${form.party_size}`);
@@ -160,6 +171,17 @@ export default function PublicInquiryPage() {
           <h1 className="font-serif text-2xl text-charcoal mb-1">{settings.welcome_heading}</h1>
           <p className="text-sm text-charcoal/60 mb-6">{settings.welcome_message}</p>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="hidden" aria-hidden="true">
+              <label>
+                Company
+                <input
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                />
+              </label>
+            </div>
             <div>
               <label className="block text-sm mb-1">Your name</label>
               <input

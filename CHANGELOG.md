@@ -2,6 +2,22 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-31 (71)
+
+- **Marketing waitlist** — added a `waitlist_signups` table (insert-only from the public site, no read access through the app by design — view signups in the Supabase table editor) and an email capture section on the homepage for visitors who find the site through marketing but aren't ready to sign up for a full account yet.
+
+## 2026-08-31 (70)
+
+- **Privacy Policy & Terms of Service** — added `/privacy` and `/terms` pages, written in plain language and specific to what Vayled actually collects and how it's stored (Supabase/Postgres with row-level security, Vercel hosting, Resend for email where configured). Both are linked from the site footer and included in the sitemap. Neither is a substitute for review by a licensed attorney, and says so on the page.
+
+## 2026-08-31 (69)
+
+- **Basic spam protection on public forms** — the public inquiry form now has a hidden honeypot field plus a minimum-time-on-page check before a submission is accepted; both are silent (the visitor still sees the normal "thank you" state) so a bot gets no signal that it was filtered. Same pattern added to the new waitlist form.
+
+## 2026-08-31 (68)
+
+- **Forgot-password flow** — added a "Forgot password?" link on the sign-in page, a `/forgot-password` page that emails a reset link via Supabase Auth, and a `/reset-password` page that lets the user set a new password once they click through. Works the same for studio owners and stylists, since both use the same login page.
+
 ## 2026-08-23 (67)
 
 - **Updated README, added a full site audit for students** — the README's "what's not built yet" section was stale (still described stylist logins and Resend integration as unbuilt, though both shipped this term); corrected it, and documented the optional `RESEND_API_KEY`/`RESEND_FROM_EMAIL` setup that was previously only in `.env.local.example`. Also produced `Vayled-Site-Audit-For-Students.docx` — a from-the-code audit across feature gaps, code quality/performance, security, accessibility, legal/compliance, and documentation, meant as a work-list menu for student contributors.

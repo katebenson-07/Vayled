@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import FeatureVisual from "@/components/FeatureVisual";
+import WaitlistForm from "@/components/WaitlistForm";
 
 export const metadata: Metadata = {
   title: "Booking software for bridal hair & makeup studios",
@@ -144,6 +145,17 @@ export default function MarketingHome() {
               Our story
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-charcoal border-t border-ivory/10">
+        <div className="max-w-6xl mx-auto px-6 py-16">
+          <p className="text-xs uppercase tracking-widest-lg text-gold mb-3">Not ready yet?</p>
+          <h2 className="font-serif text-2xl md:text-3xl text-ivory mb-2">Get on the list</h2>
+          <p className="text-beige/70 mb-6 max-w-md">
+            Leave your email and we&apos;ll let you know as Vayled keeps rolling out — no spam, just the occasional update.
+          </p>
+          <WaitlistForm source="homepage" />
         </div>
       </section>
     </div>

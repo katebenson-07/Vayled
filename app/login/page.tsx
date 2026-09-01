@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -91,12 +92,19 @@ function LoginForm() {
               {loading ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}
             </button>
           </form>
-          <button
-            className="text-sm text-charcoal/60 hover:text-charcoal mt-4"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          >
-            {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
-          </button>
+          <div className="flex items-center justify-between mt-4">
+            <button
+              className="text-sm text-charcoal/60 hover:text-charcoal"
+              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+            >
+              {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
+            </button>
+            {mode === "signin" && (
+              <Link href="/forgot-password" className="text-sm text-charcoal/60 hover:text-charcoal">
+                Forgot password?
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -17,8 +17,12 @@ export default function MarketingFooter() {
         </nav>
       </div>
       <div className="border-t border-ivory/10">
-        <div className="max-w-6xl mx-auto px-6 py-4 text-[11px] text-beige/40">
-          © {new Date().getFullYear()} Vayled. All rights reserved.
+        <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-3 text-[11px] text-beige/40">
+          <span>© {new Date().getFullYear()} Vayled. All rights reserved.</span>
+          <nav className="flex gap-4">
+            <Link href="/privacy" className="hover:text-beige/80 transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-beige/80 transition-colors">Terms</Link>
+          </nav>
         </div>
       </div>
     </footer>

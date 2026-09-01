@@ -962,3 +962,24 @@ create policy "Studios manage their own photo files" on storage.objects
   for all
   using (bucket_id = 'client-photos' and (storage.foldername(name))[1] = auth.uid()::text)
   with check (bucket_id = 'client-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- ============================================================================
+-- Marketing waitlist
+-- A single, platform-wide list (not scoped to any studio) for people who find
+-- the marketing site but aren't ready to create a full account yet. Insert
+-- only from the public site — nobody can read this back through the app, by
+-- design; view signups directly in the Supabase table editor.
+-- ============================================================================
+
+create table if not exists waitlist_signups (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  source text,
+  created_at timestamptz not null default now()
+);
+
+alter table waitlist_signups enable row level security;
+
+drop policy if exists "Public can join the waitlist" on waitlist_signups;
+create policy "Public can join the waitlist" on waitlist_signups
+  for insert to anon with check (true);

@@ -76,6 +76,12 @@ Open [http://localhost:3000](http://localhost:3000). Sign up with an email and p
 
 **Rehearsal hair & makeup** — a separate scheduled add-on from the trial, with its own invoice line and calendar entry.
 
+**Password reset** — a "Forgot password?" link on the sign-in page sends a reset email (Supabase Auth), and a dedicated page lets you set a new one. Works for owners and stylists.
+
+**Legal pages** — a Privacy Policy and Terms of Service, linked from the site footer.
+
+**Marketing waitlist** — an email capture on the homepage for visitors who aren't ready to sign up yet, stored in `waitlist_signups` (view submissions in the Supabase table editor).
+
 ## What's not built yet
 
 These need external services this app doesn't have credentials for, so they're intentionally out of scope for now:
@@ -84,7 +90,6 @@ These need external services this app doesn't have credentials for, so they're i
 - Real payment processing — payments are currently logged manually; wiring up Stripe needs your own Stripe account and API keys.
 - Automated (scheduled) email/SMS sending — transactional emails (invites, contracts, invoices) send via Resend once `RESEND_API_KEY` is set (falls back to a copy-link/mailto flow otherwise); but nothing sends *automatically on a schedule* yet — the dashboard's Reminders panel only flags what's due, a human still has to click send.
 - True e-signature on contracts — contracts can be marked sent/signed manually; a real e-signature flow needs a provider like DocuSign or HelloSign.
-- Password reset — there's currently no "forgot password" flow for either owner or stylist logins.
 
 See `Vayled-Site-Audit-For-Students.docx` for a full, categorized list of known gaps and rough edges to work through.
 
