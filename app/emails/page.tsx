@@ -155,7 +155,7 @@ function EmailsContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-serif text-2xl mb-1">Email templates</h1>
+        <h1 className="font-script text-5xl leading-tight mb-1">Email templates</h1>
         <p className="text-charcoal/60 text-sm">{MERGE_FIELD_HELP}</p>
       </div>
 

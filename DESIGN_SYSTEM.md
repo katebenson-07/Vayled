@@ -61,16 +61,15 @@ Tailwind key:
 
 | Tailwind key | Renders as | Use for |
 |---|---|---|
-| `font-serif` | Cormorant Garamond | Default — page titles, section headers, most headings. Also the site-wide body default (no class needed for plain text). |
+| `font-serif` | Cormorant Garamond | Section headers, body emphasis, and most non-title headings. Also the site-wide body default (no class needed for plain text). |
 | `font-sans` | DM Sans | Explicit override wherever digits must stay legible and even-width: stat numbers, durations, tabular data. Always paired with `font-semibold tabular-nums`. |
-| `font-script` | Pinyon Script (free stand-in for Sloop Script Pro until licensed) | Big decorative page titles only — Analytics, Expenses, Calendar, a booking's bride-name header, contract letterhead/thank-you. Not for anything below ~`text-4xl` or dense/small text — it's illegible at small sizes. |
+| `font-script` | Pinyon Script (free stand-in for Sloop Script Pro until licensed) | The standard for every internal page's main `<h1>` title (Bookings, Inquiries, Inbox, Clients, Stylists, Payroll, Contracts, Invoices, Settings, Email templates, Appointments, dashboard greeting, a booking's bride-name header, contract/invoice letterhead) — not just a few "big" pages, it's the universal page-title treatment. Not for anything below ~`text-4xl` or dense/small text — it's illegible at small sizes. Public client-facing pages (bride portal, inquiry form, trial picker) intentionally stay off script — see `font-heading` below. |
 | `font-heading` | Cormorant Garamond (same var as serif) | Contract section numbering/titles, the client-portal bride-name header and small uppercase labels. A distinct semantic role from `font-serif` even though it's the same physical font today. |
 | `font-logo` | Italiana (free stand-in for Black Gold until licensed) | The "VAYLED" wordmark only — always uppercase, wide tracking, on a dark background. |
 | `font-tagline` | DM Sans (same var as sans) | The small subtitle under the logo, and as a whole-page body-font override on the two client-facing pages (bride portal, trial picker) that intentionally read as sans throughout rather than serif. |
 
 **Sizing/weight pairings actually in use** (match these rather than picking arbitrary sizes):
-- Page title: `font-serif text-2xl mb-1`
-- Big decorative page title: `font-script text-5xl leading-tight mb-1` (or `text-4xl` one size down for a person's name)
+- Page title: `font-script text-5xl leading-tight mb-1` (or `text-4xl` one size down for a person's name/greeting, or a notably long title like "Rehearsal hair & makeup")
 - Section header inside a panel: `font-serif text-lg mb-4`
 - Stat number: `font-sans font-semibold text-3xl tabular-nums` (or `text-xl` for a smaller card)
 - Small uppercase label/eyebrow: `text-xs uppercase tracking-widest-lg` (or `tracking-[0.22em]` on `font-heading` labels)

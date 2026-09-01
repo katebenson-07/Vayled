@@ -130,7 +130,7 @@ function PayrollContent() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-serif text-2xl mb-1">Payroll</h1>
+        <h1 className="font-script text-5xl leading-tight mb-1">Payroll</h1>
         <p className="text-charcoal/60 text-sm">
           What each 1099 contractor is owed, pulled straight from their pay % (set on the Stylists page) and the
           contract total on every job they&apos;re assigned to. Mark a job as paid once you&apos;ve sent it.

@@ -118,7 +118,7 @@ function ContractsContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h1 className="font-serif text-2xl mb-1">Contract template</h1>
+          <h1 className="font-script text-5xl leading-tight mb-1">Contract template</h1>
           <p className="text-charcoal/60 text-sm">
             Each card below becomes one numbered section of the contract — add, remove, or reorder them freely, the
             numbering updates itself.

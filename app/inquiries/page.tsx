@@ -40,7 +40,7 @@ function InquiriesContent() {
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
-        <h1 className="font-serif text-2xl">Inquiries</h1>
+        <h1 className="font-script text-5xl leading-tight">Inquiries</h1>
         <Link href="/bookings" className="text-sm text-gold hover:underline">
           View projects →
         </Link>

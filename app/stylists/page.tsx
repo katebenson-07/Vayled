@@ -213,7 +213,7 @@ function StylistsContent() {
     <div className="space-y-8">
       <div className="flex items-start justify-between gap-2 flex-wrap">
         <div>
-          <h1 className="font-serif text-2xl mb-1">Stylists</h1>
+          <h1 className="font-script text-5xl leading-tight mb-1">Stylists</h1>
           <p className="text-charcoal/60 text-sm">
             Your team of 1099 contractors (or employees) and their time off — set each person&apos;s cut of a job
             here, then assign them from each booking&apos;s page, where they&apos;ll show up on the calendar

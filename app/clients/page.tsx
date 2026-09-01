@@ -42,7 +42,7 @@ function ClientsContent() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="font-serif text-2xl">Clients</h1>
+        <h1 className="font-script text-5xl leading-tight">Clients</h1>
         <Link href="/clients/new" className="bg-charcoal text-ivory rounded-md px-4 py-2 text-sm">
           Add client
         </Link>

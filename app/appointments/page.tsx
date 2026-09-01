@@ -198,7 +198,7 @@ function AppointmentsContent() {
     <div>
       <p className="text-xs uppercase tracking-widest-lg text-gold mb-1">Schedule</p>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-1">
-        <h1 className="font-serif text-3xl">Appointments</h1>
+        <h1 className="font-script text-5xl leading-tight">Appointments</h1>
         <button
           onClick={() => setShowForm((v) => !v)}
           className="bg-charcoal text-ivory rounded-full px-5 py-2.5 text-sm hover:bg-charcoal/90 transition-colors"

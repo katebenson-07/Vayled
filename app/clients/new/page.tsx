@@ -47,7 +47,7 @@ function NewClientForm() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl mb-6">Add client</h1>
+      <h1 className="font-script text-5xl leading-tight mb-6">Add client</h1>
       <form onSubmit={handleSubmit} className="bg-white border border-charcoal/10 rounded-xl p-6 space-y-4 max-w-lg">
         <div>
           <label className="block text-sm mb-1">Bride&apos;s name</label>

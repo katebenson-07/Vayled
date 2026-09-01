@@ -137,7 +137,7 @@ function ContractContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2 print:hidden">
         <div>
-          <h1 className="font-serif text-2xl mb-1">Contract</h1>
+          <h1 className="font-script text-5xl leading-tight mb-1">Contract</h1>
           <p className="text-charcoal/60">
             {client?.bride_name ?? "Client"} ·{" "}
             <Link href={`/bookings/${bookingId}`} className="text-gold hover:underline">

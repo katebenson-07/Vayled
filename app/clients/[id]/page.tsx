@@ -102,7 +102,7 @@ function ClientDetail() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl mb-1">{client.bride_name}</h1>
+      <h1 className="font-script text-4xl leading-tight mb-1">{client.bride_name}</h1>
       <p className="text-charcoal/60 mb-6">
         {client.wedding_date ?? "No date set"} · {client.venue ?? "No venue"}
       </p>

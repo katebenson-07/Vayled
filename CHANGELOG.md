@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-01 (88)
+
+- **Made the script font the standard for every internal page title** — Calendar, Analytics, and Expenses already used the big decorative `font-script` (Pinyon Script) title; the rest of the app (Bookings, Inquiries, Inbox, Clients, Stylists, Payroll, Contracts, Invoices, Settings, Email templates, Appointments, Team pages, Rehearsal, Preview session, and the dashboard greeting) used a smaller plain serif title instead. Converted all of them to match, so script is now the one consistent page-title treatment app-wide instead of a 3-page exception. Sized each to stay legible: `text-5xl` for most single-word titles, `text-4xl` for person-name headers (a booking's bride name) and the one notably long title ("Rehearsal hair & makeup"). Public client-facing pages (bride portal, inquiry form, trial picker) were left as-is — that's a separate, more sensitive surface. Updated `DESIGN_SYSTEM.md`'s Typography section to reflect the new universal rule.
+
 ## 2026-09-01 (87)
 
 - **Added DESIGN_SYSTEM.md** — a written spec of Vayled's actual UI conventions (colors, typography, date/time formats, interactive states, border-radius-by-component-type), audited straight from the codebase rather than invented. Resolves three real inconsistencies found in the audit into single rules going forward: currency formatting (new shared `formatCurrency()` in `lib/format.ts` — see below), disabled-button opacity (standardize on 50%), and input focus states (`focus:outline-none focus:border-charcoal/30`, or a background-lighten variant for dark inputs). New UI work should reference this file; it's meant to be extended, not treated as frozen.

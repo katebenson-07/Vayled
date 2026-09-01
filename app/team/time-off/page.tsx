@@ -63,7 +63,7 @@ function TimeOff() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl mb-1">Time off</h1>
+        <h1 className="font-script text-5xl leading-tight mb-1">Time off</h1>
         <p className="text-charcoal/60 text-sm">
           Block out dates you&apos;re not available — your studio owner will see this when assigning weddings.
         </p>
