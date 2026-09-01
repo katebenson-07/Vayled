@@ -36,11 +36,11 @@ export default function PrivacyPage() {
         <P>
           <strong>Client and wedding data.</strong> Studios enter information about their own clients into Vayled —
           names, contact details, wedding dates and venues, notes, payment and contract records, and photos uploaded
-          for trial or styling reference. This data belongs to the studio that entered it, and we treat it as
+          for preview or styling reference. This data belongs to the studio that entered it, and we treat it as
           confidential business information, not ours to use for anything beyond running the app.
         </P>
         <P>
-          <strong>Public form submissions.</strong> If you submit a public inquiry form or pick a trial time through
+          <strong>Public form submissions.</strong> If you submit a public inquiry form or pick a preview time through
           a link a studio shared, the information you enter (name, contact info, wedding details) is sent directly
           to that studio’s account.
         </P>
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
         <H2>Data retention &amp; deletion</H2>
         <P>
           Studio accounts and their data are retained for as long as the account is active. If you’d like your
-          studio’s account and data deleted, email us and we’ll process that request. Public inquiry and trial-pick
+          studio’s account and data deleted, email us and we’ll process that request. Public inquiry and preview-pick
           submissions become part of the receiving studio’s own client records, governed by this same policy.
         </P>
 

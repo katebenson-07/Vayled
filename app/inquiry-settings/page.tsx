@@ -16,7 +16,7 @@ const STARTER_SERVICES: Array<{ name: string; default_rate: number }> = [
   { name: "Bridesmaid Hair + Makeup", default_rate: 180 },
   { name: "Mother of the Bride/Groom — Hair + Makeup", default_rate: 180 },
   { name: "Flower Girl — Hair", default_rate: 45 },
-  { name: "Trial — Hair + Makeup", default_rate: 250 },
+  { name: "Preview — Hair + Makeup", default_rate: 250 },
 ];
 
 const DEFAULTS: Omit<InquiryFormSettings, "studio_id" | "updated_at"> = {

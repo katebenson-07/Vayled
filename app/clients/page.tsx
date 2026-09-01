@@ -102,7 +102,7 @@ function ClientsContent() {
                           className="block border border-charcoal/20 rounded-md px-3 py-2 hover:bg-ivory"
                           onClick={() => setOpenMenuFor(null)}
                         >
-                          Trial session
+                          Preview session
                         </Link>
                         <Link
                           href={`/rehearsal/${menuBookingId}`}

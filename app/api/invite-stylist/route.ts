@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       from: `${studioName} <${fromAddress}>`,
       to: [stylist.email],
       subject: `You've been invited to join ${studioName} on Vayled`,
-      text: `Hi ${stylist.name},\n\n${studioName} has invited you to join their team on Vayled, where you can see your own wedding schedule, your payout, and manage your trial notes.\n\nSet up your login here:\n${inviteLink}\n\nSee you there!`,
+      text: `Hi ${stylist.name},\n\n${studioName} has invited you to join their team on Vayled, where you can see your own wedding schedule, your payout, and manage your preview notes.\n\nSet up your login here:\n${inviteLink}\n\nSee you there!`,
     }),
   });
 

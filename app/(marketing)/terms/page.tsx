@@ -75,7 +75,7 @@ export default function TermsPage() {
         <H2>Termination</H2>
         <P>
           You can stop using Vayled and request account deletion at any time. We may suspend or terminate accounts
-          that violate these terms or misuse the service, including the public inquiry and trial-scheduling forms.
+          that violate these terms or misuse the service, including the public inquiry and preview-scheduling forms.
         </P>
 
         <H2>Disclaimer &amp; limitation of liability</H2>

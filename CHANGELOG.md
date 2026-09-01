@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-08-31 (77)
+
+- **Renamed "Trial" to "Preview" everywhere it's user-visible** — page headings, buttons, tab labels, dashboard stats/reminders, invoice line items, the auto-seeded "Trial — Hair + Makeup" service catalog item, email templates (subject + body), the client portal, the stylist team view, and marketing/legal copy. Scoped to visible text only, on purpose: routes (`/trials/[bookingId]` etc.), the `trial_sessions`/`trial_slot_offers` tables, `TrialSession`/`TrialSlotOffer` types, and all internal variable/function names are unchanged, so nothing breaks for links already sent to real clients. One thing this doesn't touch: any studio (including this one) that already had its `email_templates` seeded before this change still has the old names ("Trial reminder", "Trial time options", "Trial prep questionnaire") saved in the database — new studios get the new names, existing ones would need a manual rename in the Emails page (or a one-time SQL update, happy to write one if wanted).
+
 ## 2026-08-31 (76)
 
 - **New Appointments page** — a date-grouped schedule list (new `/appointments`, added to the sidebar right after Calendar) showing every trial fitting, rehearsal, and general meeting in one place, inspired by a reference layout Kate liked. Trial/rehearsal cards pull from the existing `trial_sessions`/`rehearsal_sessions` tables (unchanged, still editable from their own pages) and link back out to them; a brand-new `appointments` table (see `supabase/schema.sql` — **needs the schema re-run in the Supabase SQL editor before this page will work**) holds general meetings — venue walk-throughs, consultations, calls — created with the new "+ Schedule" inline form (title, date, time, location, optional client, status). Status pills (All/Confirmed/Pending/Completed/Cancelled) filter across both sources; trial/rehearsal map their `completed` boolean to Confirmed/Completed since they don't have a native 4-state status. Generic appointments can be cancelled (soft — sets status, doesn't delete) from the card.

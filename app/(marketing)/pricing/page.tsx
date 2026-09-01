@@ -18,7 +18,7 @@ const INCLUDED = [
 const ALL_FEATURES = [
   "Timeline builder, contracts, invoicing, calendar",
   "Payroll for 1099 stylists",
-  "Bride portal & trial self-scheduling",
+  "Bride portal & preview self-scheduling",
   "Full analytics & revenue reporting",
   "Expense & mileage tracking with budgets",
   "Vendor team management",

@@ -28,14 +28,14 @@ function initials(name: string) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-const NOTE_TAGS = ["General", "Hair texture", "Allergy", "Day-of note", "Trial"];
+const NOTE_TAGS = ["General", "Hair texture", "Allergy", "Day-of note", "Preview"];
 const VENDOR_ROLES = ["Photographer", "Florist", "Planner", "Venue coordinator", "Videographer", "Other"];
 
 const PIPELINE_STEPS = [
   "Inquiry received",
   "Contract signed",
   "Deposit paid",
-  "Trial done",
+  "Preview done",
   "Week of wedding",
   "Wedding day",
   "Balance & review",
@@ -43,7 +43,7 @@ const PIPELINE_STEPS = [
 
 const TABS = [
   { id: "overview", label: "Overview" },
-  { id: "notes", label: "Trial notes" },
+  { id: "notes", label: "Preview notes" },
   { id: "timeline", label: "Timeline" },
   { id: "vendors", label: "Vendors" },
   { id: "payments", label: "Payments" },
@@ -629,7 +629,7 @@ function BookingDetail() {
     "Inquiry received": true,
     "Contract signed": booking.contract_signed,
     "Deposit paid": depositPaid,
-    "Trial done": !!trial?.completed,
+    "Preview done": !!trial?.completed,
     "Week of wedding": daysToWedding !== null && daysToWedding <= 7 && daysToWedding >= 0,
     "Wedding day": daysToWedding === 0,
     "Balance & review": booking.status === "completed" && balanceDue <= 0,
@@ -648,7 +648,7 @@ function BookingDetail() {
       date: depositPayment ? format(parseISO(depositPayment.paid_at), "MMM d") : null,
     },
     {
-      label: "Trial / preview done",
+      label: "Preview done",
       done: !!trial?.completed,
       date: trial?.session_date ? format(parseISO(trial.session_date), "MMM d") : null,
     },
@@ -828,7 +828,7 @@ function BookingDetail() {
                   className="block rounded-md px-3 py-2 hover:bg-ivory"
                   onClick={() => setAppointmentMenuOpen(false)}
                 >
-                  Trial session
+                  Preview session
                 </Link>
                 <Link
                   href={`/rehearsal/${id}`}
@@ -943,7 +943,7 @@ function BookingDetail() {
                     />
                   </label>
                   <label className="text-gold text-sm hover:underline cursor-pointer">
-                    {uploadingTag === "trial_result" ? "Uploading..." : "+ Add trial result"}
+                    {uploadingTag === "trial_result" ? "Uploading..." : "+ Add preview result"}
                     <input
                       type="file"
                       accept="image/*"
@@ -959,7 +959,7 @@ function BookingDetail() {
                 </div>
               </div>
               {photos.length === 0 ? (
-                <p className="text-charcoal/60 text-sm">No photos yet — add inspiration pics or trial results.</p>
+                <p className="text-charcoal/60 text-sm">No photos yet — add inspiration pics or preview results.</p>
               ) : (
                 <div className="grid grid-cols-3 gap-3">
                   {photos.map((p) => (
@@ -971,7 +971,7 @@ function BookingDetail() {
                         <div className="w-full h-full bg-ivory" />
                       )}
                       <span className="absolute bottom-2 left-2 text-[10px] uppercase tracking-wide bg-white/80 text-charcoal/50 rounded px-1.5 py-0.5">
-                        {p.tag === "inspo" ? "Inspo" : "Trial result"}
+                        {p.tag === "inspo" ? "Inspo" : "Preview result"}
                       </span>
                       <button
                         onClick={() => removePhoto(p)}
@@ -1142,7 +1142,7 @@ function BookingDetail() {
         <>
           <div className="flex flex-wrap gap-2 text-sm">
             <Link href={`/trials/${id}`} className="border border-charcoal/20 rounded-md px-3 py-2 hover:bg-white">
-              Open full trial session (fee, ratings, quote) →
+              Open full preview session (fee, ratings, quote) →
             </Link>
             <Link href={`/rehearsal/${id}`} className="border border-charcoal/20 rounded-md px-3 py-2 hover:bg-white">
               Open rehearsal hair &amp; makeup (fee, notes) →

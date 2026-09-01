@@ -288,7 +288,7 @@ function DashboardContent() {
     .map((b) => ({
       id: `trial-book-${b.id}`,
       name: b.clients?.bride_name ?? "Unknown",
-      message: "No trial booked yet",
+      message: "No preview booked yet",
       urgent: false,
       kind: "link" as const,
       href: `/trials/${b.id}`,
@@ -299,14 +299,14 @@ function DashboardContent() {
   // questionnaire hasn't already gone out for it.
   const questionnaireReminders: Reminder[] = trials
     .filter((t) => t.session_date && !t.completed && differenceInCalendarDays(parseISO(t.session_date), today) === 1)
-    .filter((t) => !sentEmails.some((s) => s.booking_id === t.booking_id && s.template_name === "Trial prep questionnaire"))
+    .filter((t) => !sentEmails.some((s) => s.booking_id === t.booking_id && s.template_name === "Preview prep questionnaire"))
     .map((t) => ({
       id: `quest-${t.id}`,
       name: t.bookings?.clients?.bride_name ?? "Client",
-      message: "Trial is tomorrow — send the prep questionnaire",
+      message: "Preview is tomorrow — send the prep questionnaire",
       urgent: true,
       kind: "send" as const,
-      onSend: () => t.bookings && sendReminderEmail(t.bookings, "Trial prep questionnaire"),
+      onSend: () => t.bookings && sendReminderEmail(t.bookings, "Preview prep questionnaire"),
     }));
 
   const reminders = [...questionnaireReminders, ...invoiceReminders, ...trialBookingReminders];
@@ -315,7 +315,7 @@ function DashboardContent() {
     id: string;
     date: Date;
     name: string;
-    tag: "WEDDING DAY" | "TRIAL";
+    tag: "WEDDING DAY" | "PREVIEW";
     subtitle: string;
     amount: number;
     href: string;
@@ -335,7 +335,7 @@ function DashboardContent() {
       id: `t-${t.id}`,
       date: parseISO(t.session_date!),
       name: t.bookings?.clients?.bride_name ?? "Client",
-      tag: "TRIAL" as const,
+      tag: "PREVIEW" as const,
       subtitle: [t.location || "On location", "Party of 1", "Hair + Makeup"].filter(Boolean).join(" · "),
       amount: Number(t.fee),
       href: `/trials/${t.booking_id}`,
@@ -375,7 +375,7 @@ function DashboardContent() {
           <p className="text-xs text-charcoal/50 mt-1">{upcomingWeddings.length} upcoming this week</p>
         </div>
         <div className="bg-beige border border-charcoal/10 rounded-xl p-5">
-          <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Trials scheduled</p>
+          <p className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-2">Previews scheduled</p>
           <p className="font-serif text-3xl">{scheduledTrials.length}</p>
           <p className="text-xs text-charcoal/50 mt-1">
             {nextTrial?.session_date ? `Next: ${format(parseISO(nextTrial.session_date), "MMM d")}` : "None scheduled"}

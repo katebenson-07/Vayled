@@ -18,7 +18,7 @@ export default function AboutPage() {
         <div className="space-y-6 text-charcoal/70 text-lg leading-relaxed">
           <p>
             Vayled started the way most useful tools do — out of frustration with the alternative. Running a
-            bridal hair &amp; makeup studio means juggling trials, contracts, deposits, wedding-day timelines,
+            bridal hair &amp; makeup studio means juggling previews, contracts, deposits, wedding-day timelines,
             and a team of contractors, usually across a spreadsheet, a group text, and whatever app seemed
             promising last season.
           </p>

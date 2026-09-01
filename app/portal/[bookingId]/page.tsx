@@ -147,7 +147,7 @@ export default function BridePortalPage() {
   if (trial?.session_date) {
     appointments.push({
       id: "trial",
-      type: "Trial / Preview",
+      type: "Preview",
       date: parseISO(trial.session_date),
       time: "Time TBD",
       location: trial.location ?? "TBD",
@@ -337,7 +337,7 @@ export default function BridePortalPage() {
             {trialParagraph && (
               <div className="bg-beige border border-charcoal/20">
                 <button onClick={() => setShowTrialNotes((v) => !v)} className="w-full flex items-center justify-between p-5 text-left">
-                  <Heading>Trial Notes</Heading>
+                  <Heading>Preview Notes</Heading>
                   <span className="text-gold text-xs flex-shrink-0">{showTrialNotes ? "▴" : "▾"}</span>
                 </button>
                 {showTrialNotes && (

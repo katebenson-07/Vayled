@@ -138,7 +138,7 @@ function TrialContent() {
     <div className="space-y-8">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h1 className="font-serif text-2xl mb-1">Trial session</h1>
+          <h1 className="font-serif text-2xl mb-1">Preview session</h1>
           <p className="text-charcoal/60">
             {client?.bride_name ?? "Client"} ·{" "}
             <Link href={`/bookings/${bookingId}`} className="text-gold hover:underline">
@@ -148,7 +148,7 @@ function TrialContent() {
         </div>
         <label className="flex items-center gap-2 text-sm bg-white border border-charcoal/10 rounded-md px-3 py-2">
           <input type="checkbox" checked={trial.completed} onChange={(e) => update({ completed: e.target.checked })} />
-          Mark trial complete
+          Mark preview complete
         </label>
       </div>
 
@@ -191,7 +191,7 @@ function TrialContent() {
             />
           </div>
           <div>
-            <label className="block text-charcoal/60 mb-1">Trial fee ($)</label>
+            <label className="block text-charcoal/60 mb-1">Preview fee ($)</label>
             <input
               type="number"
               className="w-full border border-charcoal/20 rounded-md px-3 py-2"

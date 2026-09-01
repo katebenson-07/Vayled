@@ -15,7 +15,7 @@ function initials(name: string) {
 const TYPE_LABEL: Record<InboxItem["type"], string> = {
   inquiry: "Inquiry",
   payment: "Payment",
-  trial: "Trial",
+  trial: "Preview",
   contract: "Contract",
 };
 
@@ -44,7 +44,7 @@ function InboxContent() {
         <div>
           <h1 className="font-serif text-2xl mb-1">Inbox</h1>
           <p className="text-charcoal/60 text-sm">
-            New inquiries, payments, trial sessions, and signed contracts, in one place.
+            New inquiries, payments, preview sessions, and signed contracts, in one place.
           </p>
         </div>
       </div>

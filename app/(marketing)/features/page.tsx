@@ -22,10 +22,10 @@ const SECTIONS = [
     body: "Click any day to see everything on it — brides, venues, party size, and which stylists are already assigned. Assign a lead and an assist stylist to every job right from the calendar, so everyone knows their role before you say yes to something that conflicts.",
   },
   {
-    label: "Trial scheduling",
+    label: "Preview scheduling",
     src: "/marketing/trial-scheduling.jpg",
     title: "Offer a few times, let her pick",
-    body: "Add a handful of open trial times and send one link — your bride picks a slot on a real calendar and it's booked automatically, no more back-and-forth texts trying to land on a date that works for both of you.",
+    body: "Add a handful of open preview times and send one link — your bride picks a slot on a real calendar and it's booked automatically, no more back-and-forth texts trying to land on a date that works for both of you.",
   },
   {
     label: "Contracts",
@@ -73,7 +73,7 @@ const SECTIONS = [
     label: "Smart reminders",
     src: "/marketing/smart-reminders.jpg",
     title: "Nudges for the things that fall through the cracks",
-    body: "Vayled flags balance-due dates, unbooked trials, and pre-trial questionnaires that need to go out — you still send it, it just tells you when.",
+    body: "Vayled flags balance-due dates, unbooked previews, and pre-preview questionnaires that need to go out — you still send it, it just tells you when.",
   },
 ];
 

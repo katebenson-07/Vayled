@@ -110,7 +110,7 @@ function AppointmentsContent() {
         return {
           id: `trial-${t.id}`,
           source: "trial",
-          title: "Trial Fitting",
+          title: "Preview Fitting",
           date: t.session_date as string,
           time: t.session_time,
           clientName: booking?.clients?.bride_name ?? null,
@@ -207,7 +207,7 @@ function AppointmentsContent() {
         </button>
       </div>
       <p className="text-sm text-charcoal/50 mb-6">
-        Trial fittings, rehearsals, and every other meeting on the books.
+        Preview fittings, rehearsals, and every other meeting on the books.
       </p>
 
       {showForm && (
@@ -317,7 +317,7 @@ function AppointmentsContent() {
         <div className="bg-white border border-charcoal/10 rounded-xl p-8 text-center">
           <p className="font-serif text-lg mb-1">Nothing scheduled yet</p>
           <p className="text-sm text-charcoal/60">
-            Trial fittings and rehearsals will show up here automatically. Use the &ldquo;+ Schedule&rdquo; button for everything else.
+            Preview fittings and rehearsals will show up here automatically. Use the &ldquo;+ Schedule&rdquo; button for everything else.
           </p>
         </div>
       ) : grouped.length === 0 ? (

@@ -344,9 +344,9 @@ function CalendarContent() {
                       <span
                         key={`${ev.type}-${ev.bookingId}`}
                         className="block rounded px-1.5 py-0.5 mb-1 truncate border border-gold/40 text-gold"
-                        title={`${ev.type === "trial" ? "Trial" : "Rehearsal"} — ${ev.brideName}`}
+                        title={`${ev.type === "trial" ? "Preview" : "Rehearsal"} — ${ev.brideName}`}
                       >
-                        {ev.type === "trial" ? "Trial" : "Rehearsal"}: {ev.brideName.split(" ")[0]}
+                        {ev.type === "trial" ? "Preview" : "Rehearsal"}: {ev.brideName.split(" ")[0]}
                       </span>
                     ))}
                   </button>
@@ -503,7 +503,7 @@ function CalendarContent() {
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-sm font-medium">{ev.brideName}</p>
                         <span className="text-[10px] uppercase tracking-wide bg-gold/10 text-gold px-1.5 py-0.5 rounded">
-                          {ev.type === "trial" ? "Trial" : "Rehearsal"}
+                          {ev.type === "trial" ? "Preview" : "Rehearsal"}
                         </span>
                       </div>
                     </Link>

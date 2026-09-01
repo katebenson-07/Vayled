@@ -23,7 +23,7 @@ export function seedLineItemsFromBooking(members: PartyMember[], trial: TrialSes
   if (trial && Number(trial.fee) > 0) {
     items.push({
       id: "trial-fee",
-      description: "Trial — Hair + Makeup",
+      description: "Preview — Hair + Makeup",
       qty: 1,
       rate: Number(trial.fee),
     });

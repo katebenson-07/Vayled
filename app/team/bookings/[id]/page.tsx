@@ -223,7 +223,7 @@ function WeddingDetail() {
         onClick={() => setDetailsOpen((o) => !o)}
         className="w-full flex items-center justify-between bg-white border border-charcoal/10 rounded-xl p-5 text-left print:hidden"
       >
-        <span className="text-sm font-medium text-charcoal">Trial &amp; prep details</span>
+        <span className="text-sm font-medium text-charcoal">Preview &amp; prep details</span>
         <span className="text-xs text-gold">{detailsOpen ? "Hide ▲" : "Show ▾"}</span>
       </button>
 
@@ -231,9 +231,9 @@ function WeddingDetail() {
         <div className="print:hidden space-y-6">
       {isLead && (
         <section className="bg-white border border-charcoal/10 rounded-xl p-5">
-          <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-1">Offer trial times to the bride</h2>
+          <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-1">Offer preview times to the bride</h2>
           <p className="text-xs text-charcoal/50 mb-4">
-            You&apos;re the lead on this wedding, so you can propose trial times. She&apos;ll get a link to pick one.
+            You&apos;re the lead on this wedding, so you can propose preview times. She&apos;ll get a link to pick one.
           </p>
           <div className="flex flex-wrap items-end gap-2 mb-4">
             <div>
@@ -306,7 +306,7 @@ function WeddingDetail() {
       )}
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-5">
-        <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Trial notes</h2>
+        <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Preview notes</h2>
         <div className="space-y-4 text-sm">
           <div>
             <label className="block text-charcoal/60 mb-1">Hair</label>

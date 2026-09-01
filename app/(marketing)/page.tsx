@@ -13,7 +13,7 @@ const PATH_STEPS = [
   "Inquiry received",
   "Contract signed",
   "Deposit paid",
-  "Trial done",
+  "Preview done",
   "Balance paid (week of)",
   "Wedding day",
   "Review",
@@ -27,22 +27,22 @@ const FEATURES = [
     body: "Assign stylists, split the wedding party by headcount, and edit anything right up until the morning of. Your team and your bride see the same up-to-date timeline — not five different versions floating around in a text thread.",
   },
   {
-    label: "Trial scheduling",
+    label: "Preview scheduling",
     src: "/marketing/trial-scheduling.jpg",
     title: "Offer a few times, let her pick",
-    body: "Add a handful of open trial times and send one link — your bride picks a slot on a real calendar and it's booked, no more back-and-forth texts trying to land on a date that works.",
+    body: "Add a handful of open preview times and send one link — your bride picks a slot on a real calendar and it's booked, no more back-and-forth texts trying to land on a date that works.",
   },
   {
     label: "The path",
     src: "/marketing/pipeline.jpg",
     title: "A clear checklist for every single booking",
-    body: "Inquiry, contract, deposit, trial, week-of, wedding day, balance — every job moves through the same steps in order, so you always know exactly what's done and what's still open, for every client at once.",
+    body: "Inquiry, contract, deposit, preview, week-of, wedding day, balance — every job moves through the same steps in order, so you always know exactly what's done and what's still open, for every client at once.",
   },
   {
     label: "Reminders",
     src: "/marketing/dashboard.jpg",
     title: "Stay a step ahead of your clients, not behind them",
-    body: "Vayled flags balance-due dates, trials that still need to be booked, and questionnaires that should've gone out — so you're the one reaching out first, instead of scrambling to catch up.",
+    body: "Vayled flags balance-due dates, previews that still need to be booked, and questionnaires that should've gone out — so you're the one reaching out first, instead of scrambling to catch up.",
   },
 ];
 

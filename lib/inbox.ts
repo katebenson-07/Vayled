@@ -95,8 +95,8 @@ export async function fetchInboxItems(): Promise<InboxItem[]> {
       id: `trial-${t.id}`,
       type: "trial",
       name: t.bookings?.clients?.bride_name ?? "Client",
-      title: t.completed ? "Trial session completed" : "Trial session scheduled",
-      snippet: t.session_date ? `Session on ${t.session_date}.` : "Trial session added.",
+      title: t.completed ? "Preview session completed" : "Preview session scheduled",
+      snippet: t.session_date ? `Session on ${t.session_date}.` : "Preview session added.",
       timestamp: t.created_at,
     });
   });

@@ -151,13 +151,13 @@ export default function TrialPickerPage() {
                 {confirmedTime && <> at {formatTime(confirmedTime)}</>}
               </h1>
               <p className="text-charcoal/60 text-sm">
-                Your trial with {data.studio_name} is booked for this time. Reach out to your stylist if anything
+                Your preview with {data.studio_name} is booked for this time. Reach out to your stylist if anything
                 changes.
               </p>
             </div>
           ) : (
             <>
-              <h1 className="font-serif text-2xl text-charcoal mb-1">Pick your trial time</h1>
+              <h1 className="font-serif text-2xl text-charcoal mb-1">Pick your preview time</h1>
               <p className="text-charcoal/60 text-sm mb-5">
                 Hi {data.bride_name || "there"} — tap a highlighted day to see open times.
               </p>

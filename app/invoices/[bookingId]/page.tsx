@@ -255,7 +255,7 @@ function InvoiceContent() {
       key === "deposit"
         ? "Deposit"
         : key === "trial"
-          ? "Trial / preview"
+          ? "Preview"
           : key === "rehearsal"
             ? "Rehearsal hair & makeup"
             : "Remaining balance";
@@ -298,7 +298,7 @@ function InvoiceContent() {
     },
     {
       key: "trial",
-      label: "Trial / Preview",
+      label: "Preview",
       amount: trialAmount,
       rule: settings.trial_due_rule,
       remind: settings.trial_remind,

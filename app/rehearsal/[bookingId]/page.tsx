@@ -79,7 +79,7 @@ function RehearsalContent() {
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Session details</h2>
         <p className="text-xs text-charcoal/50 -mt-2 mb-4">
-          Separate from the trial — this is the actual paid styling for the rehearsal dinner, usually the evening
+          Separate from the preview — this is the actual paid styling for the rehearsal dinner, usually the evening
           before the wedding.
         </p>
         <div className="grid grid-cols-2 gap-4 text-sm">
