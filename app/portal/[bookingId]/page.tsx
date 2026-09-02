@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { BridePortalData, PartyMember } from "@/lib/types";
-import { computeTimeline } from "@/lib/timeline";
+import { computeTimeline, computeTimelineFromStart } from "@/lib/timeline";
 import { format, parseISO, differenceInCalendarDays } from "date-fns";
 import Logo from "@/components/Logo";
 
@@ -63,23 +63,67 @@ export default function BridePortalPage() {
     load();
   }, [params.bookingId]);
 
-  const timeline = useMemo(() => {
+  // Split the party into one timeline per assigned stylist (mirroring the
+  // studio-side Timeline tab), so a job with 3 stylists shows 3 separate
+  // schedules here instead of collapsing everyone into one flat list.
+  // Anything not yet assigned to a stylist falls into an "Unassigned" group.
+  type StylistTimeline = {
+    stylistId: string | null;
+    stylistName: string;
+    role: "lead" | "assist" | null;
+    entries: ReturnType<typeof computeTimeline>;
+  };
+
+  const stylistTimelines = useMemo<StylistTimeline[]>(() => {
     if (!data) return [];
-    const { booking, client, party_members } = data;
-    if (!booking.ready_by_time || !client.wedding_date || party_members.length === 0) return [];
-    const readyBy = new Date(`${client.wedding_date}T${booking.ready_by_time}`);
-    if (isNaN(readyBy.getTime())) return [];
+    const { booking, client, party_members, stylists } = data;
+    const anchorTimeStr = booking.start_time || booking.ready_by_time;
+    if (!anchorTimeStr || !client.wedding_date || party_members.length === 0) return [];
+    const anchor = new Date(`${client.wedding_date}T${anchorTimeStr}`);
+    if (isNaN(anchor.getTime())) return [];
+
     const asPartyMembers: PartyMember[] = party_members.map((m, i) => ({
       id: `${i}`,
       booking_id: booking.id,
       stylist_id: "",
       price: 0,
-      assigned_stylist_id: null,
       styling_notes: null,
       ...m,
     }));
-    return computeTimeline(readyBy, asPartyMembers, booking.buffer_minutes ?? 0);
+
+    const buffer = booking.buffer_minutes ?? 10;
+    const groups = new Map<string, PartyMember[]>();
+    for (const m of asPartyMembers) {
+      const key = m.assigned_stylist_id ?? "unassigned";
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(m);
+    }
+
+    return Array.from(groups.entries())
+      .map(([key, groupMembers]) => {
+        const stylist = key === "unassigned" ? null : stylists.find((s) => s.id === key) ?? null;
+        return {
+          stylistId: stylist?.id ?? null,
+          stylistName: stylist ? stylist.name : "Unassigned",
+          role: stylist?.role ?? null,
+          entries: booking.start_time
+            ? computeTimelineFromStart(anchor, groupMembers, buffer)
+            : computeTimeline(anchor, groupMembers, buffer),
+        };
+      })
+      .sort((a, b) => {
+        if (a.stylistId === null) return 1;
+        if (b.stylistId === null) return -1;
+        if (a.role !== b.role) return a.role === "lead" ? -1 : 1;
+        return a.stylistName.localeCompare(b.stylistName);
+      });
   }, [data]);
+
+  const gettingReadyDate = stylistTimelines.reduce<Date | null>((earliest, st) => {
+    if (st.entries.length === 0) return earliest;
+    const start = st.entries[0].start;
+    return !earliest || start < earliest ? start : earliest;
+  }, null);
 
   if (loading) {
     return (
@@ -113,8 +157,10 @@ export default function BridePortalPage() {
   const remaining = Math.max(0, Number(booking.contract_total) - totalPaid);
   const paidPct = booking.contract_total > 0 ? Math.round((totalPaid / Number(booking.contract_total)) * 100) : 0;
 
-  const gettingReadyTime = timeline[0]
-    ? format(timeline[0].start, "h:mm a")
+  const gettingReadyTime = gettingReadyDate
+    ? format(gettingReadyDate, "h:mm a")
+    : booking.start_time
+    ? format(new Date(`2000-01-01T${booking.start_time}`), "h:mm a")
     : booking.ready_by_time
     ? format(new Date(`2000-01-01T${booking.ready_by_time}`), "h:mm a")
     : "TBD";
@@ -223,22 +269,45 @@ export default function BridePortalPage() {
               <Heading>Day-of Timeline</Heading>
               <span className="text-[10px] text-gold uppercase tracking-wider">{gettingReadyTime} start</span>
             </div>
-            {timeline.length === 0 ? (
+            {stylistTimelines.length === 0 ? (
               <p className="text-xs text-gold">Your timeline will appear here once your stylist builds it.</p>
             ) : (
-              <div className="divide-y divide-charcoal/20">
-                {timeline.map((row, i) => (
-                  <div key={i} className="py-3.5 flex gap-4 items-start first:pt-0 last:pb-0">
-                    <div className="flex-shrink-0 w-14">
-                      <p className="text-xs font-medium text-charcoal tabular-nums leading-none">{format(row.start, "h:mm a")}</p>
+              <div className="space-y-5">
+                {stylistTimelines.map((st) => (
+                  <div key={st.stylistId ?? "unassigned"}>
+                    {stylistTimelines.length > 1 && (
+                      <div className="flex items-center justify-between mb-2 pb-2 border-b border-charcoal/20">
+                        <p className="text-xs font-medium text-charcoal">
+                          {st.stylistName}
+                          {st.role && (
+                            <span className="text-[10px] text-gold uppercase tracking-wider ml-2">
+                              {st.role === "lead" ? "Lead" : "Assist"}
+                            </span>
+                          )}
+                        </p>
+                        {st.entries.length > 0 && (
+                          <span className="text-[10px] text-gold uppercase tracking-wider">
+                            Starts {format(st.entries[0].start, "h:mm a")}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    <div className="divide-y divide-charcoal/20">
+                      {st.entries.map((row, i) => (
+                        <div key={i} className="py-3.5 flex gap-4 items-start first:pt-0 last:pb-0">
+                          <div className="flex-shrink-0 w-14">
+                            <p className="text-xs font-medium text-charcoal tabular-nums leading-none">{format(row.start, "h:mm a")}</p>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-charcoal leading-snug">{personLabel(row.member.role, row.member.name)}</p>
+                            <p className="text-xs text-gold mt-0.5">
+                              {row.member.hair && row.member.makeup ? "Hair + Makeup" : row.member.hair ? "Hair" : "Makeup"}
+                            </p>
+                          </div>
+                          <span className="text-[10px] text-gold flex-shrink-0">{row.member.prep_minutes} min</span>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-charcoal leading-snug">{personLabel(row.member.role, row.member.name)}</p>
-                      <p className="text-xs text-gold mt-0.5">
-                        {row.member.hair && row.member.makeup ? "Hair + Makeup" : row.member.hair ? "Hair" : "Makeup"}
-                      </p>
-                    </div>
-                    <span className="text-[10px] text-gold flex-shrink-0">{row.member.prep_minutes} min</span>
                   </div>
                 ))}
               </div>

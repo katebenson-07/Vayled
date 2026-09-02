@@ -631,6 +631,7 @@ as $$
       'deposit_amount', b.deposit_amount,
       'deposit_paid', b.deposit_paid,
       'ready_by_time', b.ready_by_time,
+      'start_time', b.start_time,
       'buffer_minutes', b.buffer_minutes,
       'ceremony_time', b.ceremony_time,
       'location', b.location
@@ -653,10 +654,21 @@ as $$
         'hair', pm.hair,
         'makeup', pm.makeup,
         'prep_minutes', pm.prep_minutes,
-        'order_index', pm.order_index
+        'order_index', pm.order_index,
+        'assigned_stylist_id', pm.assigned_stylist_id
       ) order by pm.order_index)
       from party_members pm
       where pm.booking_id = b.id
+    ), '[]'::jsonb),
+    'stylists', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'id', st.id,
+        'name', st.name,
+        'role', bs.role
+      ) order by bs.role, st.name)
+      from booking_stylists bs
+      join stylists st on st.id = bs.stylist_id
+      where bs.booking_id = b.id
     ), '[]'::jsonb),
     'payments', coalesce((
       select jsonb_agg(jsonb_build_object(

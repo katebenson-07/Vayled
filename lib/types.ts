@@ -393,6 +393,7 @@ export interface BridePortalData {
     deposit_amount: number;
     deposit_paid: boolean;
     ready_by_time: string | null;
+    start_time: string | null;
     buffer_minutes: number;
     ceremony_time: string | null;
     location: string | null;
@@ -415,6 +416,16 @@ export interface BridePortalData {
     makeup: boolean;
     prep_minutes: number;
     order_index: number;
+    assigned_stylist_id: string | null;
+  }[];
+  // The stylist roster assigned to this job — used to split the timeline into
+  // one section per stylist (mirroring the studio-side Timeline tab) and to
+  // label each section Lead/Assist. Only includes stylists actually assigned
+  // via booking_stylists, not every studio team member.
+  stylists: {
+    id: string;
+    name: string;
+    role: "lead" | "assist";
   }[];
   payments: {
     amount: number;
