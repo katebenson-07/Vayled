@@ -1,5 +1,5 @@
 /**
- * Brand mark: a plain "VAYLED" wordmark (Italiana, font-logo), uppercase with
+ * Brand mark: a plain "VAYLED" wordmark (Prata, font-logo), uppercase with
  * modest tracking (tighter than the old tracking-widest-lg, to match the
  * mockup previews Kate approved), one size per `size` prop — no
  * oversized-V/nested-letter treatment. Optional "BRIDAL HAIR & MAKEUP"

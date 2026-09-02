@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lora, Spectral, Italiana } from "next/font/google";
+import { Lora, Spectral, Prata } from "next/font/google";
 import "./globals.css";
 
 // Lora is the one universal text font — body copy, section headers, and stat
@@ -11,9 +11,11 @@ import "./globals.css";
 // is a lighter, more restrained serif, so it uses the same page-title sizes
 // that were sized down for Abril Fatface (text-4xl / text-3xl) rather than
 // sizing back up — Kate approved it at this scale in the comparison preview.
-// Italiana is a free lookalike standing in for the paid Black Gold font Kate
+// Prata is a free lookalike standing in for the paid Black Gold font Kate
 // wants, until she buys a license — used only for font-logo (the "VAYLED"
-// wordmark).
+// wordmark). Replaced Italiana, which Kate felt looked too plain/generic at
+// this size; Prata's higher-contrast strokes read closer to Black Gold's
+// elegant-serif style. Kate approved Prata directly from an HTML preview.
 const lora = Lora({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -29,7 +31,7 @@ const spectral = Spectral({
   display: "swap",
 });
 
-const italiana = Italiana({
+const prata = Prata({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-logo-display",
@@ -51,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${lora.variable} ${spectral.variable} ${italiana.variable}`}>
+    <html lang="en" className={`${lora.variable} ${spectral.variable} ${prata.variable}`}>
       <body>{children}</body>
     </html>
   );

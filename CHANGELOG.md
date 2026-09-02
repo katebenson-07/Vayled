@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-02 (102)
+
+- **Swapped the logo font from Italiana to Prata.** Live-site inspection confirmed Italiana was rendering correctly (font loaded, matched source) — but Kate felt "VAYLED" in it looked plain/generic, like a default Times/Georgia serif. Also clarified that the free "Black Gold" font on cdnfonts/1001fonts is an unrelated handwriting font by a different designer, not a substitute for the paid VP Fonts "Black Gold" serif she's after. Built an HTML comparison (Playfair Display, Cinzel, Prata, Cormorant) against the real Black Gold's "high-contrast elegant serif" style; Kate picked Prata. Updated `app/layout.tsx` (Prata replaces Italiana on `--font-logo-display`), `tailwind.config.ts`, `components/Logo.tsx` comment, and `DESIGN_SYSTEM.md`. Prata remains a free stand-in until Kate licenses the real Black Gold (VP Fonts, ~$32 for desktop + webfont license on Creative Market).
+
 ## 2026-09-01 (101)
 
 - **Tightened the VAYLED wordmark's letter-spacing** from `tracking-widest-lg` (0.18em) to `tracking-[0.08em]` in `components/Logo.tsx`, to match the tighter spacing used in the mockup previews Kate had approved.

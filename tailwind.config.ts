@@ -22,8 +22,9 @@ const config: Config = {
         // Spectral, chosen by Kate after Abril Fatface felt too big/heavy
         // (earlier rounds also tried Bellefair/Playfair/Marcellus/Prata/EB
         // Garamond/Fraunces/Crimson Pro/Cormorant SC/Cardo). font-logo is
-        // Italiana (free lookalike for paid Black Gold) — see
-        // app/layout.tsx.
+        // Prata (free lookalike for paid Black Gold, used only for the
+        // "VAYLED" wordmark) — replaced Italiana, which read too plain/
+        // generic in caps at logo size; see app/layout.tsx.
         serif: ["var(--font-sans)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "Georgia", "serif"],
         script: ["var(--font-script-display)", "Georgia", "serif"],
