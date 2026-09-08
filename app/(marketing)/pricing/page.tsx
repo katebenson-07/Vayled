@@ -15,7 +15,7 @@ const INCLUDED = [
   "Unlimited bookings during the beta",
 ];
 
-const ALL_FEATURES = [
+const CORE_FEATURES = [
   "Timeline builder, contracts, invoicing, calendar",
   "Payroll for 1099 stylists",
   "Bride portal & preview self-scheduling",
@@ -23,6 +23,21 @@ const ALL_FEATURES = [
   "Expense & mileage tracking with budgets",
   "Vendor team management",
   "Inquiry form & smart reminders",
+];
+
+// Studio-exclusive: the "elite/concierge" layer on top of the core CRM.
+// Unlike Solo/Pro, Studio isn't just more stylists — it's the tier built for
+// high-end, white-glove studios, so it gets a distinct set of features
+// instead of the old "every plan gets every feature" model.
+const ELITE_FEATURES = [
+  "White-labeled bride portal with your own branding",
+  "Client preference profiles (allergies, hair type, trial notes)",
+  "Polished digital contract & e-signature experience",
+  "VIP / priority booking flags with discretion notes",
+  "Shareable day-of timeline link for planners & venues",
+  "Branded PDF exports for contracts, invoices & timelines",
+  "Concierge welcome moment for new bookings",
+  "Referral & repeat-client tracking",
 ];
 
 const PLANS = [
@@ -42,10 +57,11 @@ const PLANS = [
   {
     name: "Studio",
     price: 99,
-    blurb: "For growing studios with a full stylist team.",
+    blurb: "For high-end studios who want the full concierge experience.",
     stylists: "Unlimited stylists, lead & assist roles",
     tag: "Best for studios",
     elevated: true,
+    elite: true,
   },
 ];
 
@@ -94,8 +110,9 @@ export default function PricingPage() {
             <p className="text-xs uppercase tracking-widest-lg text-gold mb-3">After beta</p>
             <h2 className="font-serif text-2xl md:text-3xl text-charcoal mb-3">What plans will look like once beta ends</h2>
             <p className="text-charcoal/70">
-              Every plan includes every feature — the only thing that changes as you move up is how many stylists
-              you can have on your team. Join now and today&apos;s founding rate is locked in for your studio.
+              Solo and Pro cover the full core CRM. Studio adds our elite, concierge-level features on top —
+              white-labeled branding, VIP handling, and more — along with unlimited stylists. Join now and
+              today&apos;s founding rate is locked in for your studio.
             </p>
           </div>
 
@@ -132,16 +149,35 @@ export default function PricingPage() {
                   {plan.stylists}
                 </p>
                 <p className={`text-xs uppercase tracking-widest-lg mb-3 ${plan.elevated ? "text-beige/60" : "text-charcoal/40"}`}>
-                  Every feature included
+                  Core features
                 </p>
-                <ul className={`text-left space-y-2.5 text-sm flex-1 ${plan.elevated ? "text-beige/80" : "text-charcoal/70"}`}>
-                  {ALL_FEATURES.map((item) => (
+                <ul
+                  className={`text-left space-y-2.5 text-sm ${plan.elite ? "" : "flex-1"} ${
+                    plan.elevated ? "text-beige/80" : "text-charcoal/70"
+                  }`}
+                >
+                  {CORE_FEATURES.map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="text-gold mt-0.5">✓</span>
                       {item}
                     </li>
                   ))}
                 </ul>
+                {plan.elite && (
+                  <>
+                    <p className="text-xs uppercase tracking-widest-lg mb-3 mt-5 pt-5 border-t border-ivory/20 text-gold">
+                      Elite additions
+                    </p>
+                    <ul className="text-left space-y-2.5 text-sm text-beige/80 flex-1">
+                      {ELITE_FEATURES.map((item) => (
+                        <li key={item} className="flex items-start gap-2">
+                          <span className="text-gold mt-0.5">✧</span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </div>
             ))}
           </div>
