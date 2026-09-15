@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import WaitlistForm from "@/components/WaitlistForm";
+import WaitlistModal from "@/components/WaitlistModal";
 
 function LoginForm() {
   const router = useRouter();
@@ -32,6 +33,7 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen bg-charcoal flex items-center justify-center p-6">
+      {mode === "signin" && <WaitlistModal />}
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <p className="font-logo text-3xl tracking-widest-lg uppercase text-ivory mb-2">Vayled</p>

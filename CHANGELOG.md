@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-15 (105)
+
+- **Added a waitlist popup modal to the sign-in page.** Since public signup is disabled (#86) and most first-time visitors to `/login` don't have an account yet, added `components/WaitlistModal.tsx` — auto-opens ~1s after the page loads (only in sign-in mode, not when the visitor's already looking at the inline waitlist form), reuses the existing `WaitlistForm` component/`waitlist_signups` table/honeypot logic, and is dismissible via the X, "Maybe later," or clicking the backdrop. Shows at most once per browser session via a `sessionStorage` flag, so it doesn't nag on every page visit. The existing "Don't have an account? Join the waitlist" inline toggle on the sign-in form still works exactly as before — this popup is an additional, more immediate nudge, not a replacement.
+
 ## 2026-09-08 (104)
 
 - **Revamped `/pricing` to give Studio an exclusive "Elite" feature set instead of every plan sharing every feature.** Previously all three plans (Solo/Pro/Studio) were feature-identical, differentiated only by stylist count. Kate wants Studio ($99) positioned as the concierge/luxury tier for high-end studios, so it now includes 8 additional "Elite" features on top of the same core CRM Solo/Pro get: white-labeled bride portal branding, client preference profiles, a polished e-signature experience, VIP/priority booking flags, a shareable read-only day-of timeline link for planners/venues, branded PDF exports, a concierge welcome moment for new bookings, and referral/repeat-client tracking. Renamed `ALL_FEATURES` to `CORE_FEATURES`, added a new `ELITE_FEATURES` list, and updated the Studio plan card to render both lists (with a divider) instead of one shared list across all three cards. Updated the "after beta" intro copy to match. These Elite features are ideas, not yet built — this only updates the marketing/pricing copy to reflect the new tier structure; the underlying app features (white-label portal, VIP flags, etc.) are tracked in the "Vayled Feature Ideas" Notion page, not yet implemented in the product.
