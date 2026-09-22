@@ -33,7 +33,7 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen bg-charcoal flex items-center justify-center p-6">
-      {mode === "signin" && <WaitlistModal />}
+      {mode === "signin" && <WaitlistModal source="login-popup" />}
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <p className="font-logo text-3xl tracking-widest-lg uppercase text-ivory mb-2">Vayled</p>

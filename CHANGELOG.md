@@ -2,6 +2,10 @@
 
 Running log of changes requested while testing the app. Newest first.
 
+## 2026-09-22 (106)
+
+- **Added the waitlist popup modal to the main marketing homepage too.** It previously only showed up on `/login` (#105); Kate wants the same nudge on `/` since that's the first page most visitors land on. Made `WaitlistModal`'s `source` a prop instead of a hardcoded `"login-popup"` string so `waitlist_signups` rows can still tell the two placements apart (`login-popup` vs. `homepage-popup`). Same auto-open-after-~1s, dismiss-once-per-session behavior as before — and since the dismiss flag is shared across pages, closing it on one page keeps it from popping up again on the other during the same session.
+
 ## 2026-09-15 (105)
 
 - **Added a waitlist popup modal to the sign-in page.** Since public signup is disabled (#86) and most first-time visitors to `/login` don't have an account yet, added `components/WaitlistModal.tsx` — auto-opens ~1s after the page loads (only in sign-in mode, not when the visitor's already looking at the inline waitlist form), reuses the existing `WaitlistForm` component/`waitlist_signups` table/honeypot logic, and is dismissible via the X, "Maybe later," or clicking the backdrop. Shows at most once per browser session via a `sessionStorage` flag, so it doesn't nag on every page visit. The existing "Don't have an account? Join the waitlist" inline toggle on the sign-in form still works exactly as before — this popup is an additional, more immediate nudge, not a replacement.

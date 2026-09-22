@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import FeatureVisual from "@/components/FeatureVisual";
 import WaitlistForm from "@/components/WaitlistForm";
+import WaitlistModal from "@/components/WaitlistModal";
 
 export const metadata: Metadata = {
   title: "Booking software for bridal hair & makeup studios",
@@ -55,6 +56,7 @@ const FEATURES = [
 export default function MarketingHome() {
   return (
     <div>
+      <WaitlistModal source="homepage-popup" />
       <section className="relative overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0"

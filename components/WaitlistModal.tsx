@@ -6,15 +6,16 @@ import WaitlistForm from "@/components/WaitlistForm";
 const DISMISS_KEY = "vayled-waitlist-modal-dismissed";
 
 /**
- * Popup modal nudging sign-in-page visitors who don't have an account yet
- * toward the beta waitlist. Auto-opens shortly after the page loads (public
- * signup is disabled — see CHANGELOG #86 — so most first-time visitors here
- * need to be pointed at the waitlist rather than a login form). Shows at
- * most once per browser session: dismissing it (X, backdrop click, or
- * successfully joining) sets a sessionStorage flag so it doesn't nag on
- * every page visit within the same session.
+ * Popup modal nudging visitors who don't have an account yet toward the beta
+ * waitlist. Auto-opens shortly after the page loads (public signup is
+ * disabled — see CHANGELOG #86 — so most first-time visitors need to be
+ * pointed at the waitlist). Shows at most once per browser session across
+ * every page it's mounted on: dismissing it (X, backdrop click, or
+ * successfully joining) sets a shared sessionStorage flag so it doesn't nag
+ * again later in the same session, even after navigating to another page
+ * that also renders it.
  */
-export default function WaitlistModal() {
+export default function WaitlistModal({ source = "popup" }: { source?: string }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function WaitlistModal() {
           We&apos;re onboarding bridal hair &amp; makeup studios in small batches. Join the waitlist and
           we&apos;ll email you when it&apos;s your turn.
         </p>
-        <WaitlistForm source="login-popup" dark={false} />
+        <WaitlistForm source={source} dark={false} />
         <button
           onClick={close}
           className="text-sm text-charcoal/50 hover:text-charcoal mt-6"
