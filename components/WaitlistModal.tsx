@@ -15,7 +15,16 @@ const DISMISS_KEY = "vayled-waitlist-modal-dismissed";
  * again later in the same session, even after navigating to another page
  * that also renders it.
  */
-export default function WaitlistModal({ source = "popup" }: { source?: string }) {
+export default function WaitlistModal({
+  source = "popup",
+  title = "Not a studio yet?",
+  showTier = false,
+}: {
+  source?: string;
+  title?: string;
+  /** Show the Solo / Pro / Studio interest bubbles under the heading. */
+  showTier?: boolean;
+}) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -48,12 +57,12 @@ export default function WaitlistModal({ source = "popup" }: { source?: string })
           ✕
         </button>
         <p className="text-xs uppercase tracking-widest-lg text-gold mb-2">Private beta</p>
-        <p className="font-serif text-2xl text-charcoal mb-3">Not a studio yet?</p>
+        <p className="font-serif text-2xl text-charcoal mb-3">{title}</p>
         <p className="text-sm text-charcoal/60 mb-6">
           We&apos;re onboarding bridal hair &amp; makeup studios in small batches. Join the waitlist and
           we&apos;ll email you when it&apos;s your turn.
         </p>
-        <WaitlistForm source={source} dark={false} />
+        <WaitlistForm source={source} dark={false} showTier={showTier} />
         <button
           onClick={close}
           className="text-sm text-charcoal/50 hover:text-charcoal mt-6"

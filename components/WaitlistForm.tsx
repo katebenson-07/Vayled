@@ -3,13 +3,20 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
+const TIERS = ["Solo", "Pro", "Studio"] as const;
+type Tier = (typeof TIERS)[number];
+
 export default function WaitlistForm({
   source,
   dark = true,
+  showTier = false,
 }: {
   source: string;
   dark?: boolean;
+  /** Show the optional "which plan are you interested in?" bubbles. */
+  showTier?: boolean;
 }) {
+  const [tier, setTier] = useState<Tier | null>(null);
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState(""); // honeypot — real visitors never see or fill this
   const [loadedAt] = useState(() => Date.now());
@@ -30,9 +37,16 @@ export default function WaitlistForm({
     }
 
     setSubmitting(true);
-    const { error: insertError } = await supabase
+    let { error: insertError } = await supabase
       .from("waitlist_signups")
-      .insert({ email: email.trim(), source });
+      .insert({ email: email.trim(), source, ...(tier ? { interested_tier: tier } : {}) });
+    // If the interested_tier column hasn't been added to the database yet,
+    // don't lose the signup — retry with just the email.
+    if (insertError && tier) {
+      ({ error: insertError } = await supabase
+        .from("waitlist_signups")
+        .insert({ email: email.trim(), source }));
+    }
     setSubmitting(false);
 
     if (insertError) {
@@ -51,7 +65,42 @@ export default function WaitlistForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md">
+    <form
+      onSubmit={handleSubmit}
+      className={`flex flex-col gap-3 max-w-md ${showTier ? "" : "sm:flex-row"}`}
+    >
+      {showTier && (
+        <div className="mb-1">
+          <p className={`text-xs mb-2 ${dark ? "text-beige/70" : "text-charcoal/60"}`}>
+            Which plan are you most interested in?
+          </p>
+          <div className="flex gap-2" role="radiogroup" aria-label="Plan interest">
+            {TIERS.map((t) => {
+              const selected = tier === t;
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setTier(selected ? null : t)}
+                  className={`flex-1 rounded-full px-4 py-2 text-xs uppercase tracking-widest-lg border transition-colors ${
+                    selected
+                      ? dark
+                        ? "bg-ivory text-charcoal border-ivory"
+                        : "bg-charcoal text-ivory border-charcoal"
+                      : dark
+                      ? "border-ivory/30 text-ivory hover:bg-ivory/10"
+                      : "border-charcoal/25 text-charcoal hover:bg-charcoal/5"
+                  }`}
+                >
+                  {t}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div className="hidden" aria-hidden="true">
         <label>
           Company

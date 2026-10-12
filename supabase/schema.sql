@@ -1035,6 +1035,12 @@ create table if not exists waitlist_signups (
   created_at timestamptz not null default now()
 );
 
+-- Which plan the visitor said they're most interested in (optional; set from
+-- the homepage popup). Query: select interested_tier, count(*) from
+-- waitlist_signups group by 1 order by 2 desc;
+alter table waitlist_signups add column if not exists interested_tier text
+  check (interested_tier in ('Solo', 'Pro', 'Studio'));
+
 alter table waitlist_signups enable row level security;
 
 drop policy if exists "Public can join the waitlist" on waitlist_signups;

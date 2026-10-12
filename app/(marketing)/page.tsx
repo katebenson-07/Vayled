@@ -56,7 +56,7 @@ const FEATURES = [
 export default function MarketingHome() {
   return (
     <div>
-      <WaitlistModal source="homepage-popup" />
+      <WaitlistModal source="homepage-popup" title="Join the waitlist" showTier />
       <section className="relative overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0"
