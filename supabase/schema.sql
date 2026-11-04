@@ -1046,3 +1046,26 @@ alter table waitlist_signups enable row level security;
 drop policy if exists "Public can join the waitlist" on waitlist_signups;
 create policy "Public can join the waitlist" on waitlist_signups
   for insert to anon, authenticated with check (true);
+
+-- ============================================================================
+-- Phone app push notifications
+-- One row per phone that has the Vayled app installed and notifications on.
+-- The app saves its own token here after sign-in; a server job uses these
+-- tokens to send pushes (new inquiry, balance due, preview reminders).
+-- ============================================================================
+
+create table if not exists device_tokens (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  token text not null unique,
+  platform text not null check (platform in ('ios', 'android')),
+  updated_at timestamptz not null default now()
+);
+
+alter table device_tokens enable row level security;
+
+drop policy if exists "Users manage their own device tokens" on device_tokens;
+create policy "Users manage their own device tokens" on device_tokens
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);

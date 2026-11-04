@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
+import FaceIdToggle from "@/components/FaceIdToggle";
 import { supabase } from "@/lib/supabaseClient";
 import { CustomQuestion, InquiryFormSettings, ServiceCatalogItem, StudioSettings } from "@/lib/types";
 
@@ -306,6 +307,7 @@ function InquirySettingsContent() {
               />
             </div>
           </div>
+          <FaceIdToggle />
         </div>
       </section>
 

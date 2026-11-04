@@ -6,6 +6,11 @@ body {
   background-color: #FAF8F5;
   color: #231815;
   font-family: var(--font-sans), Georgia, serif;
+  /* Keep content clear of the iPhone notch and home bar when running as an app. */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .tracking-widest-lg {

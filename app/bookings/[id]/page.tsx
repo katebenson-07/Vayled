@@ -19,6 +19,7 @@ import {
   ClientPhoto,
 } from "@/lib/types";
 import { computeTimeline, computeTimelineFromStart } from "@/lib/timeline";
+import { isNativeApp, pickPhoto, shareLink } from "@/lib/native";
 import { format, differenceInCalendarDays, parseISO, subDays } from "date-fns";
 
 function initials(name: string) {
@@ -69,6 +70,9 @@ function BookingDetail() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [linkCopied, setLinkCopied] = useState(false);
+  // True only inside the iPhone/Android app, where we use the phone's own photo sheet.
+  const [native, setNative] = useState(false);
+  useEffect(() => setNative(isNativeApp()), []);
 
   const [newNoteTag, setNewNoteTag] = useState(NOTE_TAGS[0]);
   const [newNoteBody, setNewNoteBody] = useState("");
@@ -668,8 +672,20 @@ function BookingDetail() {
   const portalUrl = typeof window !== "undefined" ? `${window.location.origin}/portal/${id}` : "";
   const portalAvailable = booking.status === "booked" || booking.status === "completed";
 
-  function copyPortalLink() {
+  async function addPhotoNative(tag: "inspo" | "trial_result") {
+    const file = await pickPhoto();
+    if (file) await uploadPhoto(file, tag);
+  }
+
+  async function copyPortalLink() {
     if (!portalUrl) return;
+    // In the phone app, open the native share sheet instead of copying.
+    const shared = await shareLink({
+      title: "Wedding-day timeline",
+      text: "Here's the wedding-day timeline:",
+      url: portalUrl,
+    });
+    if (shared) return;
     navigator.clipboard.writeText(portalUrl);
     setLinkCopied(true);
     setTimeout(() => setLinkCopied(false), 2000);
@@ -928,34 +944,57 @@ function BookingDetail() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50">Inspiration &amp; photos</h2>
                 <div className="flex items-center gap-3">
-                  <label className="text-gold text-sm hover:underline cursor-pointer">
-                    {uploadingTag === "inspo" ? "Uploading..." : "+ Add inspo"}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      disabled={!!uploadingTag}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) uploadPhoto(file, "inspo");
-                        e.target.value = "";
-                      }}
-                    />
-                  </label>
-                  <label className="text-gold text-sm hover:underline cursor-pointer">
-                    {uploadingTag === "trial_result" ? "Uploading..." : "+ Add preview result"}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      disabled={!!uploadingTag}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) uploadPhoto(file, "trial_result");
-                        e.target.value = "";
-                      }}
-                    />
-                  </label>
+                  {native ? (
+                    <>
+                      <button
+                        type="button"
+                        disabled={!!uploadingTag}
+                        onClick={() => addPhotoNative("inspo")}
+                        className="text-gold text-sm hover:underline"
+                      >
+                        {uploadingTag === "inspo" ? "Uploading..." : "+ Add inspo"}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!!uploadingTag}
+                        onClick={() => addPhotoNative("trial_result")}
+                        className="text-gold text-sm hover:underline"
+                      >
+                        {uploadingTag === "trial_result" ? "Uploading..." : "+ Add preview result"}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <label className="text-gold text-sm hover:underline cursor-pointer">
+                        {uploadingTag === "inspo" ? "Uploading..." : "+ Add inspo"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={!!uploadingTag}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) uploadPhoto(file, "inspo");
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                      <label className="text-gold text-sm hover:underline cursor-pointer">
+                        {uploadingTag === "trial_result" ? "Uploading..." : "+ Add preview result"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={!!uploadingTag}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) uploadPhoto(file, "trial_result");
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    </>
+                  )}
                 </div>
               </div>
               {photos.length === 0 ? (

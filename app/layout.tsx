@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Lora, Spectral, Prata } from "next/font/google";
 import "./globals.css";
+import NativeBridge from "@/components/NativeBridge";
 
 // Lora is the one universal text font — body copy, section headers, and stat
 // numbers/tabular data all share it (font-serif, font-sans, font-heading,
@@ -45,6 +46,17 @@ export const metadata: Metadata = {
     template: "%s · Vayled",
   },
   description: "CRM for bridal hair & makeup stylists",
+  appleWebApp: { capable: true, title: "Vayled", statusBarStyle: "default" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
+};
+
+// viewport-fit=cover lets the app draw under the iPhone notch/home bar; the
+// safe-area padding in globals.css keeps content clear of them.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#4D0E12",
 };
 
 export default function RootLayout({
@@ -54,7 +66,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${lora.variable} ${spectral.variable} ${prata.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <NativeBridge />
+      </body>
     </html>
   );
 }

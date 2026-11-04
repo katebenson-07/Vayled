@@ -1,0 +1,28 @@
+{
+  "appId": "com.vayled.app",
+  "appName": "Vayled",
+  "webDir": "cap-www",
+  "server": {
+    "url": "https://www.vayled.com",
+    "cleartext": false,
+    "allowNavigation": ["vayled.com", "www.vayled.com", "*.supabase.co"]
+  },
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#FAF8F5"
+  },
+  "android": {
+    "backgroundColor": "#FAF8F5"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#4D0E12",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#FAF8F5"
+    }
+  }
+}
