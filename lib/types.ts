@@ -5,6 +5,9 @@ export interface Client {
   partner_name: string | null;
   email: string | null;
   phone: string | null;
+  /** true = ticked the text opt-in on the inquiry form, false = gave a number but didn't, null = added by the studio. */
+  sms_consent?: boolean | null;
+  sms_consent_at?: string | null;
   wedding_date: string | null;
   venue: string | null;
   notes: string | null;

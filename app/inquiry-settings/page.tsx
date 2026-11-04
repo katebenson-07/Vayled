@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import FaceIdToggle from "@/components/FaceIdToggle";
+import DeleteAccount from "@/components/DeleteAccount";
 import { supabase } from "@/lib/supabaseClient";
 import { AppointmentLocation, AppointmentType, CustomQuestion, InquiryFormSettings, ServiceCatalogItem, StudioSettings } from "@/lib/types";
 import { loadAppointmentLocations, loadAppointmentTypes } from "@/lib/appointmentTypes";
@@ -404,6 +405,7 @@ function InquirySettingsContent() {
             </div>
           </div>
           <FaceIdToggle />
+          <DeleteAccount />
         </div>
       </section>
 

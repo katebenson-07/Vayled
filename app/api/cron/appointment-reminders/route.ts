@@ -51,9 +51,10 @@ export async function GET(req: NextRequest) {
     if (a.appointment_date !== tomorrowIn(tz)) continue;
 
     const [{ data: client }, { data: studio }] = await Promise.all([
-      db.from("clients").select("bride_name, phone").eq("id", a.client_id).maybeSingle(),
+      db.from("clients").select("bride_name, phone, sms_consent").eq("id", a.client_id).maybeSingle(),
       db.from("studio_settings").select("studio_name, contact_phone").eq("studio_id", a.studio_id).maybeSingle(),
     ]);
+    if (client?.sms_consent === false) continue;
     const phone = toE164(client?.phone);
     if (!client || !phone) continue;
 

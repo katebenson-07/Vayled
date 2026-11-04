@@ -33,6 +33,7 @@ export default function PublicInquiryPage() {
     getting_ready_location: "",
     email: "",
     phone: "",
+    sms_consent: false,
     party_size: "",
     referral_source: "",
     budget: "",
@@ -110,6 +111,9 @@ export default function PublicInquiryPage() {
         bride_name: form.bride_name,
         email: form.email || null,
         phone: form.phone || null,
+        // Only an explicit tick counts as consent to appointment texts.
+        sms_consent: form.phone ? form.sms_consent : null,
+        sms_consent_at: form.phone && form.sms_consent ? new Date().toISOString() : null,
         wedding_date: form.wedding_date || null,
         venue: form.venue || null,
         referral_source: form.referral_source || null,
@@ -265,6 +269,22 @@ export default function PublicInquiryPage() {
                 />
               </div>
             </div>
+
+            <label className="flex items-start gap-2 text-xs text-charcoal/70 leading-relaxed">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={form.sms_consent}
+                onChange={(e) => setForm((f) => ({ ...f, sms_consent: e.target.checked }))}
+              />
+              <span>
+                I agree to receive appointment text messages (booking confirmations and reminders) from this studio
+                through Vayled at the mobile number above. Consent is not a condition of any purchase. Message
+                frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. See our{" "}
+                <a href="/privacy" target="_blank" className="underline">Privacy Policy</a> and{" "}
+                <a href="/terms" target="_blank" className="underline">Terms</a>.
+              </span>
+            </label>
 
             {settings.ask_budget && (
               <div>

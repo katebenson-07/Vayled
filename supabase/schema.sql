@@ -1136,3 +1136,7 @@ create policy "Studios manage their own sms settings" on sms_settings
 
 alter table appointments add column if not exists confirmation_sent_at timestamptz;
 alter table appointments add column if not exists reminder_sent_at timestamptz;
+
+-- Text-message opt-in captured on the public inquiry form.
+alter table clients add column if not exists sms_consent boolean;
+alter table clients add column if not exists sms_consent_at timestamptz;

@@ -33,13 +33,16 @@ export async function POST(req: NextRequest) {
   if (!appt.client_id) return NextResponse.json({ error: "No client on this appointment." }, { status: 400 });
 
   const [{ data: client }, { data: studio }, { data: sms }] = await Promise.all([
-    supabase.from("clients").select("bride_name, phone").eq("id", appt.client_id).maybeSingle(),
+    supabase.from("clients").select("bride_name, phone, sms_consent").eq("id", appt.client_id).maybeSingle(),
     supabase.from("studio_settings").select("studio_name, contact_phone").eq("studio_id", studioId).maybeSingle(),
     supabase.from("sms_settings").select("*").eq("studio_id", studioId).maybeSingle(),
   ]);
 
   if (sms && sms.confirm_enabled === false) {
     return NextResponse.json({ skipped: "Confirmation texts are turned off in Settings." });
+  }
+  if (client?.sms_consent === false) {
+    return NextResponse.json({ skipped: "This client didn't opt in to texts." });
   }
   const to = toE164(client?.phone);
   if (!client || !to) return NextResponse.json({ error: "This client has no valid phone number." }, { status: 400 });
