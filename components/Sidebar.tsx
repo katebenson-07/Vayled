@@ -164,7 +164,7 @@ export default function Sidebar() {
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-40">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 w-72 bg-wine flex flex-col">
+          <aside className="absolute inset-y-0 right-0 w-72 bg-wine flex flex-col">
             <div className="flex justify-end px-4 pt-4">
               <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="text-ivory">
                 <NavIcon name="close" className="w-5 h-5" />

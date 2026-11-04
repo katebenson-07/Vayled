@@ -147,6 +147,10 @@ type PushPlugin = {
 export async function registerForPush(onToken: (token: string) => void): Promise<void> {
   const Push = nativePlugin<PushPlugin>("PushNotifications");
   if (!Push) return;
+  // Android needs a Firebase config file (google-services.json) before push can
+  // register, and asking without one can crash the app. Skip Android until
+  // Firebase is set up; remove this line then.
+  if (nativePlatform() === "android") return;
   try {
     const perm = await Push.requestPermissions();
     if (perm.receive !== "granted") return;
