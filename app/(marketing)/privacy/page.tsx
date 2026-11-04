@@ -19,7 +19,7 @@ export default function PrivacyPage() {
       <section className="max-w-3xl mx-auto px-6 pt-16 pb-24 md:pt-24">
         <p className="text-xs uppercase tracking-widest-lg text-gold mb-4">Legal</p>
         <h1 className="font-serif text-4xl md:text-5xl text-charcoal mb-4">Privacy Policy</h1>
-        <p className="text-sm text-charcoal/50 mb-10">Last updated August 31, 2026</p>
+        <p className="text-sm text-charcoal/50 mb-10">Last updated November 4, 2026</p>
 
         <P>
           This policy covers what Vayled (“we,” “us”) collects when you use vayled.com and the Vayled app, whether
@@ -63,6 +63,20 @@ export default function PrivacyPage() {
           Every studio’s data is scoped by row-level security enforced at the database layer, so one studio’s
           records are never returned by another studio’s queries. Transactional email, where configured, is sent
           through Resend.
+        </P>
+
+        <H2>Text messages</H2>
+        <P>
+          If a studio schedules an appointment for you, Vayled sends text messages on that studio’s behalf using the
+          mobile number you gave the studio. These are appointment texts only: a confirmation when the appointment
+          is booked and a reminder the day before. We do not send marketing or promotional texts.
+        </P>
+        <P>
+          We use your mobile number only to send these messages. We do not sell it, rent it, or share it with third
+          parties or affiliates for their marketing or promotional purposes. Text messages are delivered through
+          our messaging provider, Twilio, which handles the number only to deliver the message. Message and data
+          rates may apply, and message frequency depends on your appointments. Reply STOP at any time to opt out,
+          or HELP for help.
         </P>
 
         <H2>Sharing</H2>

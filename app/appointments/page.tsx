@@ -6,6 +6,17 @@ import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
 import { Appointment, AppointmentStatus, Booking, Client, RehearsalSession, TrialSession } from "@/lib/types";
 import { format, parseISO } from "date-fns";
+import {
+  DEFAULT_APPOINTMENT_TYPES,
+  formatLocation,
+  loadAppointmentLocations,
+  loadAppointmentTypes,
+} from "@/lib/appointmentTypes";
+import { AppointmentLocation } from "@/lib/types";
+
+const CUSTOM_OPTION = "__custom__";
+const CLIENT_ADDRESS_OPTION = "__client__";
+const OTHER_LOCATION_OPTION = "__other__";
 
 type BookingWithClient = Booking & { clients: Client | null };
 
@@ -57,11 +68,27 @@ function AppointmentsContent() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  // Dropdown choices for the title; "Other…" lets her type a one-off title.
+  const [typeNames, setTypeNames] = useState<string[]>(DEFAULT_APPOINTMENT_TYPES);
+  const [titleChoice, setTitleChoice] = useState<string>(DEFAULT_APPOINTMENT_TYPES[0]);
+  // Saved places for the Location dropdown. "" = not chosen yet.
+  const [locations, setLocations] = useState<AppointmentLocation[]>([]);
+  const [locationChoice, setLocationChoice] = useState<string>("");
 
   async function load() {
     const { data: userData } = await supabase.auth.getUser();
     const user = userData.user;
-    if (user) setStudioId(user.id);
+    if (user) {
+      setStudioId(user.id);
+      setLocations(await loadAppointmentLocations(user.id));
+      const types = await loadAppointmentTypes(user.id);
+      if (types.length > 0) {
+        const names = types.map((t) => t.name);
+        setTypeNames(names);
+        setTitleChoice((current) => (current === CUSTOM_OPTION || names.includes(current) ? current : names[0]));
+      }
+    }
 
     const [{ data: apptData }, { data: bookingData }, { data: trialData }, { data: rehearsalData }, { data: clientData }] =
       await Promise.all([
@@ -162,20 +189,42 @@ function AppointmentsContent() {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (!studioId || !form.title.trim() || !form.appointment_date) return;
+    const title = titleChoice === CUSTOM_OPTION ? form.title.trim() : titleChoice;
+    if (!studioId || !title || !form.appointment_date) return;
+    // A saved place saves as "Name, address"; the other choices use what was typed.
+    const savedPlace = locations.find((l) => l.id === locationChoice);
+    const locationText = savedPlace ? formatLocation(savedPlace) : form.location.trim();
     setSaving(true);
-    const { error } = await supabase.from("appointments").insert({
+    const { data: created, error } = await supabase.from("appointments").insert({
       studio_id: studioId,
-      title: form.title.trim(),
+      title,
       appointment_date: form.appointment_date,
       appointment_time: form.appointment_time || null,
-      location: form.location.trim() || null,
+      location: locationText || null,
       client_id: form.client_id || null,
       status: form.status,
-    });
+    }).select("id").single();
     setSaving(false);
     if (!error) {
+      // Text the bride that it's booked (only when a client with a phone is chosen).
+      const client = clients.find((c) => c.id === form.client_id);
+      if (created && client?.phone && form.status === "confirmed") {
+        const { data: sess } = await supabase.auth.getSession();
+        fetch("/api/send-sms", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${sess.session?.access_token ?? ""}` },
+          body: JSON.stringify({ appointmentId: created.id }),
+        })
+          .then(async (r) => {
+            if (r.ok) {
+              const j = await r.json().catch(() => ({}));
+              if (j.ok) setNotice(`Booked. Text sent to ${client.bride_name}.`);
+            }
+          })
+          .catch(() => {});
+      }
       setForm(EMPTY_FORM);
+      setLocationChoice("");
       setShowForm(false);
       load();
     }
@@ -210,6 +259,8 @@ function AppointmentsContent() {
         Preview fittings, rehearsals, and every other meeting on the books.
       </p>
 
+      {notice && <p className="text-sm text-charcoal/70 bg-white border border-charcoal/10 rounded-md px-3 py-2 mb-4">{notice}</p>}
+
       {showForm && (
         <form
           onSubmit={handleCreate}
@@ -217,13 +268,28 @@ function AppointmentsContent() {
         >
           <div className="flex-1 min-w-[180px]">
             <label className="block text-charcoal/60 mb-1">Title</label>
-            <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
-              placeholder="e.g. Venue Walk-Through"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              required
-            />
+            <select
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30 bg-white"
+              value={titleChoice}
+              onChange={(e) => setTitleChoice(e.target.value)}
+            >
+              {typeNames.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+              <option value={CUSTOM_OPTION}>Other (type your own)</option>
+            </select>
+            {titleChoice === CUSTOM_OPTION && (
+              <input
+                className="w-full mt-2 border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
+                placeholder="e.g. Venue Walk-Through"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                required
+              />
+            )}
+            <p className="text-xs text-charcoal/40 mt-1">Add your own choices in Settings, Appointments.</p>
           </div>
           <div>
             <label className="block text-charcoal/60 mb-1">Date</label>
@@ -246,12 +312,39 @@ function AppointmentsContent() {
           </div>
           <div className="flex-1 min-w-[160px]">
             <label className="block text-charcoal/60 mb-1">Location</label>
-            <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
-              placeholder="Studio, venue, phone..."
-              value={form.location}
-              onChange={(e) => setForm({ ...form, location: e.target.value })}
-            />
+            <select
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30 bg-white"
+              value={locationChoice}
+              onChange={(e) => {
+                const choice = e.target.value;
+                setLocationChoice(choice);
+                if (choice === CLIENT_ADDRESS_OPTION) {
+                  // Start from the address on the client's booking, if there is one.
+                  const booking = bookings.find((b) => b.client_id === form.client_id && b.location);
+                  setForm({ ...form, location: booking?.location ?? "" });
+                } else if (choice === OTHER_LOCATION_OPTION || choice === "") {
+                  setForm({ ...form, location: "" });
+                }
+              }}
+            >
+              <option value="">Choose a location...</option>
+              {locations.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.name}
+                </option>
+              ))}
+              <option value={CLIENT_ADDRESS_OPTION}>At the client&apos;s address</option>
+              <option value={OTHER_LOCATION_OPTION}>Other (type it in)</option>
+            </select>
+            {(locationChoice === CLIENT_ADDRESS_OPTION || locationChoice === OTHER_LOCATION_OPTION) && (
+              <input
+                className="w-full mt-2 border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
+                placeholder={locationChoice === CLIENT_ADDRESS_OPTION ? "Client's street address" : "Venue, address, phone..."}
+                value={form.location}
+                onChange={(e) => setForm({ ...form, location: e.target.value })}
+              />
+            )}
+            <p className="text-xs text-charcoal/40 mt-1">Save your regular places in Settings, Appointments.</p>
           </div>
           <div>
             <label className="block text-charcoal/60 mb-1">Client</label>

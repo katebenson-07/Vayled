@@ -6,7 +6,9 @@ import { useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import FaceIdToggle from "@/components/FaceIdToggle";
 import { supabase } from "@/lib/supabaseClient";
-import { CustomQuestion, InquiryFormSettings, ServiceCatalogItem, StudioSettings } from "@/lib/types";
+import { AppointmentLocation, AppointmentType, CustomQuestion, InquiryFormSettings, ServiceCatalogItem, StudioSettings } from "@/lib/types";
+import { loadAppointmentLocations, loadAppointmentTypes } from "@/lib/appointmentTypes";
+import { DEFAULT_CONFIRM_TEMPLATE, DEFAULT_REMINDER_TEMPLATE, SMS_FIELDS } from "@/lib/sms";
 
 const STARTER_SERVICES: Array<{ name: string; default_rate: number }> = [
   { name: "Bridal Hair", default_rate: 200 },
@@ -61,13 +63,14 @@ const PROFILE_DEFAULTS: ProfileFields = {
   default_deposit_flat: 0,
 };
 
-type Tab = "profile" | "notifications" | "inquiry" | "invoice";
+type Tab = "profile" | "notifications" | "inquiry" | "invoice" | "appointments";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "profile", label: "Personal Information" },
   { id: "notifications", label: "Notifications" },
   { id: "inquiry", label: "Inquiry Form" },
   { id: "invoice", label: "Invoice" },
+  { id: "appointments", label: "Appointments" },
 ];
 
 function InquirySettingsContent() {
@@ -85,6 +88,21 @@ function InquirySettingsContent() {
   const [newServiceName, setNewServiceName] = useState("");
   const [newServiceRate, setNewServiceRate] = useState("");
   const [editingService, setEditingService] = useState<Record<string, { name: string; rate: string }>>({});
+  const [apptTypes, setApptTypes] = useState<AppointmentType[]>([]);
+  const [newTypeName, setNewTypeName] = useState("");
+  const [editingType, setEditingType] = useState<Record<string, string>>({});
+  const [places, setPlaces] = useState<AppointmentLocation[]>([]);
+  const [newPlaceName, setNewPlaceName] = useState("");
+  const [newPlaceAddress, setNewPlaceAddress] = useState("");
+  const [sms, setSms] = useState({
+    confirm_enabled: true,
+    confirm_template: DEFAULT_CONFIRM_TEMPLATE,
+    reminder_enabled: true,
+    reminder_template: DEFAULT_REMINDER_TEMPLATE,
+    reminder_extra: "",
+    timezone: "America/Chicago",
+  });
+  const [smsSaved, setSmsSaved] = useState(false);
 
   useEffect(() => {
     const requested = searchParams.get("tab");
@@ -110,6 +128,19 @@ function InquirySettingsContent() {
           serviceList = (inserted as ServiceCatalogItem[]) ?? [];
         }
         setServices(serviceList);
+        setApptTypes(await loadAppointmentTypes(uid));
+        setPlaces(await loadAppointmentLocations(uid));
+        const { data: smsRow } = await supabase.from("sms_settings").select("*").eq("studio_id", uid).maybeSingle();
+        if (smsRow) {
+          setSms({
+            confirm_enabled: smsRow.confirm_enabled,
+            confirm_template: smsRow.confirm_template,
+            reminder_enabled: smsRow.reminder_enabled,
+            reminder_template: smsRow.reminder_template,
+            reminder_extra: smsRow.reminder_extra ?? "",
+            timezone: smsRow.timezone ?? "America/Chicago",
+          });
+        }
         if (data) {
           setSettings({
             welcome_heading: data.welcome_heading,
@@ -213,6 +244,71 @@ function InquirySettingsContent() {
   async function removeService(id: string) {
     const { error } = await supabase.from("service_catalog").delete().eq("id", id);
     if (!error) setServices(services.filter((s) => s.id !== id));
+  }
+
+  async function addApptType(e: React.FormEvent) {
+    e.preventDefault();
+    const name = newTypeName.trim();
+    if (!name || !studioId) return;
+    if (apptTypes.some((t) => t.name.toLowerCase() === name.toLowerCase())) return;
+    const { data, error } = await supabase
+      .from("appointment_types")
+      .insert({ studio_id: studioId, name, order_index: apptTypes.length })
+      .select()
+      .single();
+    if (!error && data) {
+      setApptTypes([...apptTypes, data as AppointmentType]);
+      setNewTypeName("");
+    }
+  }
+
+  async function saveApptType(id: string) {
+    const name = editingType[id]?.trim();
+    if (!name) return;
+    const { error } = await supabase.from("appointment_types").update({ name }).eq("id", id);
+    if (!error) {
+      setApptTypes(apptTypes.map((t) => (t.id === id ? { ...t, name } : t)));
+      const next = { ...editingType };
+      delete next[id];
+      setEditingType(next);
+    }
+  }
+
+  async function removeApptType(id: string) {
+    const { error } = await supabase.from("appointment_types").delete().eq("id", id);
+    if (!error) setApptTypes(apptTypes.filter((t) => t.id !== id));
+  }
+
+  async function addPlace(e: React.FormEvent) {
+    e.preventDefault();
+    const name = newPlaceName.trim();
+    if (!name || !studioId) return;
+    const { data, error } = await supabase
+      .from("appointment_locations")
+      .insert({ studio_id: studioId, name, address: newPlaceAddress.trim() || null, order_index: places.length })
+      .select()
+      .single();
+    if (!error && data) {
+      setPlaces([...places, data as AppointmentLocation]);
+      setNewPlaceName("");
+      setNewPlaceAddress("");
+    }
+  }
+
+  async function removePlace(id: string) {
+    const { error } = await supabase.from("appointment_locations").delete().eq("id", id);
+    if (!error) setPlaces(places.filter((p) => p.id !== id));
+  }
+
+  async function saveSms() {
+    if (!studioId) return;
+    const { error } = await supabase
+      .from("sms_settings")
+      .upsert({ studio_id: studioId, ...sms, updated_at: new Date().toISOString() });
+    if (!error) {
+      setSmsSaved(true);
+      setTimeout(() => setSmsSaved(false), 2000);
+    }
   }
 
   async function save() {
@@ -445,6 +541,196 @@ function InquirySettingsContent() {
           </div>
         )}
       </section>
+      </div>
+
+      <div className={`space-y-6 ${activeTab === "appointments" ? "" : "hidden"}`}>
+        <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+          <h2 className="font-serif text-lg mb-1">Appointment titles</h2>
+          <p className="text-charcoal/60 text-sm mb-4">
+            These are the choices in the Title dropdown when you schedule an appointment. Preview, Rehearsal, and
+            Bridal Shower are there to start. Add your own, rename them, or remove ones you don&apos;t use.
+          </p>
+          <form onSubmit={addApptType} className="flex flex-wrap gap-2 mb-4 text-sm">
+            <input
+              className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[200px] focus:outline-none focus:border-charcoal/30"
+              placeholder="e.g. Venue Walk-Through"
+              value={newTypeName}
+              onChange={(e) => setNewTypeName(e.target.value)}
+            />
+            <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1 hover:bg-charcoal/90">
+              Add
+            </button>
+          </form>
+          {apptTypes.length === 0 ? (
+            <p className="text-charcoal/60 text-sm">Nothing here yet. Add your first title above.</p>
+          ) : (
+            <div className="space-y-2 text-sm">
+              {apptTypes.map((t) => {
+                const draft = editingType[t.id];
+                return (
+                  <div key={t.id} className="flex items-center justify-between border-b border-charcoal/10 pb-2 gap-2">
+                    {draft !== undefined ? (
+                      <>
+                        <input
+                          className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 focus:outline-none focus:border-charcoal/30"
+                          value={draft}
+                          onChange={(e) => setEditingType({ ...editingType, [t.id]: e.target.value })}
+                        />
+                        <div className="flex items-center gap-3">
+                          <button onClick={() => saveApptType(t.id)} className="text-gold hover:underline">
+                            Save
+                          </button>
+                          <button
+                            onClick={() => {
+                              const next = { ...editingType };
+                              delete next[t.id];
+                              setEditingType(next);
+                            }}
+                            className="text-charcoal/60"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <span>{t.name}</span>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => setEditingType({ ...editingType, [t.id]: t.name })}
+                            className="text-charcoal/60 hover:text-charcoal"
+                          >
+                            Edit
+                          </button>
+                          <button onClick={() => removeApptType(t.id)} className="text-red-600">
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+          <h2 className="font-serif text-lg mb-1">Saved locations</h2>
+          <p className="text-charcoal/60 text-sm mb-4">
+            Places you meet clients. They show up in the Location dropdown when you schedule an appointment. For
+            appointments at the client&apos;s home or venue, pick &ldquo;At the client&apos;s address&rdquo; there instead.
+          </p>
+          <form onSubmit={addPlace} className="flex flex-wrap gap-2 mb-4 text-sm">
+            <input
+              className="border border-charcoal/20 rounded-md px-2 py-1 flex-1 min-w-[160px] focus:outline-none focus:border-charcoal/30"
+              placeholder="Name, e.g. My studio"
+              value={newPlaceName}
+              onChange={(e) => setNewPlaceName(e.target.value)}
+            />
+            <input
+              className="border border-charcoal/20 rounded-md px-2 py-1 flex-[2] min-w-[220px] focus:outline-none focus:border-charcoal/30"
+              placeholder="Address"
+              value={newPlaceAddress}
+              onChange={(e) => setNewPlaceAddress(e.target.value)}
+            />
+            <button type="submit" className="bg-charcoal text-ivory rounded-md px-4 py-1 hover:bg-charcoal/90">
+              Add
+            </button>
+          </form>
+          {places.length === 0 ? (
+            <p className="text-charcoal/60 text-sm">No saved locations yet.</p>
+          ) : (
+            <div className="space-y-2 text-sm">
+              {places.map((p) => (
+                <div key={p.id} className="flex items-center justify-between border-b border-charcoal/10 pb-2 gap-2">
+                  <span>
+                    {p.name}
+                    {p.address ? <span className="text-charcoal/50"> · {p.address}</span> : null}
+                  </span>
+                  <button onClick={() => removePlace(p.id)} className="text-red-600">
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+          <h2 className="font-serif text-lg mb-1">Texts to your brides</h2>
+          <p className="text-charcoal/60 text-sm mb-4">
+            A text goes to the client when you schedule an appointment for her, and a reminder goes out the day
+            before. They send to the phone number on her client record. You can use these fields:{" "}
+            <span className="text-charcoal/80">{SMS_FIELDS.join("  ")}</span>
+          </p>
+          <div className="space-y-5 text-sm">
+            <div>
+              <label className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  checked={sms.confirm_enabled}
+                  onChange={(e) => setSms({ ...sms, confirm_enabled: e.target.checked })}
+                />
+                <span className="font-medium">Send a text when an appointment is booked</span>
+              </label>
+              <textarea
+                rows={3}
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
+                value={sms.confirm_template}
+                onChange={(e) => setSms({ ...sms, confirm_template: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  checked={sms.reminder_enabled}
+                  onChange={(e) => setSms({ ...sms, reminder_enabled: e.target.checked })}
+                />
+                <span className="font-medium">Send a reminder 24 hours before</span>
+              </label>
+              <textarea
+                rows={3}
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
+                value={sms.reminder_template}
+                onChange={(e) => setSms({ ...sms, reminder_template: e.target.value })}
+              />
+              <label className="block text-charcoal/60 mt-3 mb-1">
+                Extra info added to every reminder (parking, what to bring, come with clean dry hair...)
+              </label>
+              <textarea
+                rows={3}
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
+                placeholder="e.g. Please arrive with clean, dry hair and bring your inspo photos."
+                value={sms.reminder_extra}
+                onChange={(e) => setSms({ ...sms, reminder_extra: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-charcoal/60 mb-1">Your time zone</label>
+              <select
+                className="border border-charcoal/20 rounded-md px-2 py-1 focus:outline-none focus:border-charcoal/30"
+                value={sms.timezone}
+                onChange={(e) => setSms({ ...sms, timezone: e.target.value })}
+              >
+                <option value="America/New_York">Eastern</option>
+                <option value="America/Chicago">Central</option>
+                <option value="America/Denver">Mountain</option>
+                <option value="America/Phoenix">Arizona</option>
+                <option value="America/Los_Angeles">Pacific</option>
+                <option value="America/Anchorage">Alaska</option>
+                <option value="Pacific/Honolulu">Hawaii</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-3">
+              <button onClick={saveSms} className="bg-charcoal text-ivory rounded-md px-4 py-2 hover:bg-charcoal/90">
+                Save text settings
+              </button>
+              {smsSaved && <span className="text-charcoal/60">Saved</span>}
+            </div>
+          </div>
+        </section>
       </div>
 
       <div className={`space-y-6 ${activeTab === "invoice" ? "" : "hidden"}`}>

@@ -19,7 +19,7 @@ export default function TermsPage() {
       <section className="max-w-3xl mx-auto px-6 pt-16 pb-24 md:pt-24">
         <p className="text-xs uppercase tracking-widest-lg text-gold mb-4">Legal</p>
         <h1 className="font-serif text-4xl md:text-5xl text-charcoal mb-4">Terms of Service</h1>
-        <p className="text-sm text-charcoal/50 mb-10">Last updated August 31, 2026</p>
+        <p className="text-sm text-charcoal/50 mb-10">Last updated November 4, 2026</p>
 
         <P>
           These terms cover your use of vayled.com and the Vayled app. By creating an account, accepting an invite
@@ -46,6 +46,20 @@ export default function TermsPage() {
           Client and wedding information entered into Vayled belongs to the studio that entered it. We store and
           process it to run the app — we don’t claim ownership of it, sell it, or use it beyond what’s described in
           our Privacy Policy.
+        </P>
+
+        <H2>Text messaging</H2>
+        <P>
+          Studios can use Vayled to text their clients about appointments. By giving your mobile number to a studio
+          that uses Vayled, you agree to receive appointment texts from that studio through Vayled: a confirmation
+          when an appointment is booked and a reminder the day before. Consent to receive texts is not a condition
+          of buying any service. Message frequency varies with your appointments, and message and data rates may
+          apply. Reply STOP to cancel at any time, or HELP for help, or email us at the address below. Carriers are
+          not liable for delayed or undelivered messages.
+        </P>
+        <P>
+          Studios using Vayled are responsible for texting only clients who have given them their number for
+          appointment purposes, and for honoring opt-outs.
         </P>
 
         <H2>Acceptable use</H2>

@@ -290,7 +290,38 @@ export interface Appointment {
   location: string | null;
   status: AppointmentStatus;
   notes: string | null;
+  confirmation_sent_at?: string | null;
+  reminder_sent_at?: string | null;
   created_at: string;
+}
+
+/** Wording for the texts sent to a bride (booked confirmation + 24 hour reminder). */
+export interface SmsSettings {
+  studio_id: string;
+  confirm_enabled: boolean;
+  confirm_template: string;
+  reminder_enabled: boolean;
+  reminder_template: string;
+  reminder_extra: string;
+  timezone: string;
+}
+
+/** One entry in a studio's dropdown of appointment titles (Preview, Rehearsal,
+ *  Bridal Shower, plus anything the studio adds in Settings > Appointments). */
+export interface AppointmentType {
+  id: string;
+  studio_id: string;
+  name: string;
+  order_index: number;
+}
+
+/** A saved place for appointments (her studio, a favorite meeting spot). */
+export interface AppointmentLocation {
+  id: string;
+  studio_id: string;
+  name: string;
+  address: string | null;
+  order_index: number;
 }
 
 export interface ContractClause {

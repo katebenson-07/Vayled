@@ -1069,3 +1069,70 @@ create policy "Users manage their own device tokens" on device_tokens
   for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- ============================================================================
+-- Appointment titles
+-- The choices in the Title dropdown on the Appointments page. The app creates
+-- Preview, Rehearsal, and Bridal Shower for each studio the first time they
+-- open it; studios can add, rename, and remove their own in Settings.
+-- ============================================================================
+
+create table if not exists appointment_types (
+  id uuid primary key default gen_random_uuid(),
+  studio_id uuid not null references auth.users(id) on delete cascade,
+  name text not null,
+  order_index int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table appointment_types enable row level security;
+
+drop policy if exists "Studios manage their own appointment types" on appointment_types;
+create policy "Studios manage their own appointment types" on appointment_types
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+-- ============================================================================
+-- Saved appointment locations
+-- Places a studio meets clients (their studio, a coffee shop, a friend's
+-- salon) so they can pick one from a dropdown instead of retyping an address.
+-- ============================================================================
+
+create table if not exists appointment_locations (
+  id uuid primary key default gen_random_uuid(),
+  studio_id uuid not null references auth.users(id) on delete cascade,
+  name text not null,
+  address text,
+  order_index int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table appointment_locations enable row level security;
+
+drop policy if exists "Studios manage their own appointment locations" on appointment_locations;
+create policy "Studios manage their own appointment locations" on appointment_locations
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+-- ============================================================================
+-- Appointment texts (confirmation + 24 hour reminder)
+-- One row per studio. The studio edits the wording in Settings > Appointments.
+-- ============================================================================
+
+create table if not exists sms_settings (
+  studio_id uuid primary key references auth.users(id) on delete cascade,
+  confirm_enabled boolean not null default true,
+  confirm_template text not null default 'Hi {bride_name}! Your {title} with {studio_name} is booked for {date} at {time}. Location: {location}. Reply with any questions.',
+  reminder_enabled boolean not null default true,
+  reminder_template text not null default 'Hi {bride_name}! A reminder that your {title} with {studio_name} is tomorrow, {date} at {time}. Location: {location}.',
+  reminder_extra text not null default '',
+  timezone text not null default 'America/Chicago',
+  updated_at timestamptz not null default now()
+);
+
+alter table sms_settings enable row level security;
+
+drop policy if exists "Studios manage their own sms settings" on sms_settings;
+create policy "Studios manage their own sms settings" on sms_settings
+  for all using (auth.uid() = studio_id) with check (auth.uid() = studio_id);
+
+alter table appointments add column if not exists confirmation_sent_at timestamptz;
+alter table appointments add column if not exists reminder_sent_at timestamptz;
