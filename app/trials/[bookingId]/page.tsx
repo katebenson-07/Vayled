@@ -412,26 +412,49 @@ function TrialContent() {
           </button>
           {feedbackMsg && <span className="text-charcoal/60">{feedbackMsg}</span>}
         </div>
-        {(trial.feedback_loved || trial.feedback_change || trial.feedback_final_look) && (
+        {trial.feedback_answers && (
           <div className="mb-5 space-y-3 text-sm bg-ivory rounded-md p-4">
-            {trial.feedback_loved && (
+            <p>
+              <span className="text-charcoal/60">Confidence: </span>
+              {{
+                yes: "Feels like her. Ready to go.",
+                refine: "Happy, with a few refinements.",
+                talk: "Wants to talk it through. Follow up with her.",
+              }[trial.feedback_answers.confidence]}
+            </p>
+            {trial.feedback_answers.hair_topics.length > 0 && (
+              <p>
+                <span className="text-charcoal/60">Hair thoughts: </span>
+                {trial.feedback_answers.hair_topics.join(", ")}
+              </p>
+            )}
+            {trial.feedback_answers.hair_notes && (
               <div>
-                <p className="text-charcoal/60">What she loved</p>
-                <p className="whitespace-pre-wrap">{trial.feedback_loved}</p>
+                <p className="text-charcoal/60">Hair notes</p>
+                <p className="whitespace-pre-wrap">{trial.feedback_answers.hair_notes}</p>
               </div>
             )}
-            {trial.feedback_change && (
+            {trial.feedback_answers.makeup_topics.length > 0 && (
+              <p>
+                <span className="text-charcoal/60">Makeup thoughts: </span>
+                {trial.feedback_answers.makeup_topics.join(", ")}
+              </p>
+            )}
+            {trial.feedback_answers.makeup_notes && (
               <div>
-                <p className="text-charcoal/60">What she&apos;d change</p>
-                <p className="whitespace-pre-wrap">{trial.feedback_change}</p>
+                <p className="text-charcoal/60">Makeup notes</p>
+                <p className="whitespace-pre-wrap">{trial.feedback_answers.makeup_notes}</p>
               </div>
             )}
-            {trial.feedback_final_look && (
+            {trial.feedback_answers.anything_else && (
               <div>
-                <p className="text-charcoal/60">Her final look choices</p>
-                <p className="whitespace-pre-wrap">{trial.feedback_final_look}</p>
+                <p className="text-charcoal/60">Anything else</p>
+                <p className="whitespace-pre-wrap">{trial.feedback_answers.anything_else}</p>
               </div>
             )}
+            <p className="text-charcoal/60">
+              Photo permission: {trial.feedback_answers.photo_permission ? "Yes" : "Not given"}
+            </p>
           </div>
         )}
         <div className="grid grid-cols-3 gap-4 mb-4 text-sm">

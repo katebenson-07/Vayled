@@ -248,12 +248,29 @@ export interface TrialSession {
   makeup_rating: number | null;
   quote: string | null;
   /** From the client's feedback form. */
+  feedback_answers?: FeedbackAnswers | null;
   feedback_loved?: string | null;
   feedback_change?: string | null;
   feedback_final_look?: string | null;
   feedback_submitted_at?: string | null;
   feedback_sent_at?: string | null;
   created_at: string;
+}
+
+/** What a client submits on the preview feedback form. */
+export interface FeedbackAnswers {
+  received_hair: boolean;
+  received_makeup: boolean;
+  overall: number;
+  hair_rating: number | null;
+  makeup_rating: number | null;
+  hair_topics: string[];
+  hair_notes: string | null;
+  makeup_topics: string[];
+  makeup_notes: string | null;
+  confidence: "yes" | "refine" | "talk";
+  anything_else: string | null;
+  photo_permission: boolean;
 }
 
 /** A separate scheduled add-on from the trial — actual paid styling for the

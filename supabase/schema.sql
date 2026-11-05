@@ -1223,3 +1223,96 @@ end;
 $$;
 
 grant execute on function public.submit_preview_feedback(uuid, integer, integer, integer, text, text, text) to anon, authenticated;
+
+-- Feedback form v2 (matches the Figma mockup): structured answers.
+alter table trial_sessions add column if not exists feedback_answers jsonb;
+
+create or replace function public.get_preview_feedback(p_booking_id uuid)
+returns jsonb
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select jsonb_build_object(
+    'bride_name', c.bride_name,
+    'wedding_date', c.wedding_date,
+    'studio_name', coalesce(s.studio_name, 'Your studio'),
+    'submitted', t.feedback_submitted_at is not null
+  )
+  from bookings b
+  join clients c on c.id = b.client_id
+  left join trial_sessions t on t.booking_id = b.id
+  left join studio_settings s on s.studio_id = b.stylist_id
+  where b.id = p_booking_id
+    and b.status in ('booked', 'completed');
+$$;
+
+grant execute on function public.get_preview_feedback(uuid) to anon, authenticated;
+
+create or replace function public.submit_preview_feedback_v2(p_booking_id uuid, p_answers jsonb)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_row trial_sessions%rowtype;
+  v_overall integer := nullif(p_answers->>'overall', '')::integer;
+  v_hair integer := nullif(p_answers->>'hair_rating', '')::integer;
+  v_makeup integer := nullif(p_answers->>'makeup_rating', '')::integer;
+  v_conf text := p_answers->>'confidence';
+  v_clean jsonb;
+begin
+  if v_overall is null or v_overall not between 1 and 5 then
+    return jsonb_build_object('ok', false, 'error', 'Please tell us how you felt about the finished look.');
+  end if;
+  if v_conf is null or v_conf not in ('yes', 'refine', 'talk') then
+    return jsonb_build_object('ok', false, 'error', 'Please choose how you are feeling about the wedding day.');
+  end if;
+
+  select t.* into v_row
+  from trial_sessions t
+  join bookings b on b.id = t.booking_id
+  where t.booking_id = p_booking_id and b.status in ('booked', 'completed')
+  for update of t;
+
+  if not found then
+    return jsonb_build_object('ok', false, 'error', 'We could not find this preview.');
+  end if;
+  if v_row.feedback_submitted_at is not null then
+    return jsonb_build_object('ok', false, 'error', 'Thank you, your feedback was already received.');
+  end if;
+
+  v_clean := jsonb_build_object(
+    'received_hair', coalesce((p_answers->>'received_hair')::boolean, true),
+    'received_makeup', coalesce((p_answers->>'received_makeup')::boolean, true),
+    'overall', v_overall,
+    'hair_rating', case when v_hair between 1 and 5 then v_hair end,
+    'makeup_rating', case when v_makeup between 1 and 5 then v_makeup end,
+    'hair_topics', coalesce((
+      select jsonb_agg(x) from jsonb_array_elements_text(coalesce(p_answers->'hair_topics', '[]'::jsonb)) x
+      where x in ('Shape', 'Volume', 'Face framing', 'Hold', 'Accessories')), '[]'::jsonb),
+    'hair_notes', left(nullif(trim(p_answers->>'hair_notes'), ''), 600),
+    'makeup_topics', coalesce((
+      select jsonb_agg(x) from jsonb_array_elements_text(coalesce(p_answers->'makeup_topics', '[]'::jsonb)) x
+      where x in ('Complexion', 'Eyes', 'Lashes', 'Lip color', 'Overall tone')), '[]'::jsonb),
+    'makeup_notes', left(nullif(trim(p_answers->>'makeup_notes'), ''), 600),
+    'confidence', v_conf,
+    'anything_else', left(nullif(trim(p_answers->>'anything_else'), ''), 600),
+    'photo_permission', coalesce((p_answers->>'photo_permission')::boolean, false)
+  );
+
+  update trial_sessions set
+    overall_rating = v_overall,
+    hair_rating = case when v_hair between 1 and 5 then v_hair else hair_rating end,
+    makeup_rating = case when v_makeup between 1 and 5 then v_makeup else makeup_rating end,
+    feedback_answers = v_clean,
+    feedback_submitted_at = now()
+  where id = v_row.id;
+
+  return jsonb_build_object('ok', true);
+end;
+$$;
+
+grant execute on function public.submit_preview_feedback_v2(uuid, jsonb) to anon, authenticated;
