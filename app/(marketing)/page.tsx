@@ -53,6 +53,24 @@ const FEATURES = [
   },
 ];
 
+const HIGHLIGHTS = [
+  {
+    title: "The bride portal",
+    body: "A private page for every client, with her timeline and details.",
+    src: "/marketing/bride-portal.jpg",
+  },
+  {
+    title: "Preview scheduling",
+    body: "She picks a time from your openings. Reminders go out for you.",
+    src: "/marketing/trial-scheduling.jpg",
+  },
+  {
+    title: "Team and payroll",
+    body: "Commissions, payouts, and 1099 tracking without spreadsheets.",
+    src: "/marketing/payroll.jpg",
+  },
+];
+
 export default function MarketingHome() {
   return (
     <div>
@@ -91,6 +109,24 @@ export default function MarketingHome() {
 
       <section className="max-w-6xl mx-auto px-6 pt-12 pb-20">
         <FeatureVisual label="Vayled dashboard" src="/marketing/dashboard.jpg" />
+      </section>
+
+      <section className="max-w-6xl mx-auto px-6 pb-24 text-center">
+        <h2 className="font-display font-semibold text-lg md:text-xl uppercase tracking-[0.22em] text-charcoal mb-12">
+          Everything your studio needs
+        </h2>
+        <div className="grid md:grid-cols-3 gap-8 text-left">
+          {HIGHLIGHTS.map((h) => (
+            <div key={h.title}>
+              <FeatureVisual label={h.title} src={h.src} />
+              <p className="font-display font-semibold text-[12px] uppercase tracking-[0.2em] mt-5 mb-2">{h.title}</p>
+              <p className="text-sm text-charcoal/65 leading-relaxed mb-3">{h.body}</p>
+              <Link href="/features" className="text-[12px] tracking-wide border-b border-charcoal pb-0.5 hover:text-wine hover:border-wine">
+                Learn more
+              </Link>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="bg-white border-y border-charcoal/10">
