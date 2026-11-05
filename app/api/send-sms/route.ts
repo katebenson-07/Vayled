@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { DEFAULT_CONFIRM_TEMPLATE, fillTemplate, sendViaTwilio, toE164 } from "@/lib/sms";
+import { DEFAULT_CONFIRM_TEMPLATE, DEFAULT_FEEDBACK_TEMPLATE, fillTemplate, sendViaTwilio, toE164 } from "@/lib/sms";
 
 /**
  * Texts the bride that her appointment is booked. Runs as the signed-in
@@ -21,11 +21,16 @@ export async function POST(req: NextRequest) {
   const studioId = userData.user.id;
 
   let appointmentId: string | undefined;
+  let feedbackBookingId: string | undefined;
   try {
-    appointmentId = (await req.json()).appointmentId;
+    const json = await req.json();
+    appointmentId = json.appointmentId;
+    feedbackBookingId = json.feedbackBookingId;
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
+
+  if (feedbackBookingId) return sendFeedback(supabase, studioId, feedbackBookingId);
   if (!appointmentId) return NextResponse.json({ error: "Missing appointmentId." }, { status: 400 });
 
   const { data: appt } = await supabase.from("appointments").select("*").eq("id", appointmentId).maybeSingle();
@@ -62,5 +67,45 @@ export async function POST(req: NextRequest) {
   if (err) return NextResponse.json({ error: err }, { status: 502 });
 
   await supabase.from("appointments").update({ confirmation_sent_at: new Date().toISOString() }).eq("id", appointmentId);
+  return NextResponse.json({ ok: true });
+}
+
+/** Texts the bride her preview feedback link (the "Text feedback form" button). */
+async function sendFeedback(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  studioId: string,
+  bookingId: string
+) {
+  const { data: booking } = await supabase.from("bookings").select("id, client_id").eq("id", bookingId).maybeSingle();
+  if (!booking) return NextResponse.json({ error: "Booking not found." }, { status: 404 });
+
+  const [{ data: client }, { data: studio }, { data: sms }] = await Promise.all([
+    supabase.from("clients").select("bride_name, phone, sms_consent").eq("id", booking.client_id).maybeSingle(),
+    supabase.from("studio_settings").select("studio_name, contact_phone").eq("studio_id", studioId).maybeSingle(),
+    supabase.from("sms_settings").select("*").eq("studio_id", studioId).maybeSingle(),
+  ]);
+  if (client?.sms_consent === false) {
+    return NextResponse.json({ error: "This client didn't opt in to texts." }, { status: 400 });
+  }
+  const to = toE164(client?.phone);
+  if (!client || !to) return NextResponse.json({ error: "This client has no valid phone number." }, { status: 400 });
+
+  const site = process.env.NEXT_PUBLIC_SITE_URL || "https://www.vayled.com";
+  const body = fillTemplate(sms?.feedback_template ?? DEFAULT_FEEDBACK_TEMPLATE, {
+    bride_name: client.bride_name,
+    title: "Preview",
+    date: new Date().toISOString().slice(0, 10),
+    time: null,
+    location: null,
+    studio_name: studio?.studio_name ?? null,
+    studio_phone: studio?.contact_phone ?? null,
+    feedback_link: `${site}/feedback/${bookingId}`,
+  });
+  const err = await sendViaTwilio(to, body);
+  if (err === "not_configured") return NextResponse.json({ error: "Text sending isn't set up yet." }, { status: 501 });
+  if (err) return NextResponse.json({ error: err }, { status: 502 });
+
+  await supabase.from("trial_sessions").update({ feedback_sent_at: new Date().toISOString() }).eq("booking_id", bookingId);
   return NextResponse.json({ ok: true });
 }

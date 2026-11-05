@@ -1140,3 +1140,86 @@ alter table appointments add column if not exists reminder_sent_at timestamptz;
 -- Text-message opt-in captured on the public inquiry form.
 alter table clients add column if not exists sms_consent boolean;
 alter table clients add column if not exists sms_consent_at timestamptz;
+
+-- ============================================================================
+-- Client feedback form (sent after the preview)
+-- Public link /feedback/[bookingId]. Answers land on the preview session:
+-- the star ratings fill the existing ratings, the rest go in new columns.
+-- ============================================================================
+
+alter table trial_sessions add column if not exists feedback_loved text;
+alter table trial_sessions add column if not exists feedback_change text;
+alter table trial_sessions add column if not exists feedback_final_look text;
+alter table trial_sessions add column if not exists feedback_submitted_at timestamptz;
+alter table trial_sessions add column if not exists feedback_sent_at timestamptz;
+
+alter table sms_settings add column if not exists feedback_enabled boolean not null default true;
+alter table sms_settings add column if not exists feedback_template text not null default 'Hi {bride_name}! Thank you for coming in for your preview with {studio_name}. We would love your feedback on your look: {feedback_link}';
+
+create or replace function public.get_preview_feedback(p_booking_id uuid)
+returns jsonb
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select jsonb_build_object(
+    'bride_name', c.bride_name,
+    'studio_name', coalesce(s.studio_name, 'Your studio'),
+    'submitted', t.feedback_submitted_at is not null
+  )
+  from bookings b
+  join clients c on c.id = b.client_id
+  left join trial_sessions t on t.booking_id = b.id
+  left join studio_settings s on s.studio_id = b.stylist_id
+  where b.id = p_booking_id
+    and b.status in ('booked', 'completed');
+$$;
+
+grant execute on function public.get_preview_feedback(uuid) to anon, authenticated;
+
+create or replace function public.submit_preview_feedback(
+  p_booking_id uuid,
+  p_overall integer,
+  p_hair integer,
+  p_makeup integer,
+  p_loved text,
+  p_change text,
+  p_final_look text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_row trial_sessions%rowtype;
+begin
+  select t.* into v_row
+  from trial_sessions t
+  join bookings b on b.id = t.booking_id
+  where t.booking_id = p_booking_id and b.status in ('booked', 'completed')
+  for update of t;
+
+  if not found then
+    return jsonb_build_object('ok', false, 'error', 'We could not find this preview.');
+  end if;
+  if v_row.feedback_submitted_at is not null then
+    return jsonb_build_object('ok', false, 'error', 'Thank you, your feedback was already received.');
+  end if;
+
+  update trial_sessions set
+    overall_rating = case when p_overall between 1 and 5 then p_overall else overall_rating end,
+    hair_rating = case when p_hair between 1 and 5 then p_hair else hair_rating end,
+    makeup_rating = case when p_makeup between 1 and 5 then p_makeup else makeup_rating end,
+    feedback_loved = left(nullif(trim(p_loved), ''), 2000),
+    feedback_change = left(nullif(trim(p_change), ''), 2000),
+    feedback_final_look = left(nullif(trim(p_final_look), ''), 2000),
+    feedback_submitted_at = now()
+  where id = v_row.id;
+
+  return jsonb_build_object('ok', true);
+end;
+$$;
+
+grant execute on function public.submit_preview_feedback(uuid, integer, integer, integer, text, text, text) to anon, authenticated;

@@ -21,6 +21,7 @@ const DISALLOWED = [
   "/inquiry-settings",
   "/invoices",
   "/trials",
+  "/feedback",
   "/portal",
   "/inquire",
   "/api",

@@ -247,6 +247,12 @@ export interface TrialSession {
   hair_rating: number | null;
   makeup_rating: number | null;
   quote: string | null;
+  /** From the client's feedback form. */
+  feedback_loved?: string | null;
+  feedback_change?: string | null;
+  feedback_final_look?: string | null;
+  feedback_submitted_at?: string | null;
+  feedback_sent_at?: string | null;
   created_at: string;
 }
 
@@ -306,6 +312,8 @@ export interface SmsSettings {
   reminder_enabled: boolean;
   reminder_template: string;
   reminder_extra: string;
+  feedback_enabled?: boolean;
+  feedback_template?: string;
   timezone: string;
 }
 

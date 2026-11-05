@@ -9,6 +9,9 @@ export const DEFAULT_CONFIRM_TEMPLATE =
 export const DEFAULT_REMINDER_TEMPLATE =
   "Hi {bride_name}! A reminder that your {title} with {studio_name} is tomorrow, {date} at {time}. Location: {location}.";
 
+export const DEFAULT_FEEDBACK_TEMPLATE =
+  "Hi {bride_name}! Thank you for coming in for your preview with {studio_name}. We would love your feedback on your look: {feedback_link}";
+
 /** Merge fields a studio can use in either message. */
 export const SMS_FIELDS = ["{bride_name}", "{title}", "{date}", "{time}", "{location}", "{studio_name}", "{studio_phone}"];
 
@@ -22,6 +25,7 @@ export interface SmsContext {
   location: string | null;
   studio_name: string | null;
   studio_phone: string | null;
+  feedback_link?: string;
 }
 
 function prettyDate(iso: string): string {
@@ -54,10 +58,11 @@ export function fillTemplate(template: string, ctx: SmsContext): string {
     location: ctx.location?.trim() || "to be confirmed",
     studio_name: ctx.studio_name?.trim() || "your stylist",
     studio_phone: ctx.studio_phone?.trim() || "",
+    feedback_link: ctx.feedback_link ?? "",
   };
   return template
     .replace(/\{(\w+)\}/g, (m, key) => (key in values ? values[key] : m))
-    .replace(/\s{2,}/g, " ")
+    .replace(/[ \t]{2,}/g, " ")
     .trim();
 }
 

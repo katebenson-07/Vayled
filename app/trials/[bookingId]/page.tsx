@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
+import LocationPicker from "@/components/LocationPicker";
 import { supabase } from "@/lib/supabaseClient";
 import { Booking, Client, TrialSession, TrialSlotOffer } from "@/lib/types";
 import { format, parseISO } from "date-fns";
@@ -35,6 +36,8 @@ function TrialContent() {
   const [newSlotTime, setNewSlotTime] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [feedbackLinkCopied, setFeedbackLinkCopied] = useState(false);
+  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
   async function loadSlots() {
     const { data } = await supabase
@@ -132,6 +135,31 @@ function TrialContent() {
     setTimeout(() => setLinkCopied(false), 2000);
   }
 
+  const feedbackUrl = typeof window !== "undefined" ? `${window.location.origin}/feedback/${bookingId}` : "";
+
+  function copyFeedbackLink() {
+    navigator.clipboard.writeText(feedbackUrl);
+    setFeedbackLinkCopied(true);
+    setTimeout(() => setFeedbackLinkCopied(false), 2000);
+  }
+
+  async function textFeedbackLink() {
+    setFeedbackMsg(null);
+    const { data: sess } = await supabase.auth.getSession();
+    const res = await fetch("/api/send-sms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${sess.session?.access_token ?? ""}` },
+      body: JSON.stringify({ feedbackBookingId: bookingId }),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (res.ok && j.ok) {
+      setFeedbackMsg(`Texted to ${client?.bride_name ?? "client"}.`);
+      load();
+    } else {
+      setFeedbackMsg(j.error ?? "Couldn't send the text.");
+    }
+  }
+
   if (loading || !trial) return <p className="text-charcoal/60">Loading...</p>;
 
   return (
@@ -184,10 +212,10 @@ function TrialContent() {
           </div>
           <div>
             <label className="block text-charcoal/60 mb-1">Location</label>
-            <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
-              defaultValue={trial.location ?? ""}
-              onBlur={(e) => update({ location: e.target.value })}
+            <LocationPicker
+              value={trial.location}
+              clientAddress={booking?.location}
+              onChange={(v) => update({ location: v })}
             />
           </div>
           <div>
@@ -366,7 +394,46 @@ function TrialContent() {
       </section>
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
-        <h2 className="font-serif text-lg mb-4">Client feedback</h2>
+        <h2 className="font-serif text-lg mb-1">Client feedback</h2>
+        <p className="text-xs text-charcoal/50 mb-3">
+          Send her the feedback form. Her answers fill in the stars and boxes below.
+          {trial.feedback_submitted_at
+            ? " She submitted it."
+            : trial.feedback_sent_at
+              ? " Sent, waiting for her answers."
+              : ""}
+        </p>
+        <div className="flex flex-wrap items-center gap-2 mb-5 text-sm">
+          <button onClick={copyFeedbackLink} className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-ivory">
+            {feedbackLinkCopied ? "Copied" : "Copy link"}
+          </button>
+          <button onClick={textFeedbackLink} className="bg-charcoal text-ivory rounded-md px-3 py-1.5 hover:bg-charcoal/90">
+            Text feedback form
+          </button>
+          {feedbackMsg && <span className="text-charcoal/60">{feedbackMsg}</span>}
+        </div>
+        {(trial.feedback_loved || trial.feedback_change || trial.feedback_final_look) && (
+          <div className="mb-5 space-y-3 text-sm bg-ivory rounded-md p-4">
+            {trial.feedback_loved && (
+              <div>
+                <p className="text-charcoal/60">What she loved</p>
+                <p className="whitespace-pre-wrap">{trial.feedback_loved}</p>
+              </div>
+            )}
+            {trial.feedback_change && (
+              <div>
+                <p className="text-charcoal/60">What she&apos;d change</p>
+                <p className="whitespace-pre-wrap">{trial.feedback_change}</p>
+              </div>
+            )}
+            {trial.feedback_final_look && (
+              <div>
+                <p className="text-charcoal/60">Her final look choices</p>
+                <p className="whitespace-pre-wrap">{trial.feedback_final_look}</p>
+              </div>
+            )}
+          </div>
+        )}
         <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
           <div>
             <p className="text-charcoal/60 mb-1">Overall look</p>

@@ -25,6 +25,9 @@ export function buildMergeContext(
     trial_pick_link: booking
       ? `${typeof window !== "undefined" ? window.location.origin : "https://vayled.com"}/trials/${booking.id}/pick`
       : "",
+    feedback_link: booking
+      ? `${typeof window !== "undefined" ? window.location.origin : "https://vayled.com"}/feedback/${booking.id}`
+      : "",
   };
 }
 
@@ -55,4 +58,4 @@ export function stripFieldMarkers(text: string): string {
 export const FIELD_MARKERS = { start: FIELD_START, end: FIELD_END };
 
 export const MERGE_FIELD_HELP =
-  "Available fields: {{bride_name}}, {{wedding_date}}, {{venue}}, {{contact_email}}, {{contact_phone}}, {{contract_total}}, {{deposit_amount}}, {{balance_due}}, {{studio_name}}, {{today}}, {{trial_pick_link}}";
+  "Available fields: {{bride_name}}, {{wedding_date}}, {{venue}}, {{contact_email}}, {{contact_phone}}, {{contract_total}}, {{deposit_amount}}, {{balance_due}}, {{studio_name}}, {{today}}, {{trial_pick_link}}, {{feedback_link}}";

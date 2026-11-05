@@ -31,6 +31,12 @@ export const DEFAULT_TEMPLATES: Omit<EmailTemplate, "id" | "studio_id" | "create
       "Hi {{bride_name}},\n\nI have a few openings for your bridal preview — pick whichever works best for you here:\n\n{{trial_pick_link}}\n\nCan't wait to see you!",
   },
   {
+    name: "Preview feedback",
+    subject: "How was your preview?",
+    body:
+      "Hi {{bride_name}},\n\nThank you so much for coming in for your preview! I would love to hear how it went and what you want for your wedding day look. It takes about two minutes:\n\n{{feedback_link}}\n\nThank you!",
+  },
+  {
     name: "Preview prep questionnaire",
     subject: "A few quick questions before your preview",
     body:

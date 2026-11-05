@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { buildReminder, DEFAULT_REMINDER_TEMPLATE, sendViaTwilio, toE164 } from "@/lib/sms";
+import { buildReminder, DEFAULT_FEEDBACK_TEMPLATE, DEFAULT_REMINDER_TEMPLATE, fillTemplate, sendViaTwilio, toE164 } from "@/lib/sms";
 
 /**
  * Daily job (see vercel.json). Texts every bride whose appointment is tomorrow
@@ -9,6 +9,11 @@ import { buildReminder, DEFAULT_REMINDER_TEMPLATE, sendViaTwilio, toE164 } from 
  * token on cron calls.
  */
 export const dynamic = "force-dynamic";
+
+function yesterdayIn(tz: string): string {
+  const d = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  return new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(d);
+}
 
 function tomorrowIn(tz: string): string {
   const d = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -76,5 +81,51 @@ export async function GET(req: NextRequest) {
     await db.from("appointments").update({ reminder_sent_at: new Date().toISOString() }).eq("id", a.id);
     sent++;
   }
-  return NextResponse.json({ sent, failed });
+
+  // Feedback form: text the bride the morning after her preview.
+  let feedbackSent = 0;
+  const site = process.env.NEXT_PUBLIC_SITE_URL || "https://www.vayled.com";
+  const back = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const { data: previews } = await db
+    .from("trial_sessions")
+    .select("id, studio_id, booking_id, session_date")
+    .gte("session_date", back)
+    .lte("session_date", from)
+    .is("feedback_sent_at", null)
+    .is("feedback_submitted_at", null);
+  for (const t of previews ?? []) {
+    const s = settingsByStudio.get(t.studio_id);
+    if (s && s.feedback_enabled === false) continue;
+    const tz = s?.timezone ?? "America/Chicago";
+    if (t.session_date !== yesterdayIn(tz)) continue;
+
+    const { data: booking } = await db.from("bookings").select("client_id, status").eq("id", t.booking_id).maybeSingle();
+    if (!booking || booking.status === "cancelled") continue;
+    const [{ data: client }, { data: studio }] = await Promise.all([
+      db.from("clients").select("bride_name, phone, sms_consent").eq("id", booking.client_id).maybeSingle(),
+      db.from("studio_settings").select("studio_name, contact_phone").eq("studio_id", t.studio_id).maybeSingle(),
+    ]);
+    if (!client || client.sms_consent === false) continue;
+    const phone = toE164(client.phone);
+    if (!phone) continue;
+
+    const body = fillTemplate(s?.feedback_template ?? DEFAULT_FEEDBACK_TEMPLATE, {
+      bride_name: client.bride_name,
+      title: "Preview",
+      date: t.session_date,
+      time: null,
+      location: null,
+      studio_name: studio?.studio_name ?? null,
+      studio_phone: studio?.contact_phone ?? null,
+      feedback_link: `${site}/feedback/${t.booking_id}`,
+    });
+    const err = await sendViaTwilio(phone, body);
+    if (err) {
+      failed++;
+      continue;
+    }
+    await db.from("trial_sessions").update({ feedback_sent_at: new Date().toISOString() }).eq("id", t.id);
+    feedbackSent++;
+  }
+  return NextResponse.json({ sent, feedbackSent, failed });
 }

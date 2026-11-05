@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
+import LocationPicker from "@/components/LocationPicker";
 import { supabase } from "@/lib/supabaseClient";
 import { Booking, Client, RehearsalSession } from "@/lib/types";
 
@@ -112,10 +113,10 @@ function RehearsalContent() {
           </div>
           <div>
             <label className="block text-charcoal/60 mb-1">Location</label>
-            <input
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
-              defaultValue={rehearsal.location ?? ""}
-              onBlur={(e) => update({ location: e.target.value })}
+            <LocationPicker
+              value={rehearsal.location}
+              clientAddress={booking?.location}
+              onChange={(v) => update({ location: v })}
             />
           </div>
           <div>

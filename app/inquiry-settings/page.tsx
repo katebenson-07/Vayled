@@ -9,7 +9,7 @@ import DeleteAccount from "@/components/DeleteAccount";
 import { supabase } from "@/lib/supabaseClient";
 import { AppointmentLocation, AppointmentType, CustomQuestion, InquiryFormSettings, ServiceCatalogItem, StudioSettings } from "@/lib/types";
 import { loadAppointmentLocations, loadAppointmentTypes } from "@/lib/appointmentTypes";
-import { DEFAULT_CONFIRM_TEMPLATE, DEFAULT_REMINDER_TEMPLATE, SMS_FIELDS } from "@/lib/sms";
+import { DEFAULT_CONFIRM_TEMPLATE, DEFAULT_FEEDBACK_TEMPLATE, DEFAULT_REMINDER_TEMPLATE, SMS_FIELDS } from "@/lib/sms";
 
 const STARTER_SERVICES: Array<{ name: string; default_rate: number }> = [
   { name: "Bridal Hair", default_rate: 200 },
@@ -101,6 +101,8 @@ function InquirySettingsContent() {
     reminder_enabled: true,
     reminder_template: DEFAULT_REMINDER_TEMPLATE,
     reminder_extra: "",
+    feedback_enabled: true,
+    feedback_template: DEFAULT_FEEDBACK_TEMPLATE,
     timezone: "America/Chicago",
   });
   const [smsSaved, setSmsSaved] = useState(false);
@@ -139,6 +141,8 @@ function InquirySettingsContent() {
             reminder_enabled: smsRow.reminder_enabled,
             reminder_template: smsRow.reminder_template,
             reminder_extra: smsRow.reminder_extra ?? "",
+            feedback_enabled: smsRow.feedback_enabled ?? true,
+            feedback_template: smsRow.feedback_template ?? DEFAULT_FEEDBACK_TEMPLATE,
             timezone: smsRow.timezone ?? "America/Chicago",
           });
         }
@@ -708,6 +712,25 @@ function InquirySettingsContent() {
                 value={sms.reminder_extra}
                 onChange={(e) => setSms({ ...sms, reminder_extra: e.target.value })}
               />
+            </div>
+            <div>
+              <label className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  checked={sms.feedback_enabled}
+                  onChange={(e) => setSms({ ...sms, feedback_enabled: e.target.checked })}
+                />
+                <span className="font-medium">Text the feedback form the morning after a preview</span>
+              </label>
+              <textarea
+                rows={3}
+                className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
+                value={sms.feedback_template}
+                onChange={(e) => setSms({ ...sms, feedback_template: e.target.value })}
+              />
+              <p className="text-xs text-charcoal/50 mt-1">
+                Keep <span className="text-charcoal/80">{"{feedback_link}"}</span> in the message so she gets the link.
+              </p>
             </div>
             <div>
               <label className="block text-charcoal/60 mb-1">Your time zone</label>
