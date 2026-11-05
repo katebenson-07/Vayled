@@ -13,6 +13,7 @@ PRICING (after beta; previews may change before public launch)
 - Solo: $29/month, 1 stylist.
 - Pro: $49/month, up to 10 stylists. Most popular.
 - Studio: $99/month, unlimited stylists, lead and assist roles, plus elite features (white-labeled bride portal, client preference profiles, polished contract and e-signature experience, VIP booking flags, shareable day-of timeline link for planners and venues, branded PDF exports, referral and repeat-client tracking).
+- Vayled never takes a percentage of a studio's bookings or payments. Studios pay one flat subscription. The only fee on a card payment is Stripe's standard card processing fee, which goes to Stripe, not Vayled. (Collecting client payments through Vayled invoices is planned but not available yet; for now payments are marked paid by hand.)
 - Yearly billing: pay for 10 months, get 12 (2 months free). Solo $290/year, Pro $490/year, Studio $990/year.
 - Discount codes can be entered on the pricing page or the waitlist form. Types are percent off or free months. Codes can expire or have limited uses.
 - The beta is free and needs no credit card.

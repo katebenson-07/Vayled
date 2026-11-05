@@ -119,6 +119,14 @@ export default function PricingPage() {
 
           <PricingPlans plans={PLANS} coreFeatures={CORE_FEATURES} eliteFeatures={ELITE_FEATURES} />
 
+          <div className="max-w-2xl mx-auto mt-14 text-center">
+            <p className="text-xs uppercase tracking-widest-lg text-gold mb-3">No cut of your payments</p>
+            <p className="text-charcoal/70">
+              We never take a percentage of your bookings. You pay one flat subscription, and the only fee on a
+              payment is Stripe&apos;s standard card processing, which goes to Stripe, not to us.
+            </p>
+          </div>
+
           <p className="text-center text-charcoal/50 text-xs mt-10">
             Pricing shown here is a preview and may change before public launch. Studios who join during beta keep
             today&apos;s rate regardless of what&apos;s shown above.
