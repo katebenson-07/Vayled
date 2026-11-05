@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
 import LocationPicker from "@/components/LocationPicker";
+import TimeSelect from "@/components/TimeSelect";
 import { supabase } from "@/lib/supabaseClient";
 import { Booking, Client, RehearsalSession } from "@/lib/types";
 
@@ -95,12 +96,7 @@ function RehearsalContent() {
           </div>
           <div>
             <label className="block text-charcoal/60 mb-1">Time</label>
-            <input
-              type="time"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
-              value={rehearsal.session_time ?? ""}
-              onChange={(e) => update({ session_time: e.target.value })}
-            />
+            <TimeSelect value={rehearsal.session_time ?? ""} onChange={(v) => update({ session_time: v || null })} />
           </div>
           <div>
             <label className="block text-charcoal/60 mb-1">Duration (min)</label>

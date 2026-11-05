@@ -13,6 +13,7 @@ import {
   loadAppointmentTypes,
 } from "@/lib/appointmentTypes";
 import { AppointmentLocation } from "@/lib/types";
+import TimeSelect from "@/components/TimeSelect";
 
 const CUSTOM_OPTION = "__custom__";
 const CLIENT_ADDRESS_OPTION = "__client__";
@@ -303,11 +304,10 @@ function AppointmentsContent() {
           </div>
           <div>
             <label className="block text-charcoal/60 mb-1">Time</label>
-            <input
-              type="time"
-              className="border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
+            <TimeSelect
               value={form.appointment_time}
-              onChange={(e) => setForm({ ...form, appointment_time: e.target.value })}
+              onChange={(v) => setForm({ ...form, appointment_time: v })}
+              placeholder="Any time"
             />
           </div>
           <div className="flex-1 min-w-[160px]">

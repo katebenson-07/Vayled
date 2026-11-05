@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
 import LocationPicker from "@/components/LocationPicker";
+import TimeSelect from "@/components/TimeSelect";
 import { supabase } from "@/lib/supabaseClient";
 import { Booking, Client, TrialSession, TrialSlotOffer } from "@/lib/types";
 import { format, parseISO } from "date-fns";
@@ -180,38 +181,41 @@ function TrialContent() {
         </label>
       </div>
 
-      <section className="bg-white border border-charcoal/10 rounded-xl p-6">
-        <h2 className="font-serif text-lg mb-4">Session details</h2>
-        <div className="grid grid-cols-2 gap-4 text-sm">
+      <section className="bg-white border border-charcoal/10 rounded-xl p-6 md:p-8">
+        <h2 className="font-serif text-lg mb-6">Session details</h2>
+        <div className="grid md:grid-cols-3 gap-x-6 gap-y-6 text-sm">
           <div>
-            <label className="block text-charcoal/60 mb-1">Date</label>
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-charcoal/50 mb-2">Date</label>
             <input
               type="date"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
               value={trial.session_date ?? ""}
               onChange={(e) => update({ session_date: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-charcoal/60 mb-1">Time</label>
-            <input
-              type="time"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
-              value={trial.session_time ?? ""}
-              onChange={(e) => update({ session_time: e.target.value })}
-            />
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-charcoal/50 mb-2">Time</label>
+            <TimeSelect value={trial.session_time} onChange={(v) => update({ session_time: v || null })} />
           </div>
           <div>
-            <label className="block text-charcoal/60 mb-1">Duration (min)</label>
-            <input
-              type="number"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-charcoal/50 mb-2">Duration</label>
+            <select
+              className="w-full border border-charcoal/20 rounded-md px-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
               value={trial.duration_minutes}
               onChange={(e) => update({ duration_minutes: parseInt(e.target.value) || 0 })}
-            />
+            >
+              {[30, 45, 60, 75, 90, 120, 150, 180, trial.duration_minutes]
+                .filter((m, i, arr) => arr.indexOf(m) === i)
+                .sort((x, y) => x - y)
+                .map((m) => (
+                  <option key={m} value={m}>
+                    {m >= 60 ? `${Math.floor(m / 60)} hr${m % 60 ? ` ${m % 60} min` : ""}` : `${m} min`}
+                  </option>
+                ))}
+            </select>
           </div>
-          <div>
-            <label className="block text-charcoal/60 mb-1">Location</label>
+          <div className="md:col-span-2">
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-charcoal/50 mb-2">Location</label>
             <LocationPicker
               value={trial.location}
               clientAddress={booking?.location}
@@ -219,19 +223,26 @@ function TrialContent() {
             />
           </div>
           <div>
-            <label className="block text-charcoal/60 mb-1">Preview fee ($)</label>
-            <input
-              type="number"
-              className="w-full border border-charcoal/20 rounded-md px-3 py-2 focus:outline-none focus:border-charcoal/30"
-              value={trial.fee}
-              onChange={(e) => update({ fee: parseFloat(e.target.value) || 0 })}
-            />
-          </div>
-          <div>
-            <label className="flex items-center gap-2 text-charcoal/60">
-              <input type="checkbox" checked={trial.fee_paid} onChange={(e) => update({ fee_paid: e.target.checked })} />
-              Fee paid
-            </label>
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-charcoal/50 mb-2">Preview fee</label>
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/40">$</span>
+                <input
+                  type="number"
+                  className="w-full border border-charcoal/20 rounded-md pl-7 pr-3 py-2 bg-white focus:outline-none focus:border-charcoal/30"
+                  value={trial.fee}
+                  onChange={(e) => update({ fee: parseFloat(e.target.value) || 0 })}
+                />
+              </div>
+              <label className="flex items-center gap-2 text-charcoal/70 whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  checked={trial.fee_paid}
+                  onChange={(e) => update({ fee_paid: e.target.checked })}
+                />
+                Paid
+              </label>
+            </div>
           </div>
         </div>
       </section>
@@ -253,7 +264,7 @@ function TrialContent() {
 
         <div className="flex flex-wrap items-end gap-2 mb-4">
           <div>
-            <label className="block text-charcoal/60 mb-1 text-sm">Date</label>
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-charcoal/50 mb-2">Date</label>
             <input
               type="date"
               className="border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
@@ -262,13 +273,8 @@ function TrialContent() {
             />
           </div>
           <div>
-            <label className="block text-charcoal/60 mb-1 text-sm">Time (optional)</label>
-            <input
-              type="time"
-              className="border border-charcoal/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-charcoal/30"
-              value={newSlotTime}
-              onChange={(e) => setNewSlotTime(e.target.value)}
-            />
+            <label className="block text-[11px] uppercase tracking-[0.2em] text-charcoal/50 mb-2">Time (optional)</label>
+            <TimeSelect value={newSlotTime} onChange={setNewSlotTime} placeholder="Any time" className="text-sm min-w-[150px]" />
           </div>
           <button
             onClick={addSlot}
