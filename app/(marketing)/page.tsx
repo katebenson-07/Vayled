@@ -103,13 +103,9 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      <p className="text-center text-[11px] uppercase tracking-[0.3em] text-charcoal/45 mt-12 px-6">
+      <p className="text-center text-[11px] uppercase tracking-[0.3em] text-charcoal/45 mt-12 mb-20 px-6">
         Built by a working bridal artist. A real product, already running real weddings.
       </p>
-
-      <section className="max-w-6xl mx-auto px-6 pt-12 pb-20">
-        <FeatureVisual label="Vayled dashboard" src="/marketing/dashboard.jpg" />
-      </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-24 text-center">
         <h2 className="font-display font-semibold text-lg md:text-xl uppercase tracking-[0.22em] text-charcoal mb-12">
