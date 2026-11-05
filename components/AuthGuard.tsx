@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { acceptPendingInviteIfAny } from "@/lib/pendingInvite";
-import Sidebar from "./Sidebar";
+import TopNav from "./TopNav";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -64,9 +64,9 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-ivory md:flex">
-      <Sidebar />
-      <main className="flex-1 min-w-0 p-6 md:p-8 max-w-6xl">{children}</main>
+    <div className="min-h-screen bg-white">
+      <TopNav />
+      <main className="max-w-6xl mx-auto min-w-0 px-5 py-8 md:px-8 md:py-12">{children}</main>
     </div>
   );
 }

@@ -15,11 +15,11 @@ export default function Logo({
   tagline?: boolean;
   className?: string;
 }) {
-  const wordmarkSize = size === "lg" ? "text-4xl" : size === "md" ? "text-2xl" : "text-xl";
+  const wordmarkSize = size === "lg" ? "text-3xl" : size === "md" ? "text-xl" : "text-base";
 
   return (
     <span className={`inline-block ${className}`}>
-      <span className={`font-logo ${wordmarkSize} uppercase tracking-[0.08em]`}>Vayled</span>
+      <span className={`font-logo ${wordmarkSize} uppercase tracking-[0.42em] font-medium`}>Vayled</span>
       {tagline && (
         <span className="font-tagline font-light text-[10px] uppercase tracking-[0.3em] opacity-60 block mt-1">
           Bridal Hair &amp; Makeup

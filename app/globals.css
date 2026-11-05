@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 body {
-  background-color: #FAF8F5;
-  color: #231815;
+  background-color: #FFFFFF;
+  color: #1C1B1B;
   font-family: var(--font-sans), Georgia, serif;
   /* Keep content clear of the iPhone notch and home bar when running as an app. */
   padding-top: env(safe-area-inset-top);
@@ -16,3 +16,113 @@ body {
 .tracking-widest-lg {
   letter-spacing: 0.18em;
 }
+
+/* ---------------------------------------------------------------------------
+   Vayled design system layer: lighter display type, hairline cards, more air.
+   Kept here (not in every page) so the whole app moves together.
+   --------------------------------------------------------------------------- */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+/* Page titles and card headings: lighter, a touch tighter, more refined. */
+.font-script {
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+h2.font-serif {
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* Deep red is the signature color: primary buttons are wine, not near-black. */
+.bg-charcoal {
+  background-color: #4D0E12;
+}
+.bg-charcoal.text-ivory,
+.bg-charcoal .text-ivory {
+  color: #F8F9FA;
+}
+button.bg-charcoal, a.bg-charcoal {
+  letter-spacing: 0.04em;
+}
+
+/* Cards: warm hairline, no heavy edge, subtle lift, more padding. */
+.bg-white.border.rounded-xl,
+.bg-white.border.rounded-lg {
+  border-color: rgb(28 27 27 / 0.09);
+  box-shadow: 0 1px 2px rgb(28 27 27 / 0.03);
+}
+.bg-white.rounded-xl.p-4 { padding: 1.25rem; }
+.bg-white.rounded-xl.p-5 { padding: 1.5rem; }
+.bg-white.rounded-xl.p-6 { padding: 1.75rem; }
+@media (min-width: 768px) {
+  .bg-white.rounded-xl.p-5 { padding: 1.75rem; }
+  .bg-white.rounded-xl.p-6 { padding: 2rem; }
+  .bg-white.rounded-xl.p-8 { padding: 2.5rem; }
+}
+
+/* Form fields: calm borders, wine focus, comfortable height. */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-color: rgb(28 27 27 / 0.18);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  border-color: #4D0E12 !important;
+  box-shadow: 0 0 0 3px rgb(77 14 18 / 0.08);
+  outline: none;
+}
+input[type="checkbox"], input[type="radio"] {
+  accent-color: #4D0E12;
+}
+
+/* Small caps labels used above fields read as one consistent system. */
+label.block.text-charcoal\/60 {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: rgb(28 27 27 / 0.55);
+}
+
+/* Buttons: smooth, slightly more generous. */
+button, a { transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease; }
+
+/* App page titles (inside the signed-in layout): wide capitals, smaller size. */
+main h1.font-script {
+  font-family: var(--font-display), Arial, sans-serif;
+  font-weight: 500;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+/* Public site: wide capital titles and square buttons on every marketing page. */
+.marketing h1.font-serif,
+.marketing h2.font-serif.md\:text-3xl,
+.marketing h2.font-serif.md\:text-4xl {
+  font-family: var(--font-display), Arial, sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+}
+.marketing h1.font-serif {
+  font-size: clamp(1.5rem, 3.6vw, 2.4rem);
+}
+.marketing h2.font-serif.md\:text-3xl,
+.marketing h2.font-serif.md\:text-4xl {
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+}
+.marketing .rounded-full.uppercase {
+  border-radius: 0;
+  font-family: var(--font-display), Arial, sans-serif;
+  letter-spacing: 0.24em;
+}
+.marketing em { font-style: normal; }

@@ -57,51 +57,45 @@ export default function MarketingHome() {
   return (
     <div>
       <WaitlistModal source="homepage-popup" title="Join the waitlist" showTier />
-      <section className="relative overflow-hidden">
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(111,95,77,0.14), rgba(234,236,228,0) 60%)",
-          }}
-        />
-        <div className="relative max-w-6xl mx-auto px-6 pt-24 pb-24 md:pt-36 md:pb-36">
-          <p className="text-xs uppercase tracking-widest-lg text-gold mb-5">For bridal hair &amp; makeup studios</p>
-          <h1 className="font-serif text-4xl md:text-6xl leading-[1.12] text-charcoal max-w-3xl">
-            One <em className="italic">organized</em> path from inquiry to wedding day
+      <section className="bg-wine text-ivory text-center">
+        <div className="max-w-4xl mx-auto px-6 pt-24 pb-28 md:pt-36 md:pb-40">
+          <p className="text-[11px] uppercase tracking-[0.4em] text-ivory/80 mb-7">Bridal hair &amp; makeup studios</p>
+          <h1 className="font-display font-semibold text-3xl md:text-5xl leading-[1.35] uppercase tracking-[0.14em]">
+            One organized path from inquiry to wedding day
           </h1>
-          <p className="text-charcoal/70 text-lg mt-7 max-w-xl leading-relaxed">
+          <p className="text-ivory/80 text-base md:text-lg mt-8 max-w-xl mx-auto leading-relaxed">
             Stop juggling five different apps to run a wedding. Vayled walks every booking through the same clear
             process, builds one timeline your stylists and your bride actually use, and keeps you a step ahead of
-            your clients instead of chasing them.
+            your clients.
           </p>
-          <div className="flex flex-wrap gap-4 mt-10">
+          <div className="flex flex-wrap justify-center gap-4 mt-11">
             <Link
               href="/login?mode=signup"
-              className="bg-charcoal text-ivory text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-charcoal/90 transition-colors"
+              className="border border-ivory font-display text-[11px] font-medium uppercase tracking-[0.28em] px-8 py-4 hover:bg-ivory hover:text-wine transition-colors"
             >
-              Join the beta
+              Join the waitlist
             </Link>
             <Link
               href="/features"
-              className="border border-charcoal/20 text-charcoal text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-white transition-colors"
+              className="font-display text-[11px] font-medium uppercase tracking-[0.28em] px-8 py-4 text-ivory/80 hover:text-ivory underline underline-offset-8 decoration-ivory/40"
             >
               See features
             </Link>
           </div>
-          <p className="text-xs uppercase tracking-widest-lg text-charcoal/40 mt-10">
-            Built by a working bridal artist — a real product, already running real weddings
-          </p>
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 pb-20">
+      <p className="text-center text-[11px] uppercase tracking-[0.3em] text-charcoal/45 mt-12 px-6">
+        Built by a working bridal artist. A real product, already running real weddings.
+      </p>
+
+      <section className="max-w-6xl mx-auto px-6 pt-12 pb-20">
         <FeatureVisual label="Vayled dashboard" src="/marketing/dashboard.jpg" />
       </section>
 
       <section className="bg-white border-y border-charcoal/10">
         <div className="max-w-6xl mx-auto px-6 py-20">
-          <h2 className="font-serif text-2xl md:text-3xl text-charcoal max-w-xl mb-3">
+          <h2 className="font-display font-semibold text-lg md:text-xl uppercase tracking-[0.2em] text-charcoal max-w-xl mb-4">
             Every booking follows the same clear path
           </h2>
           <p className="text-charcoal/70 max-w-xl mb-10">
@@ -111,7 +105,7 @@ export default function MarketingHome() {
           <div className="flex flex-wrap gap-2">
             {PATH_STEPS.map((step, i) => (
               <div key={step} className="flex items-center gap-2">
-                <span className="bg-ivory border border-charcoal/10 rounded-full px-4 py-2 text-xs md:text-sm text-charcoal/80 whitespace-nowrap">
+                <span className="bg-ivory border border-charcoal/10 rounded-none px-4 py-2 text-xs md:text-sm text-charcoal/80 whitespace-nowrap">
                   {step}
                 </span>
                 {i < PATH_STEPS.length - 1 && <span className="text-charcoal/20">→</span>}
@@ -129,22 +123,22 @@ export default function MarketingHome() {
           >
             <FeatureVisual label={f.label} src={f.src} />
             <div>
-              <p className="text-xs uppercase tracking-widest-lg text-gold mb-3">{f.label}</p>
-              <h3 className="font-serif text-2xl md:text-3xl text-charcoal mb-4">{f.title}</h3>
+              <p className="text-[11px] uppercase tracking-[0.3em] text-wine mb-3">{f.label}</p>
+              <h3 className="font-display font-semibold text-base md:text-lg uppercase tracking-[0.18em] text-charcoal mb-4 leading-relaxed">{f.title}</h3>
               <p className="text-charcoal/70">{f.body}</p>
             </div>
           </div>
         ))}
         <div className="text-center">
-          <Link href="/features" className="text-sm text-gold hover:underline">
-            See every feature →
+          <Link href="/features" className="text-[12px] uppercase tracking-[0.2em] text-charcoal border-b border-charcoal pb-1 hover:text-wine hover:border-wine">
+            See every feature
           </Link>
         </div>
       </section>
 
       <section className="bg-charcoal">
         <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-          <h2 className="font-serif text-3xl md:text-4xl text-ivory max-w-2xl mx-auto">
+          <h2 className="font-display font-semibold text-xl md:text-2xl uppercase tracking-[0.2em] text-ivory max-w-2xl mx-auto leading-relaxed">
             Built by a working bridal artist, for bridal artists
           </h2>
           <p className="text-beige/70 mt-4 max-w-xl mx-auto">
@@ -154,13 +148,13 @@ export default function MarketingHome() {
           <div className="flex flex-wrap justify-center gap-4 mt-8">
             <Link
               href="/login?mode=signup"
-              className="bg-ivory text-charcoal text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-beige transition-colors"
+              className="border border-ivory font-display text-[11px] font-medium uppercase tracking-[0.28em] px-8 py-4 hover:bg-ivory hover:text-wine transition-colors"
             >
               Join the beta
             </Link>
             <Link
               href="/about"
-              className="border border-ivory/30 text-ivory text-xs uppercase tracking-widest-lg rounded-full px-7 py-3.5 hover:bg-ivory/10 transition-colors"
+              className="font-display text-[11px] font-medium uppercase tracking-[0.28em] px-8 py-4 text-ivory/80 hover:text-ivory underline underline-offset-8 decoration-ivory/40"
             >
               Our story
             </Link>
@@ -170,8 +164,8 @@ export default function MarketingHome() {
 
       <section className="bg-charcoal border-t border-ivory/10">
         <div className="max-w-6xl mx-auto px-6 py-16">
-          <p className="text-xs uppercase tracking-widest-lg text-gold mb-3">Not ready yet?</p>
-          <h2 className="font-serif text-2xl md:text-3xl text-ivory mb-2">Get on the list</h2>
+          <p className="text-[11px] uppercase tracking-[0.3em] text-ivory/70 mb-3">Not ready yet?</p>
+          <h2 className="font-display font-semibold text-lg md:text-xl uppercase tracking-[0.2em] text-ivory mb-3">Get on the list</h2>
           <p className="text-beige/70 mb-6 max-w-md">
             Leave your email and we&apos;ll let you know as Vayled keeps rolling out — no spam, just the occasional update.
           </p>
