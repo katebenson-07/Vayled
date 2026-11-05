@@ -45,8 +45,13 @@ h2.font-serif {
 .bg-charcoal .text-ivory {
   color: #F8F9FA;
 }
+/* Primary buttons everywhere: square, wide capitals, like the rest of the brand. */
 button.bg-charcoal, a.bg-charcoal {
-  letter-spacing: 0.04em;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.7rem;
+  font-weight: 500;
 }
 
 /* Cards: warm hairline, no heavy edge, subtle lift, more padding. */
@@ -104,7 +109,7 @@ main h1.font-script {
 }
 
 /* Public site: wide capital titles and square buttons on every marketing page. */
-.marketing h1.font-serif,
+h1.font-serif,
 .marketing h2.font-serif.md\:text-3xl,
 .marketing h2.font-serif.md\:text-4xl {
   font-family: var(--font-display), Arial, sans-serif;
@@ -113,8 +118,8 @@ main h1.font-script {
   letter-spacing: 0.16em;
   line-height: 1.4;
 }
-.marketing h1.font-serif {
-  font-size: clamp(1.5rem, 3.6vw, 2.4rem);
+h1.font-serif {
+  font-size: clamp(1.25rem, 3vw, 2rem);
 }
 .marketing h2.font-serif.md\:text-3xl,
 .marketing h2.font-serif.md\:text-4xl {

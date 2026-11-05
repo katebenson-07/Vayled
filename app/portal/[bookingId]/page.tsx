@@ -17,7 +17,7 @@ const ROLE_LABELS: Record<string, string> = {
 
 function Heading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="font-heading text-[10px] uppercase tracking-[0.22em] text-charcoal font-medium mb-4">
+    <h3 className="font-display text-[11px] uppercase tracking-[0.24em] text-charcoal font-semibold mb-5">
       {children}
     </h3>
   );
@@ -127,15 +127,15 @@ export default function BridePortalPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-ivory flex items-center justify-center">
-        <p className="text-gold text-sm">Loading...</p>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-charcoal/55 text-sm">Loading...</p>
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-ivory flex items-center justify-center p-6">
+      <div className="min-h-screen bg-white flex items-center justify-center p-6">
         <div className="text-center max-w-sm">
           <Logo size="md" className="justify-center mb-4" />
           <p className="text-charcoal/60 text-sm">
@@ -213,64 +213,80 @@ export default function BridePortalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-ivory p-5 font-tagline">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="flex items-end justify-between flex-wrap gap-4 mb-6">
-          <div>
-            <h1 className="font-heading text-4xl text-charcoal font-light leading-tight mb-1">{client.bride_name}</h1>
-            <p className="text-[10px] uppercase tracking-widest text-gold">
-              {weddingDateLabel}
-              {client.venue ? ` · ${client.venue}` : ""}
-            </p>
+    <div className="min-h-screen bg-white">
+      {/* Hero */}
+      <header className="bg-wine text-ivory">
+        <div className="max-w-5xl mx-auto px-5 pt-7 pb-12 md:pb-16">
+          <div className="flex items-start justify-between mb-12 md:mb-16">
+            <Logo size="sm" />
+            <span className="text-[10px] uppercase tracking-[0.3em] text-ivory/80 text-right">
+              {studio.studio_name ?? "Your stylist"}
+            </span>
           </div>
-          <div className="flex items-center gap-3">
-            {studio.contact_phone && (
-              <a
-                href={`tel:${studio.contact_phone}`}
-                className="flex items-center gap-2 text-xs px-4 py-2.5 border border-charcoal/20 text-charcoal hover:bg-beige transition-colors"
-              >
-                <span className="text-gold">☎</span>
-                {studio.studio_name ?? "Call"}
-              </a>
-            )}
-            {studio.contact_email && (
-              <a
-                href={`mailto:${studio.contact_email}`}
-                className="flex items-center gap-2 text-xs px-4 py-2.5 bg-charcoal text-ivory hover:bg-charcoal/85 transition-colors"
-              >
-                ✉ Email {studio.studio_name?.split(" ")[0] ?? "us"}
-              </a>
-            )}
+          <p className="text-[11px] uppercase tracking-[0.35em] text-ivory/75 mb-4">Your bridal portal</p>
+          <h1 className="font-display font-medium text-2xl md:text-4xl uppercase tracking-[0.14em] leading-snug mb-3">
+            {client.bride_name}
+          </h1>
+          <p className="text-sm text-ivory/80">
+            {weddingDateLabel}
+            {client.venue ? ` · ${client.venue}` : ""}
+          </p>
+
+          <div className="mt-9 flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-ivory/70 mb-2">Days to go</p>
+              <p className="text-6xl md:text-7xl font-light leading-none">
+                {weddingDays !== null ? (weddingDays > 0 ? weddingDays : "Today") : "—"}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {studio.contact_phone && (
+                <a
+                  href={`tel:${studio.contact_phone}`}
+                  className="border border-ivory font-display text-[10px] font-medium uppercase tracking-[0.24em] px-5 py-3.5 hover:bg-ivory hover:text-wine transition-colors"
+                >
+                  Call {studio.studio_name?.split(" ")[0] ?? ""}
+                </a>
+              )}
+              {studio.contact_email && (
+                <a
+                  href={`mailto:${studio.contact_email}`}
+                  className="border border-ivory font-display text-[10px] font-medium uppercase tracking-[0.24em] px-5 py-3.5 hover:bg-ivory hover:text-wine transition-colors"
+                >
+                  Email
+                </a>
+              )}
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* Stat cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+      <div className="max-w-5xl mx-auto px-5 py-10 md:py-14">
+        {/* Key facts */}
+        <div className="grid grid-cols-3 gap-4 md:gap-8 mb-12 md:mb-16">
           {[
-            { label: "Days to go", value: weddingDays !== null ? (weddingDays > 0 ? `${weddingDays}` : "Today!") : "—", sub: weddingDateLabel },
             { label: "Total paid", value: `$${totalPaid.toLocaleString()}`, sub: `${paidPct}% of $${Number(booking.contract_total).toLocaleString()}` },
             { label: "Getting ready", value: gettingReadyTime, sub: booking.location ?? "Location TBD" },
             { label: "Party size", value: `${party_members.length}`, sub: `${services.length} services booked` },
           ].map((s) => (
-            <div key={s.label} className="bg-beige border border-charcoal/20 p-5">
-              <p className="text-[10px] uppercase tracking-widest text-gold mb-3">{s.label}</p>
-              <p className="text-[2rem] font-medium text-charcoal leading-none mb-2">{s.value}</p>
-              <p className="text-xs text-gold truncate">{s.sub}</p>
+            <div key={s.label}>
+              <p className="text-[10px] uppercase tracking-[0.22em] text-charcoal/50 mb-2">{s.label}</p>
+              <p className="text-2xl md:text-4xl font-light text-wine leading-none mb-2">{s.value}</p>
+              <p className="text-[11px] md:text-xs text-charcoal/55 truncate">{s.sub}</p>
             </div>
           ))}
         </div>
 
         {/* Body grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 lg:gap-16">
           {/* Left — timeline */}
-          <div className="bg-beige border border-charcoal/20 p-5">
+          <div className="border-t border-charcoal/15 pt-8">
             <div className="flex items-center justify-between mb-5">
               <Heading>Day-of Timeline</Heading>
-              <span className="text-[10px] text-gold uppercase tracking-wider">{gettingReadyTime} start</span>
+              <span className="text-[10px] text-charcoal/55 uppercase tracking-wider">{gettingReadyTime} start</span>
             </div>
             {stylistTimelines.length === 0 ? (
-              <p className="text-xs text-gold">Your timeline will appear here once your stylist builds it.</p>
+              <p className="text-xs text-charcoal/55">Your timeline will appear here once your stylist builds it.</p>
             ) : (
               <div className="space-y-5">
                 {stylistTimelines.map((st) => (
@@ -280,13 +296,13 @@ export default function BridePortalPage() {
                         <p className="text-xs font-medium text-charcoal">
                           {st.stylistName}
                           {st.role && (
-                            <span className="text-[10px] text-gold uppercase tracking-wider ml-2">
+                            <span className="text-[10px] text-charcoal/55 uppercase tracking-wider ml-2">
                               {st.role === "lead" ? "Lead" : "Assist"}
                             </span>
                           )}
                         </p>
                         {st.entries.length > 0 && (
-                          <span className="text-[10px] text-gold uppercase tracking-wider">
+                          <span className="text-[10px] text-charcoal/55 uppercase tracking-wider">
                             Starts {format(st.entries[0].start, "h:mm a")}
                           </span>
                         )}
@@ -300,11 +316,11 @@ export default function BridePortalPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-charcoal leading-snug">{personLabel(row.member.role, row.member.name)}</p>
-                            <p className="text-xs text-gold mt-0.5">
+                            <p className="text-xs text-charcoal/55 mt-0.5">
                               {row.member.hair && row.member.makeup ? "Hair + Makeup" : row.member.hair ? "Hair" : "Makeup"}
                             </p>
                           </div>
-                          <span className="text-[10px] text-gold flex-shrink-0">{row.member.prep_minutes} min</span>
+                          <span className="text-[10px] text-charcoal/55 flex-shrink-0">{row.member.prep_minutes} min</span>
                         </div>
                       ))}
                     </div>
@@ -312,15 +328,15 @@ export default function BridePortalPage() {
                 ))}
               </div>
             )}
-            <p className="text-[10px] text-gold mt-4 pt-4 border-t border-charcoal/20">
+            <p className="text-[10px] text-charcoal/55 mt-4 pt-4 border-t border-charcoal/20">
               Times are approximate and may shift slightly on the day.
             </p>
           </div>
 
           {/* Right column */}
-          <div className="space-y-4">
+          <div className="space-y-10">
             {appointments.length > 0 && (
-              <div className="bg-beige border border-charcoal/20 p-5">
+              <div className="border-t border-charcoal/15 pt-8">
                 <Heading>Appointments</Heading>
                 <div className="divide-y divide-charcoal/20">
                   {appointments.map((apt) => {
@@ -328,23 +344,23 @@ export default function BridePortalPage() {
                     return (
                       <div key={apt.id} className="py-4 flex gap-4 items-start first:pt-0 last:pb-0">
                         <div className="flex-shrink-0 text-center w-10">
-                          <p className="text-[10px] uppercase tracking-wider text-gold leading-none mb-1">{format(apt.date, "EEE")}</p>
+                          <p className="text-[10px] uppercase tracking-wider text-charcoal/55 leading-none mb-1">{format(apt.date, "EEE")}</p>
                           <p className="text-xl font-medium text-charcoal leading-none">{format(apt.date, "d")}</p>
-                          <p className="text-[10px] text-gold leading-none mt-1">{format(apt.date, "MMM")}</p>
+                          <p className="text-[10px] text-charcoal/55 leading-none mt-1">{format(apt.date, "MMM")}</p>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <span className="text-sm font-medium text-charcoal">{apt.time}</span>
                             <span
                               className={`text-[9px] px-1.5 py-px uppercase tracking-wider flex-shrink-0 ${
-                                isWedding ? "bg-charcoal text-ivory" : "border border-charcoal/20 text-gold"
+                                isWedding ? "bg-charcoal text-ivory" : "border border-charcoal/20 text-charcoal/55"
                               }`}
                             >
                               {apt.type}
                             </span>
                           </div>
-                          <p className="text-xs text-gold leading-snug">{apt.location}</p>
-                          {apt.note && <p className="text-[10px] text-gold/70 mt-1 italic leading-snug">{apt.note}</p>}
+                          <p className="text-xs text-charcoal/55 leading-snug">{apt.location}</p>
+                          {apt.note && <p className="text-[10px] text-charcoal/40 mt-1 italic leading-snug">{apt.note}</p>}
                         </div>
                       </div>
                     );
@@ -353,11 +369,11 @@ export default function BridePortalPage() {
               </div>
             )}
 
-            <div className="bg-beige border border-charcoal/20 p-5">
+            <div className="border-t border-charcoal/15 pt-8">
               <Heading>Payments</Heading>
               <div className="mb-4">
                 <div className="flex items-baseline justify-between mb-1.5">
-                  <span className="text-xs text-gold">${totalPaid.toLocaleString()} paid</span>
+                  <span className="text-xs text-charcoal/55">${totalPaid.toLocaleString()} paid</span>
                   <span className="text-xs font-medium text-charcoal">{paidPct}%</span>
                 </div>
                 <div className="h-1 bg-charcoal/20">
@@ -372,7 +388,7 @@ export default function BridePortalPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-charcoal capitalize">{p.note || p.type}</p>
-                      <p className="text-[10px] text-gold">Paid {format(parseISO(p.paid_at), "MMM d")}</p>
+                      <p className="text-[10px] text-charcoal/55">Paid {format(parseISO(p.paid_at), "MMM d")}</p>
                     </div>
                     <span className="text-sm font-medium text-charcoal flex-shrink-0">${Number(p.amount).toLocaleString()}</span>
                   </div>
@@ -382,7 +398,7 @@ export default function BridePortalPage() {
                     <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center border border-charcoal/20" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-charcoal">Remaining balance</p>
-                      <p className="text-[10px] text-gold">Due before your wedding day</p>
+                      <p className="text-[10px] text-charcoal/55">Due before your wedding day</p>
                     </div>
                     <span className="text-sm font-medium text-charcoal flex-shrink-0">${remaining.toLocaleString()}</span>
                   </div>
@@ -391,12 +407,12 @@ export default function BridePortalPage() {
             </div>
 
             {services.length > 0 && (
-              <div className="bg-beige border border-charcoal/20 p-5">
+              <div className="border-t border-charcoal/15 pt-8">
                 <Heading>Services Booked</Heading>
                 <div className="space-y-2">
                   {services.map((s, i) => (
                     <div key={i} className="flex items-center gap-2.5 py-1.5 border-b border-charcoal/10 last:border-0">
-                      <span className="text-gold text-[8px]">◆</span>
+                      <span className="text-charcoal/55 text-[8px]">◆</span>
                       <span className="text-xs text-charcoal">{s}</span>
                     </div>
                   ))}
@@ -405,25 +421,25 @@ export default function BridePortalPage() {
             )}
 
             {trialParagraph && (
-              <div className="bg-beige border border-charcoal/20">
-                <button onClick={() => setShowTrialNotes((v) => !v)} className="w-full flex items-center justify-between p-5 text-left">
+              <div className="border-t border-charcoal/15">
+                <button onClick={() => setShowTrialNotes((v) => !v)} className="w-full flex items-center justify-between pt-8 pb-1 text-left">
                   <Heading>Preview Notes</Heading>
-                  <span className="text-gold text-xs flex-shrink-0">{showTrialNotes ? "▴" : "▾"}</span>
+                  <span className="text-charcoal/55 text-xs flex-shrink-0">{showTrialNotes ? "▴" : "▾"}</span>
                 </button>
                 {showTrialNotes && (
-                  <div className="px-5 pb-5 border-t border-charcoal/20 pt-4">
+                  <div className="pb-5 pt-2">
                     <p className="text-xs text-charcoal leading-relaxed">{trialParagraph}</p>
                   </div>
                 )}
               </div>
             )}
 
-            <div className="bg-beige border border-charcoal/20 p-5">
+            <div className="border-t border-charcoal/15 pt-8">
               <Heading>Reminders</Heading>
               <div className="space-y-2">
                 {reminders.map((r, i) => (
                   <div key={i} className="flex items-start gap-2.5 text-xs text-charcoal leading-relaxed">
-                    <span className="text-gold text-[8px] mt-1 flex-shrink-0">◆</span>
+                    <span className="text-charcoal/55 text-[8px] mt-1 flex-shrink-0">◆</span>
                     {r}
                   </div>
                 ))}
@@ -432,7 +448,7 @@ export default function BridePortalPage() {
           </div>
         </div>
 
-        <p className="font-heading text-center text-xs text-gold mt-6 italic">
+        <p className="text-center text-[10px] uppercase tracking-[0.3em] text-charcoal/40 mt-16">
           Prepared by {studio.studio_name ?? "your stylist"} · Powered by Vayled
         </p>
       </div>

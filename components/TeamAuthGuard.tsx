@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { acceptPendingInviteIfAny } from "@/lib/pendingInvite";
-import TeamSidebar from "./TeamSidebar";
+import TeamTopNav from "./TeamTopNav";
 
 type TeamMemberContext = {
   studioId: string;
@@ -85,9 +85,9 @@ export default function TeamAuthGuard({ children }: { children: React.ReactNode 
 
   return (
     <Ctx.Provider value={member}>
-      <div className="min-h-screen bg-ivory md:flex">
-        <TeamSidebar stylistName={member.stylistName} />
-        <main className="flex-1 min-w-0 p-6 md:p-8 max-w-4xl">{children}</main>
+      <div className="min-h-screen bg-white">
+        <TeamTopNav stylistName={member.stylistName} />
+        <main className="max-w-4xl mx-auto min-w-0 px-5 py-8 md:px-8 md:py-12">{children}</main>
       </div>
     </Ctx.Provider>
   );
