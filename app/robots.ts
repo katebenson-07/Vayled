@@ -19,6 +19,7 @@ const DISALLOWED = [
   "/analytics",
   "/expenses",
   "/inquiry-settings",
+  "/admin",
   "/invoices",
   "/trials",
   "/feedback",

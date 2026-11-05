@@ -1,5 +1,6 @@
 "use client";
 
+import HelpChat from "@/components/HelpChat";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -88,6 +89,7 @@ export default function TeamAuthGuard({ children }: { children: React.ReactNode 
       <div className="min-h-screen bg-white">
         <TeamTopNav stylistName={member.stylistName} />
         <main className="max-w-4xl mx-auto min-w-0 px-5 py-8 md:px-8 md:py-12">{children}</main>
+        <HelpChat mode="app" />
       </div>
     </Ctx.Provider>
   );

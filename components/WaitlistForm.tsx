@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 const TIERS = ["Solo", "Pro", "Studio"] as const;
@@ -18,6 +18,15 @@ export default function WaitlistForm({
 }) {
   const [tier, setTier] = useState<Tier | null>(null);
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+
+  // A code applied on the pricing page rides along with the signup.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("vayled_code");
+      if (saved) setCode(saved);
+    } catch {}
+  }, []);
   const [company, setCompany] = useState(""); // honeypot — real visitors never see or fill this
   const [loadedAt] = useState(() => Date.now());
   const [submitting, setSubmitting] = useState(false);
@@ -37,12 +46,16 @@ export default function WaitlistForm({
     }
 
     setSubmitting(true);
-    let { error: insertError } = await supabase
-      .from("waitlist_signups")
-      .insert({ email: email.trim(), source, ...(tier ? { interested_tier: tier } : {}) });
-    // If the interested_tier column hasn't been added to the database yet,
-    // don't lose the signup — retry with just the email.
-    if (insertError && tier) {
+    const trimmedCode = code.trim();
+    let { error: insertError } = await supabase.from("waitlist_signups").insert({
+      email: email.trim(),
+      source,
+      ...(tier ? { interested_tier: tier } : {}),
+      ...(trimmedCode ? { discount_code: trimmedCode } : {}),
+    });
+    // If a newer column hasn't been added to the database yet, don't lose
+    // the signup — retry with just the email.
+    if (insertError && (tier || trimmedCode)) {
       ({ error: insertError } = await supabase
         .from("waitlist_signups")
         .insert({ email: email.trim(), source }));
@@ -112,6 +125,18 @@ export default function WaitlistForm({
           />
         </label>
       </div>
+      {showTier && (
+        <input
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          placeholder="Discount code (optional)"
+          className={`rounded-full px-5 py-3 text-sm tracking-wider ${
+            dark
+              ? "bg-ivory/10 border border-ivory/20 text-ivory placeholder:text-beige/40 focus:bg-ivory/15"
+              : "bg-white border border-charcoal/20 text-charcoal placeholder:text-charcoal/40 focus:border-charcoal/30"
+          } outline-none`}
+        />
+      )}
       <input
         type="email"
         required

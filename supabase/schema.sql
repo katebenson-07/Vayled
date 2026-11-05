@@ -1316,3 +1316,89 @@ end;
 $$;
 
 grant execute on function public.submit_preview_feedback_v2(uuid, jsonb) to anon, authenticated;
+
+-- ============================================================================
+-- Discount codes
+-- Codes you hand out (founding members, promos). Only katebenson@vayled.com can
+-- create/edit them (page: /admin/codes). Anyone can CHECK a code through
+-- check_discount_code(), which never reveals the table itself. When someone
+-- joins the waitlist with a code, the trigger below validates it and counts the
+-- use; an invalid code is quietly dropped so the signup still goes through.
+-- kind: 'percent' (value = % off) or 'free_months' (value = months free).
+-- ============================================================================
+
+create table if not exists discount_codes (
+  id uuid primary key default gen_random_uuid(),
+  code text not null,
+  kind text not null check (kind in ('percent', 'free_months')),
+  value numeric not null check (value > 0),
+  note text,
+  max_uses integer,
+  uses integer not null default 0,
+  expires_at timestamptz,
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+create unique index if not exists discount_codes_code_key on discount_codes (upper(code));
+
+alter table discount_codes enable row level security;
+
+drop policy if exists "Admin manages discount codes" on discount_codes;
+create policy "Admin manages discount codes" on discount_codes
+  for all to authenticated
+  using ((auth.jwt() ->> 'email') = 'katebenson@vayled.com')
+  with check ((auth.jwt() ->> 'email') = 'katebenson@vayled.com');
+
+create or replace function check_discount_code(p_code text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  c discount_codes%rowtype;
+begin
+  select * into c from discount_codes where upper(code) = upper(trim(p_code)) limit 1;
+  if not found or not c.active then
+    return jsonb_build_object('valid', false, 'message', 'That code isn''t valid.');
+  end if;
+  if c.expires_at is not null and c.expires_at < now() then
+    return jsonb_build_object('valid', false, 'message', 'That code has expired.');
+  end if;
+  if c.max_uses is not null and c.uses >= c.max_uses then
+    return jsonb_build_object('valid', false, 'message', 'That code has been fully claimed.');
+  end if;
+  return jsonb_build_object('valid', true, 'code', upper(c.code), 'kind', c.kind, 'value', c.value);
+end;
+$$;
+grant execute on function check_discount_code(text) to anon, authenticated;
+
+alter table waitlist_signups add column if not exists discount_code text;
+
+create or replace function redeem_waitlist_code()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  result jsonb;
+begin
+  if new.discount_code is null or trim(new.discount_code) = '' then
+    new.discount_code := null;
+    return new;
+  end if;
+  result := check_discount_code(new.discount_code);
+  if (result ->> 'valid')::boolean then
+    new.discount_code := result ->> 'code';
+    update discount_codes set uses = uses + 1 where upper(code) = upper(new.discount_code);
+  else
+    new.discount_code := null;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists waitlist_redeem_code on waitlist_signups;
+create trigger waitlist_redeem_code before insert on waitlist_signups
+  for each row execute function redeem_waitlist_code();

@@ -1,5 +1,6 @@
 "use client";
 
+import HelpChat from "@/components/HelpChat";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -67,6 +68,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-white">
       <TopNav />
       <main className="max-w-6xl mx-auto min-w-0 px-5 py-8 md:px-8 md:py-12">{children}</main>
+      <HelpChat mode="app" />
     </div>
   );
 }

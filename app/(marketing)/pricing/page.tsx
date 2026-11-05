@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PricingPlans from "@/components/PricingPlans";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -116,71 +117,7 @@ export default function PricingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
-            {PLANS.map((plan) => (
-              <div
-                key={plan.name}
-                className={`rounded-xl p-6 border flex flex-col ${
-                  plan.elevated
-                    ? "border-charcoal bg-charcoal text-ivory shadow-md md:-my-3 md:py-9"
-                    : plan.tag
-                      ? "border-charcoal bg-ivory shadow-sm"
-                      : "border-charcoal/10 bg-ivory/50"
-                }`}
-              >
-                {plan.tag && (
-                  <p className={`text-xs uppercase tracking-widest-lg mb-2 ${plan.elevated ? "text-gold" : "text-gold"}`}>
-                    {plan.tag}
-                  </p>
-                )}
-                <p className={`font-serif text-lg mb-1 ${plan.elevated ? "text-ivory" : "text-charcoal"}`}>{plan.name}</p>
-                <p className={`text-sm mb-4 ${plan.elevated ? "text-beige/70" : "text-charcoal/50"}`}>{plan.blurb}</p>
-                <p className="mb-5">
-                  <span className={`font-serif text-3xl ${plan.elevated ? "text-ivory" : "text-charcoal"}`}>
-                    ${plan.price}
-                  </span>
-                  <span className={`text-sm ${plan.elevated ? "text-beige/60" : "text-charcoal/50"}`}> /mo</span>
-                </p>
-                <p
-                  className={`text-sm font-medium mb-4 pb-4 border-b ${
-                    plan.elevated ? "text-ivory border-ivory/20" : "text-charcoal border-charcoal/10"
-                  }`}
-                >
-                  {plan.stylists}
-                </p>
-                <p className={`text-xs uppercase tracking-widest-lg mb-3 ${plan.elevated ? "text-beige/60" : "text-charcoal/40"}`}>
-                  Core features
-                </p>
-                <ul
-                  className={`text-left space-y-2.5 text-sm ${plan.elite ? "" : "flex-1"} ${
-                    plan.elevated ? "text-beige/80" : "text-charcoal/70"
-                  }`}
-                >
-                  {CORE_FEATURES.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="text-gold mt-0.5">✓</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                {plan.elite && (
-                  <>
-                    <p className="text-xs uppercase tracking-widest-lg mb-3 mt-5 pt-5 border-t border-ivory/20 text-gold">
-                      Elite additions
-                    </p>
-                    <ul className="text-left space-y-2.5 text-sm text-beige/80 flex-1">
-                      {ELITE_FEATURES.map((item) => (
-                        <li key={item} className="flex items-start gap-2">
-                          <span className="text-gold mt-0.5">✧</span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
+          <PricingPlans plans={PLANS} coreFeatures={CORE_FEATURES} eliteFeatures={ELITE_FEATURES} />
 
           <p className="text-center text-charcoal/50 text-xs mt-10">
             Pricing shown here is a preview and may change before public launch. Studios who join during beta keep
