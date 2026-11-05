@@ -1,5 +1,6 @@
 "use client";
 
+import PageTabs from "@/components/PageTabs";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
@@ -383,25 +384,16 @@ function AppointmentsContent() {
       )}
 
       {!loading && unified.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap mb-6">
-          {FILTERS.map((f) => {
-            const count = f.key === "all" ? unified.length : unified.filter((u) => u.status === f.key).length;
-            const active = statusFilter === f.key;
-            return (
-              <button
-                key={f.key}
-                onClick={() => setStatusFilter(f.key)}
-                className={`text-xs uppercase tracking-wide rounded-full px-3.5 py-2 border transition-colors ${
-                  active
-                    ? "bg-charcoal text-ivory border-charcoal"
-                    : "bg-white text-charcoal/60 border-charcoal/15 hover:border-charcoal/30"
-                }`}
-              >
-                {f.label} <span className={active ? "text-ivory/60" : "text-charcoal/35"}>{count}</span>
-              </button>
-            );
-          })}
-        </div>
+        <PageTabs
+          className="mb-8"
+          active={statusFilter}
+          onChange={(k) => setStatusFilter(k as typeof statusFilter)}
+          tabs={FILTERS.map((f) => ({
+            key: f.key,
+            label: f.label,
+            count: f.key === "all" ? unified.length : unified.filter((u) => u.status === f.key).length,
+          }))}
+        />
       )}
 
       {loading ? (

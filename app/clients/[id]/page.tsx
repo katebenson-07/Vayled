@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import PageTabs from "@/components/PageTabs";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
@@ -17,6 +18,7 @@ function ClientDetail() {
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
   const [appointmentMenuOpen, setAppointmentMenuOpen] = useState(false);
+  const [tab, setTab] = useState<"details" | "bookings">("details");
   const [appointmentBookingId, setAppointmentBookingId] = useState("");
 
   useEffect(() => {
@@ -107,6 +109,18 @@ function ClientDetail() {
         {client.wedding_date ?? "No date set"} · {client.venue ?? "No venue"}
       </p>
 
+      <PageTabs
+        className="mb-8"
+        active={tab}
+        onChange={(k) => setTab(k as typeof tab)}
+        tabs={[
+          { key: "details", label: "Details" },
+          { key: "bookings", label: "Bookings", count: bookings.length },
+        ]}
+      />
+
+      {tab === "details" && (
+        <>
       <div className="bg-white border border-charcoal/10 rounded-xl p-6 mb-6">
         <div className="flex items-center justify-between gap-2 mb-4">
           <h2 className="font-serif text-lg">Details</h2>
@@ -187,6 +201,26 @@ function ClientDetail() {
         </div>
       </div>
 
+      <div className="border border-red-200 rounded-xl p-5 flex items-center justify-between flex-wrap gap-3 mt-6">
+        <div>
+          <h2 className="text-xs uppercase tracking-widest-lg text-red-600 mb-1">Danger zone</h2>
+          <p className="text-sm text-charcoal/60">
+            Permanently deletes this client and every one of their bookings — contracts, invoices, payments,
+            wedding parties, and timelines included. There&apos;s no undo.
+          </p>
+        </div>
+        <button
+          onClick={deleteClient}
+          className="border border-red-200 text-red-600 rounded-md px-4 py-2 hover:bg-red-50 uppercase text-xs tracking-wide whitespace-nowrap"
+        >
+          Delete client
+        </button>
+      </div>
+        </>
+      )}
+
+      {tab === "bookings" && (
+        <>
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-serif text-lg">Bookings</h2>
         <div
@@ -265,21 +299,8 @@ function ClientDetail() {
         </div>
       )}
 
-      <div className="border border-red-200 rounded-xl p-5 flex items-center justify-between flex-wrap gap-3 mt-6">
-        <div>
-          <h2 className="text-xs uppercase tracking-widest-lg text-red-600 mb-1">Danger zone</h2>
-          <p className="text-sm text-charcoal/60">
-            Permanently deletes this client and every one of their bookings — contracts, invoices, payments,
-            wedding parties, and timelines included. There&apos;s no undo.
-          </p>
-        </div>
-        <button
-          onClick={deleteClient}
-          className="border border-red-200 text-red-600 rounded-md px-4 py-2 hover:bg-red-50 uppercase text-xs tracking-wide whitespace-nowrap"
-        >
-          Delete client
-        </button>
-      </div>
+        </>
+      )}
     </div>
   );
 }

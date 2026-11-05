@@ -1,5 +1,6 @@
 "use client";
 
+import PageTabs from "@/components/PageTabs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
@@ -84,33 +85,23 @@ function BookingsContent() {
       <p className="text-sm text-charcoal/50 mb-6">Every booked, completed, or closed-out project.</p>
 
       {!loading && bookings.length > 0 && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
+        <div className="mb-6">
+          <PageTabs
+            active={statusFilter}
+            onChange={(k) => setStatusFilter(k as typeof statusFilter)}
+            tabs={FILTERS.map((f) => ({
+              key: f.key,
+              label: f.label,
+              count: f.key === "all" ? bookings.length : bookings.filter((b) => b.status === f.key).length,
+            }))}
+          />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search couples or venues..."
-            className="w-full sm:max-w-xs border border-charcoal/15 rounded-full px-4 py-2 text-sm bg-white focus:outline-none focus:border-charcoal/30"
+            className="w-full sm:max-w-sm mt-5 border border-charcoal/15 rounded-md px-4 py-2 text-sm bg-white"
           />
-          <div className="flex items-center gap-2 flex-wrap">
-            {FILTERS.map((f) => {
-              const count = f.key === "all" ? bookings.length : bookings.filter((b) => b.status === f.key).length;
-              const active = statusFilter === f.key;
-              return (
-                <button
-                  key={f.key}
-                  onClick={() => setStatusFilter(f.key)}
-                  className={`text-xs uppercase tracking-wide rounded-full px-3 py-1.5 border transition-colors ${
-                    active
-                      ? "bg-charcoal text-ivory border-charcoal"
-                      : "bg-white text-charcoal/60 border-charcoal/15 hover:border-charcoal/30"
-                  }`}
-                >
-                  {f.label} <span className={active ? "text-ivory/60" : "text-charcoal/35"}>{count}</span>
-                </button>
-              );
-            })}
-          </div>
         </div>
       )}
 

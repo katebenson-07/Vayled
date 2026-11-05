@@ -1,5 +1,6 @@
 "use client";
 
+import PageTabs from "@/components/PageTabs";
 import { useEffect, useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
@@ -28,6 +29,7 @@ function niceAxisMax(max: number): number {
 
 function AnalyticsContent() {
   const [studioName, setStudioName] = useState("");
+  const [tab, setTab] = useState<"revenue" | "pipeline">("revenue");
   const [bookings, setBookings] = useState<BookingWithClient[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -138,6 +140,16 @@ function AnalyticsContent() {
         </div>
       </div>
 
+      <PageTabs
+        active={tab}
+        onChange={(k) => setTab(k as typeof tab)}
+        tabs={[
+          { key: "revenue", label: "Revenue" },
+          { key: "pipeline", label: "Inquiry pipeline" },
+        ]}
+      />
+
+      {tab === "revenue" && (
       <section className="bg-beige border border-charcoal/10 rounded-xl p-6">
         <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Monthly revenue — {year}</h2>
         <div className="flex gap-3">
@@ -162,7 +174,9 @@ function AnalyticsContent() {
           </div>
         </div>
       </section>
+      )}
 
+      {tab === "pipeline" && (
       <div>
         <h2 className="text-xs uppercase tracking-widest-lg text-charcoal/50 mb-4">Inquiry pipeline — last 12 months</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -204,6 +218,7 @@ function AnalyticsContent() {
           </div>
         </section>
       </div>
+      )}
     </div>
   );
 }

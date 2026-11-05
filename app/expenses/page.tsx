@@ -1,5 +1,6 @@
 "use client";
 
+import PageTabs from "@/components/PageTabs";
 import { useEffect, useMemo, useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
@@ -11,6 +12,7 @@ const DEFAULT_MILE_RATE = 0.7; // IRS standard business mileage rate, 2025
 
 function ExpensesContent() {
   const [studioId, setStudioId] = useState<string | null>(null);
+  const [tab, setTab] = useState<"expenses" | "mileage">("expenses");
   const [studioName, setStudioName] = useState("");
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -258,6 +260,16 @@ function ExpensesContent() {
         </div>
       </div>
 
+      <PageTabs
+        active={tab}
+        onChange={(k) => setTab(k as typeof tab)}
+        tabs={[
+          { key: "expenses", label: "Expenses" },
+          { key: "mileage", label: "Mileage" },
+        ]}
+      />
+
+      {tab === "expenses" && (
       <div className="grid lg:grid-cols-[1.4fr_1fr] gap-4 items-start">
         <section className="bg-beige border border-charcoal/10 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
@@ -418,8 +430,9 @@ function ExpensesContent() {
           </div>
         </section>
       </div>
+      )}
 
-      {/* Mileage tracker */}
+      {tab === "mileage" && (
       <div className="grid lg:grid-cols-[1.4fr_1fr] gap-4 items-start">
         <section className="bg-beige border border-charcoal/10 rounded-xl p-6">
           <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
@@ -592,6 +605,7 @@ function ExpensesContent() {
           </div>
         </section>
       </div>
+      )}
     </div>
   );
 }

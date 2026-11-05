@@ -1,5 +1,6 @@
 "use client";
 
+import TimeSelect from "@/components/TimeSelect";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -797,144 +798,125 @@ function BookingDetail() {
             )}
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 text-sm">
-          <Link href={`/emails?booking=${id}`} className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide">
-            Message
-          </Link>
-          <Link href={`/contracts/${id}`} className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide">
-            Contract{booking.contract_signed ? " ✓" : ""}
-          </Link>
-          <Link href={`/invoices/${id}`} className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide">
-            Invoice
-          </Link>
-          {portalAvailable && (
-            <>
-              <a
-                href={`/portal/${id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide"
-              >
-                Bride portal
-              </a>
-              <button
-                onClick={copyPortalLink}
-                className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide"
-              >
-                {linkCopied ? "Link copied ✓" : "Copy link"}
-              </button>
-            </>
-          )}
-          <div
-            className="relative"
-            onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node)) setAppointmentMenuOpen(false);
-            }}
-          >
-            <button
-              onClick={() => setAppointmentMenuOpen((o) => !o)}
-              className="border border-charcoal/20 rounded-md px-3 py-1.5 hover:bg-white uppercase text-xs tracking-wide"
-            >
-              Appointment
-            </button>
-            {appointmentMenuOpen && (
-              <div className="absolute left-0 top-full mt-2 w-56 bg-white border border-charcoal/10 rounded-lg shadow-lg p-2 z-10 text-sm normal-case tracking-normal">
-                <Link
-                  href={`/trials/${id}`}
-                  className="block rounded-md px-3 py-2 hover:bg-ivory"
-                  onClick={() => setAppointmentMenuOpen(false)}
-                >
-                  Preview session
-                </Link>
-                <Link
-                  href={`/rehearsal/${id}`}
-                  className="block rounded-md px-3 py-2 hover:bg-ivory"
-                  onClick={() => setAppointmentMenuOpen(false)}
-                >
-                  Rehearsal hair &amp; makeup
-                </Link>
-              </div>
-            )}
-          </div>
-          <button
-            onClick={() => setActiveTab("timeline")}
-            className="bg-charcoal text-ivory rounded-md px-4 py-2 uppercase text-xs tracking-wide hover:bg-charcoal/90"
-          >
-            Build timeline
-          </button>
-        </div>
       </div>
 
-      <div className="flex flex-wrap border border-charcoal/10 rounded-xl overflow-hidden bg-beige">
-        {PIPELINE_STEPS.map((step, i) => {
-          const done = pipelineDone[step];
-          const current = i === currentStepIndex;
-          return (
-            <div
-              key={step}
-              className={`flex items-center gap-2 px-3 py-2.5 text-xs flex-1 min-w-[140px] border-r border-charcoal/10 last:border-r-0 ${
-                current ? "bg-charcoal text-ivory" : ""
-              }`}
-            >
-              <span
-                className={`w-3.5 h-3.5 rounded-sm border shrink-0 flex items-center justify-center ${
-                  done
-                    ? current
-                      ? "bg-ivory border-ivory text-charcoal"
-                      : "bg-charcoal border-charcoal text-ivory"
-                    : current
-                    ? "border-ivory/60"
-                    : "border-charcoal/30"
-                }`}
-              >
-                {done && "✓"}
-              </span>
-              <span className={current ? "text-ivory" : "text-charcoal/70"}>{step}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-4 bg-white border border-charcoal/10 rounded-xl px-4 py-2.5 text-sm">
-        <div className="flex items-center gap-2">
-          <label className="text-charcoal/50 text-xs uppercase tracking-wide">Status</label>
-          <select
-            className="border border-charcoal/20 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-charcoal/30"
-            value={booking.status}
-            onChange={(e) => updateBooking({ status: e.target.value as Booking["status"] })}
-          >
-            <option value="inquiry">Inquiry</option>
-            <option value="booked">Booked</option>
-            <option value="completed">Completed</option>
-            <option value="ghosted">Ghosted</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-charcoal/50 text-xs uppercase tracking-wide">Ready by</label>
-          <input
-            type="time"
-            className="border border-charcoal/20 rounded-md px-2 py-1 text-sm focus:outline-none focus:border-charcoal/30"
-            value={booking.ready_by_time ?? ""}
-            onChange={(e) => updateBooking({ ready_by_time: e.target.value })}
-          />
-        </div>
-      </div>
-
-      <div className="flex gap-1 border-b border-charcoal/10">
+      <nav className="flex items-center gap-8 overflow-x-auto whitespace-nowrap border-b border-charcoal/10 text-[11px] uppercase tracking-[0.2em]">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 text-sm border-b-2 -mb-px transition-colors ${
+            className={`py-4 border-b -mb-px transition-colors ${
               activeTab === tab.id
-                ? "border-charcoal text-charcoal font-medium"
-                : "border-transparent text-charcoal/50 hover:text-charcoal/80"
+                ? "border-wine text-wine"
+                : "border-transparent text-charcoal/55 hover:text-charcoal"
             }`}
           >
             {tab.label}
           </button>
         ))}
+        <span className="h-4 border-l border-charcoal/20 shrink-0" aria-hidden="true" />
+        <Link href={`/emails?booking=${id}`} className="py-4 text-charcoal/55 hover:text-charcoal">
+          Message
+        </Link>
+        <Link href={`/contracts/${id}`} className="py-4 text-charcoal/55 hover:text-charcoal">
+          Contract{booking.contract_signed ? " ✓" : ""}
+        </Link>
+        <Link href={`/invoices/${id}`} className="py-4 text-charcoal/55 hover:text-charcoal">
+          Invoice
+        </Link>
+        {portalAvailable && (
+          <>
+            <a
+              href={`/portal/${id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-4 text-charcoal/55 hover:text-charcoal"
+            >
+              Bride portal
+            </a>
+            <button onClick={copyPortalLink} className="py-4 text-charcoal/55 hover:text-charcoal">
+              {linkCopied ? "Link copied ✓" : "Copy link"}
+            </button>
+          </>
+        )}
+        <div
+          className="relative"
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) setAppointmentMenuOpen(false);
+          }}
+        >
+          <button
+            onClick={() => setAppointmentMenuOpen((o) => !o)}
+            className="py-4 text-charcoal/55 hover:text-charcoal"
+          >
+            Appointment ▾
+          </button>
+          {appointmentMenuOpen && (
+            <div className="absolute left-0 top-full mt-0 w-56 bg-white border border-charcoal/15 py-2 z-20 text-sm normal-case tracking-normal">
+              <Link
+                href={`/trials/${id}`}
+                className="block px-4 py-2.5 hover:bg-ivory"
+                onClick={() => setAppointmentMenuOpen(false)}
+              >
+                Preview session
+              </Link>
+              <Link
+                href={`/rehearsal/${id}`}
+                className="block px-4 py-2.5 hover:bg-ivory"
+                onClick={() => setAppointmentMenuOpen(false)}
+              >
+                Rehearsal hair &amp; makeup
+              </Link>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      <div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-4">
+        <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.16em]">
+          {PIPELINE_STEPS.map((step, i) => {
+            const done = pipelineDone[step];
+            const current = i === currentStepIndex;
+            return (
+              <span
+                key={step}
+                className={`flex items-center gap-2 ${
+                  current ? "text-wine border-b border-wine pb-1" : done ? "text-charcoal/70" : "text-charcoal/40"
+                }`}
+              >
+                <span aria-hidden="true">{done ? "✓" : "○"}</span>
+                {step}
+              </span>
+            );
+          })}
+        </div>
+        <div className="flex flex-wrap items-center gap-6 text-sm">
+          <div className="flex items-center gap-3">
+            <label className="text-charcoal/50 text-[11px] uppercase tracking-[0.2em]">Status</label>
+            <select
+              className="border border-charcoal/20 rounded-md px-2 py-1.5 text-sm bg-white"
+              value={booking.status}
+              onChange={(e) => updateBooking({ status: e.target.value as Booking["status"] })}
+            >
+              <option value="inquiry">Inquiry</option>
+              <option value="booked">Booked</option>
+              <option value="completed">Completed</option>
+              <option value="ghosted">Ghosted</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="text-charcoal/50 text-[11px] uppercase tracking-[0.2em]">Ready by</label>
+            <div className="w-36">
+              <TimeSelect
+                value={booking.ready_by_time}
+                onChange={(v) => updateBooking({ ready_by_time: v })}
+                placeholder="Select"
+                className="py-1.5"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {activeTab === "overview" && (

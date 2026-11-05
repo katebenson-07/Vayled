@@ -1,5 +1,6 @@
 "use client";
 
+import PageTabs from "@/components/PageTabs";
 import { useEffect, useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { supabase } from "@/lib/supabaseClient";
@@ -15,6 +16,7 @@ function initials(name: string) {
 
 function StylistsContent() {
   const [stylists, setStylists] = useState<Stylist[]>([]);
+  const [tab, setTab] = useState<"team" | "timeoff">("team");
   const [timeOff, setTimeOff] = useState<StylistTimeOff[]>([]);
   const [members, setMembers] = useState<StudioMember[]>([]);
   const [invitingId, setInvitingId] = useState<string | null>(null);
@@ -227,6 +229,16 @@ function StylistsContent() {
         <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2.5">{inviteError}</div>
       )}
 
+      <PageTabs
+        active={tab}
+        onChange={(k) => setTab(k as typeof tab)}
+        tabs={[
+          { key: "team", label: "Team" },
+          { key: "timeoff", label: "Time off" },
+        ]}
+      />
+
+      {tab === "team" && (
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Team</h2>
         <form onSubmit={addStylist} className="flex flex-wrap items-center gap-2 mb-4 text-sm">
@@ -425,7 +437,9 @@ function StylistsContent() {
           </div>
         )}
       </section>
+      )}
 
+      {tab === "timeoff" && (
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Time off</h2>
         <form onSubmit={addTimeOff} className="flex flex-wrap items-end gap-2 mb-4 text-sm">
@@ -500,6 +514,7 @@ function StylistsContent() {
           </div>
         )}
       </section>
+      )}
     </div>
   );
 }

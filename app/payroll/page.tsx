@@ -1,5 +1,6 @@
 "use client";
 
+import PageTabs from "@/components/PageTabs";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
@@ -153,19 +154,15 @@ function PayrollContent() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex gap-1 bg-beige/40 rounded-lg p-1">
-          {(["all", "unpaid", "paid"] as FilterId[]).map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-md text-sm capitalize ${
-                filter === f ? "bg-charcoal text-ivory hover:bg-charcoal/90" : "text-charcoal/60 hover:text-charcoal"
-              }`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
+        <PageTabs
+          className="w-full"
+          active={filter}
+          onChange={(k) => setFilter(k as FilterId)}
+          tabs={(["all", "unpaid", "paid"] as FilterId[]).map((f) => ({
+            key: f,
+            label: f,
+          }))}
+        />
         <select
           className="border border-charcoal/20 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:border-charcoal/30"
           value={stylistFilter}

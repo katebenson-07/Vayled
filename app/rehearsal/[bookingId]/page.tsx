@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
+import BookingTabs from "@/components/BookingTabs";
 import LocationPicker from "@/components/LocationPicker";
 import TimeSelect from "@/components/TimeSelect";
 import { supabase } from "@/lib/supabaseClient";
@@ -77,6 +78,8 @@ function RehearsalContent() {
           Mark rehearsal complete
         </label>
       </div>
+
+      <BookingTabs bookingId={bookingId} active="rehearsal" />
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <h2 className="font-serif text-lg mb-4">Session details</h2>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
+import BookingTabs from "@/components/BookingTabs";
 import { supabase } from "@/lib/supabaseClient";
 import {
   Booking,
@@ -352,6 +353,8 @@ function InvoiceContent() {
           </button>
         </div>
       </div>
+
+      <BookingTabs bookingId={bookingId} active="invoice" />
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-8">
         <div className="flex items-start justify-between mb-8">

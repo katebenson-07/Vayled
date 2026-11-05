@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
+import BookingTabs from "@/components/BookingTabs";
 import LocationPicker from "@/components/LocationPicker";
 import TimeSelect from "@/components/TimeSelect";
 import { supabase } from "@/lib/supabaseClient";
@@ -180,6 +181,8 @@ function TrialContent() {
           Mark preview complete
         </label>
       </div>
+
+      <BookingTabs bookingId={bookingId} active="preview" />
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-6 md:p-8">
         <h2 className="font-serif text-lg mb-6">Session details</h2>

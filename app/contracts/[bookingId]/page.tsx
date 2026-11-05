@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AuthGuard from "@/components/AuthGuard";
+import BookingTabs from "@/components/BookingTabs";
 import ContractDocument, { ContractSectionHeading } from "@/components/ContractDocument";
 import ContractLetterhead from "@/components/ContractLetterhead";
 import ContractSignatureBlock from "@/components/ContractSignatureBlock";
@@ -161,6 +162,8 @@ function ContractContent() {
           </button>
         </div>
       </div>
+
+      <BookingTabs bookingId={bookingId} active="contract" />
 
       <section className="bg-white border border-charcoal/10 rounded-xl p-6 print:hidden">
         <div className="flex items-center justify-between mb-4">

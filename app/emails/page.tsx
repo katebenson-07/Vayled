@@ -1,5 +1,6 @@
 "use client";
 
+import PageTabs from "@/components/PageTabs";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -16,6 +17,7 @@ function EmailsContent() {
   const bookingId = searchParams.get("booking");
 
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+  const [tab, setTab] = useState<"send" | "library" | null>(null);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [client, setClient] = useState<Client | null>(null);
   const [sentLog, setSentLog] = useState<SentEmail[]>([]);
@@ -159,9 +161,22 @@ function EmailsContent() {
         <p className="text-charcoal/60 text-sm">{MERGE_FIELD_HELP}</p>
       </div>
 
-      {bookingId && client && (
+      {(() => {
+        const hasSend = Boolean(bookingId && client);
+        const current = tab ?? (hasSend ? "send" : "library");
+        return (
+          <>
+            <PageTabs
+              active={current}
+              onChange={(k) => setTab(k as "send" | "library")}
+              tabs={[
+                ...(hasSend ? [{ key: "send", label: `Send to ${client?.bride_name ?? ""}` }] : []),
+                { key: "library", label: "Library" },
+              ]}
+            />
+            {hasSend && current === "send" && (
         <section className="bg-white border border-charcoal/10 rounded-xl p-6">
-          <h2 className="font-serif text-lg mb-1">Send to {client.bride_name}</h2>
+          <h2 className="font-serif text-lg mb-1">Send to {client?.bride_name}</h2>
           <p className="text-charcoal/60 text-sm mb-4">
             Pick a template — it sends automatically once Vayled&apos;s email is set up, or opens in your own email app
             pre-filled until then. Either way it logs here once sent.{" "}
@@ -195,8 +210,9 @@ function EmailsContent() {
             </div>
           )}
         </section>
-      )}
+            )}
 
+            {current === "library" && (
       <section className="bg-white border border-charcoal/10 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-serif text-lg">Library</h2>
@@ -262,6 +278,10 @@ function EmailsContent() {
           ))}
         </div>
       </section>
+            )}
+          </>
+        );
+      })()}
     </div>
   );
 }
