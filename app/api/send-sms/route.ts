@@ -72,7 +72,6 @@ export async function POST(req: NextRequest) {
 
 /** Texts the bride her preview feedback link (the "Text feedback form" button). */
 async function sendFeedback(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   studioId: string,
   bookingId: string
