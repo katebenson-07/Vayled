@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import FaceIdToggle from "@/components/FaceIdToggle";
 import DeleteAccount from "@/components/DeleteAccount";
+import BillingPanel from "@/components/BillingPanel";
+import { isNativeApp } from "@/lib/native";
 import { supabase } from "@/lib/supabaseClient";
 import { AppointmentLocation, AppointmentType, CustomQuestion, InquiryFormSettings, ServiceCatalogItem, StudioSettings } from "@/lib/types";
 import { loadAppointmentLocations, loadAppointmentTypes } from "@/lib/appointmentTypes";
@@ -64,7 +66,7 @@ const PROFILE_DEFAULTS: ProfileFields = {
   default_deposit_flat: 0,
 };
 
-type Tab = "profile" | "notifications" | "inquiry" | "invoice" | "appointments";
+type Tab = "profile" | "notifications" | "inquiry" | "invoice" | "appointments" | "billing";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "profile", label: "Personal Information" },
@@ -72,11 +74,15 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "inquiry", label: "Inquiry Form" },
   { id: "invoice", label: "Invoice" },
   { id: "appointments", label: "Appointments" },
+  { id: "billing", label: "Billing" },
 ];
 
 function InquirySettingsContent() {
   const searchParams = useSearchParams();
   const [studioId, setStudioId] = useState<string | null>(null);
+  // Billing is website-only: the phone app never shows purchase options.
+  const [native, setNative] = useState(true);
+  useEffect(() => setNative(isNativeApp()), []);
   const [settings, setSettings] = useState<Omit<InquiryFormSettings, "studio_id" | "updated_at">>(DEFAULTS);
   const [profile, setProfile] = useState<ProfileFields>(PROFILE_DEFAULTS);
   const [newQuestion, setNewQuestion] = useState("");
@@ -355,7 +361,7 @@ function InquirySettingsContent() {
       {saved && <p className="text-sm text-green-700">Saved.</p>}
 
       <div className="flex gap-1 border-b border-charcoal/10 text-sm">
-        {TABS.map((t) => (
+        {TABS.filter((t) => t.id !== "billing" || !native).map((t) => (
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id)}
@@ -757,6 +763,12 @@ function InquirySettingsContent() {
           </div>
         </section>
       </div>
+
+      {!native && activeTab === "billing" && (
+        <section className="bg-white border border-charcoal/10 rounded-xl p-6">
+          <BillingPanel />
+        </section>
+      )}
 
       <div className={`space-y-6 ${activeTab === "invoice" ? "" : "hidden"}`}>
         <section className="bg-white border border-charcoal/10 rounded-xl p-6">

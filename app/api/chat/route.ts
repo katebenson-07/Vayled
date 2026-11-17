@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { HELP_KNOWLEDGE, SUPPORT_EMAIL } from "@/lib/helpKnowledge";
+import { HELP_KNOWLEDGE, SUPPORT_EMAIL, fallbackAnswer } from "@/lib/helpKnowledge";
 
 export const runtime = "nodejs";
 
@@ -20,9 +20,6 @@ function limited(ip: string) {
 
 export async function POST(request: Request) {
   const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) {
-    return NextResponse.json({ error: "not_configured" }, { status: 503 });
-  }
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (limited(ip)) {
@@ -42,6 +39,12 @@ export async function POST(request: Request) {
     .map((m) => ({ role: m.role, content: m.content.slice(0, 1000) }));
   if (messages.length === 0 || messages[messages.length - 1].role !== "user") {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
+  }
+
+  const lastQuestion = messages[messages.length - 1].content;
+  // No AI key yet (or the AI service is down): answer from the built-in FAQ.
+  if (!key) {
+    return NextResponse.json({ reply: fallbackAnswer(lastQuestion), source: "faq" });
   }
 
   const audience =
@@ -72,7 +75,8 @@ ${HELP_KNOWLEDGE}`;
       }),
     });
     if (!res.ok) {
-      return NextResponse.json({ error: "upstream" }, { status: 502 });
+      console.error("chat upstream error", res.status, await res.text().catch(() => ""));
+      return NextResponse.json({ reply: fallbackAnswer(lastQuestion), source: "faq" });
     }
     const data = (await res.json()) as { content?: { type: string; text?: string }[] };
     const reply = (data.content ?? [])
@@ -82,6 +86,6 @@ ${HELP_KNOWLEDGE}`;
       .trim();
     return NextResponse.json({ reply: reply || `I'm not sure about that. Please email ${SUPPORT_EMAIL}.` });
   } catch {
-    return NextResponse.json({ error: "upstream" }, { status: 502 });
+    return NextResponse.json({ reply: fallbackAnswer(lastQuestion), source: "faq" });
   }
 }

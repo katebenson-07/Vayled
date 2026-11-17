@@ -1402,3 +1402,28 @@ $$;
 drop trigger if exists waitlist_redeem_code on waitlist_signups;
 create trigger waitlist_redeem_code before insert on waitlist_signups
   for each row execute function redeem_waitlist_code();
+
+-- ============================================================================
+-- Vayled subscriptions (Stripe)
+-- One row per studio, written ONLY by the Stripe webhook (service role). The
+-- studio owner can read their own row to show plan and billing status.
+-- ============================================================================
+
+create table if not exists studio_subscriptions (
+  studio_id uuid primary key references auth.users(id) on delete cascade,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  plan text,               -- 'solo' | 'pro' | 'studio'
+  billing_interval text,   -- 'month' | 'year'
+  status text,             -- trialing, active, past_due, canceled, ...
+  trial_end timestamptz,
+  current_period_end timestamptz,
+  cancel_at_period_end boolean not null default false,
+  updated_at timestamptz not null default now()
+);
+
+alter table studio_subscriptions enable row level security;
+
+drop policy if exists "Owner reads own subscription" on studio_subscriptions;
+create policy "Owner reads own subscription" on studio_subscriptions
+  for select to authenticated using (studio_id = auth.uid());
