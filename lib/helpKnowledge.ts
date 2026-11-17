@@ -3,7 +3,7 @@
  * keep it factual, because the bot is told to say "I'm not sure" about anything
  * that isn't written here.
  */
-export const SUPPORT_EMAIL = "katebenson@vayled.com";
+export const SUPPORT_EMAIL = "info@vayled.com";
 
 export const HELP_KNOWLEDGE = `
 ABOUT VAYLED

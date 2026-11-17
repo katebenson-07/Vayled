@@ -19,7 +19,7 @@ export default function TermsPage() {
       <section className="max-w-3xl mx-auto px-6 pt-16 pb-24 md:pt-24">
         <p className="text-xs uppercase tracking-widest-lg text-gold mb-4">Legal</p>
         <h1 className="font-serif text-4xl md:text-5xl text-charcoal mb-4">Terms of Service</h1>
-        <p className="text-sm text-charcoal/50 mb-10">Last updated November 4, 2026</p>
+        <p className="text-sm text-charcoal/50 mb-10">Last updated November 17, 2026</p>
 
         <P>
           These terms cover your use of vayled.com and the Vayled app. By creating an account, accepting an invite
@@ -69,15 +69,49 @@ export default function TermsPage() {
           service for other users.
         </P>
 
-        <H2>Payments &amp; plans</H2>
+        <H2>Plans, billing &amp; free trial</H2>
         <P>
-          Current pricing is listed on our{" "}
+          Vayled is offered as a paid subscription. Current plans and prices are listed on our{" "}
           <a href="/pricing" className="text-gold hover:underline">
             pricing page
           </a>
-          . Vayled tracks deposits, balances, and payments a studio records manually — Vayled does not currently
-          process payments on a studio’s behalf, and isn’t a party to any payment arrangement between a studio and
-          their clients or contractors.
+          . You can pay monthly or yearly; the yearly option charges for ten months and covers twelve. Payments are
+          processed by Stripe. We never see or store your full card number.
+        </P>
+        <P>
+          Some plans start with a free trial. If you add a card to start a trial, you won’t be charged until the
+          trial ends, and your subscription then begins automatically at the plan and price you chose. Your
+          subscription renews automatically each month or year until you cancel. You can cancel at any time from
+          Settings &gt; Billing; your access continues until the end of the period you’ve already paid for, and you
+          won’t be charged again. Unless the law requires otherwise, fees already paid are not refunded, including
+          for the unused part of a billing period.
+        </P>
+        <P>
+          We may change prices with advance notice. A price change won’t affect your current billing period.
+        </P>
+
+        <H2>Founding rate &amp; discount codes</H2>
+        <P>
+          Studios who join during the founding beta keep the founding rate they signed up at for as long as they stay
+          subscribed without a lapse. Discount codes apply only to the plan and period they’re issued for, may have
+          an expiration date or a limited number of uses, can’t be combined or exchanged for cash, and may be
+          withdrawn if misused.
+        </P>
+
+        <H2>No cut of your payments</H2>
+        <P>
+          Vayled does not take a percentage of your bookings or the payments your clients make you. You pay a flat
+          subscription. If a studio takes card payments through a payment provider such as Stripe, that provider’s
+          own processing fees apply and go to the provider, not to Vayled. Today, Vayled tracks deposits, balances,
+          and payments a studio records, and isn’t a party to any payment arrangement between a studio and their
+          clients or contractors.
+        </P>
+
+        <H2>Help assistant</H2>
+        <P>
+          Vayled includes a help chat that answers questions about the app. It is an automated assistant and can be
+          wrong. For anything involving your account, billing, or a decision that matters, email us. Please don’t
+          type passwords, card numbers, or other sensitive details into the chat.
         </P>
 
         <H2>Service availability</H2>
@@ -109,8 +143,8 @@ export default function TermsPage() {
         <H2>Contact</H2>
         <P>
           Questions about these terms — email{" "}
-          <a href="mailto:katebenson@vayled.com" className="text-gold hover:underline">
-            katebenson@vayled.com
+          <a href="mailto:info@vayled.com" className="text-gold hover:underline">
+            info@vayled.com
           </a>
           .
         </P>

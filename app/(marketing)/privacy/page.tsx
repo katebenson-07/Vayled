@@ -19,7 +19,7 @@ export default function PrivacyPage() {
       <section className="max-w-3xl mx-auto px-6 pt-16 pb-24 md:pt-24">
         <p className="text-xs uppercase tracking-widest-lg text-gold mb-4">Legal</p>
         <h1 className="font-serif text-4xl md:text-5xl text-charcoal mb-4">Privacy Policy</h1>
-        <p className="text-sm text-charcoal/50 mb-10">Last updated November 4, 2026</p>
+        <p className="text-sm text-charcoal/50 mb-10">Last updated November 17, 2026</p>
 
         <P>
           This policy covers what Vayled (“we,” “us”) collects when you use vayled.com and the Vayled app, whether
@@ -57,12 +57,27 @@ export default function PrivacyPage() {
           marketing outside of the account it belongs to.
         </P>
 
+        <H2>Billing information</H2>
+        <P>
+          Studio subscriptions are billed through Stripe. Stripe collects and stores your card details; we never see
+          or store your full card number. We keep your plan, billing period, and subscription status so we can show
+          them to you and give you the right access. Stripe’s handling of your payment information is covered by its
+          own privacy policy.
+        </P>
+
+        <H2>Help chat</H2>
+        <P>
+          The help chat on vayled.com and in the app is powered by an AI service from Anthropic. When you use it, the
+          questions you type are sent to that service to produce an answer. We don’t ask you to share client
+          information in the chat, and you shouldn’t type passwords, card numbers, or other sensitive details into it.
+        </P>
+
         <H2>Where it’s stored</H2>
         <P>
           Vayled runs on Supabase (Postgres database, authentication, and file storage) and is hosted on Vercel.
           Every studio’s data is scoped by row-level security enforced at the database layer, so one studio’s
           records are never returned by another studio’s queries. Transactional email, where configured, is sent
-          through Resend.
+          through Resend, payments are handled by Stripe, and help chat questions are processed by Anthropic.
         </P>
 
         <H2>Text messages</H2>
@@ -81,7 +96,7 @@ export default function PrivacyPage() {
 
         <H2>Sharing</H2>
         <P>
-          We share information only with the infrastructure providers above, strictly to operate the service — not
+          We share information only with the infrastructure and service providers above (Supabase, Vercel, Resend, Twilio, Stripe, and Anthropic), strictly to operate the service — not
           with advertisers, data brokers, or anyone else. We’ll disclose information if required by law, or to
           protect the rights, safety, or property of Vayled, our users, or the public.
         </P>
@@ -115,8 +130,8 @@ export default function PrivacyPage() {
         <H2>Contact</H2>
         <P>
           Questions about this policy or your data — email{" "}
-          <a href="mailto:katebenson@vayled.com" className="text-gold hover:underline">
-            katebenson@vayled.com
+          <a href="mailto:info@vayled.com" className="text-gold hover:underline">
+            info@vayled.com
           </a>
           .
         </P>
